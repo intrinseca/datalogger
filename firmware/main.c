@@ -39,55 +39,24 @@ void _low_ISR (void)
 
 /** D E C L A R A T I O N S **************************************************/
 #pragma code
-/******************************************************************************
- * Function:        void main(void)
- *
- * PreCondition:    None
- *
- * Input:           None
- *
- * Output:          None
- *
- * Side Effects:    None
- *
- * Overview:        Main program entry point.
- *
- * Note:            None
- *****************************************************************************/
+
 void main(void)
 {
     InitializeSystem();
     while(1)
     {
         USBTasks();         // USB Tasks
-		//UCAM
-        ProcessIO();        // See user\user.c & .h
-		
-    }//end while
-}//end main
-
-
-
+        ProcessIO();        // See user\user.c & .h	
+    }
+}
 
 /******************************************************************************
- * Function:        static void InitializeSystem(void)
+ *  InitializeSystem is a centralize initialization routine.
+ *  All required USB initialization routines are called from
+ *  here.
  *
- * PreCondition:    None
- *
- * Input:           None
- *
- * Output:          None
- *
- * Side Effects:    None
- *
- * Overview:        InitializeSystem is a centralize initialization routine.
- *                  All required USB initialization routines are called from
- *                  here.
- *
- *                  User application initialization routine should also be
- *                  called from here.                  
- *
- * Note:            None
+ *  User application initialization routine should also be
+ *  called from here.        
  *****************************************************************************/
 static void InitializeSystem(void)
 {
@@ -103,23 +72,10 @@ static void InitializeSystem(void)
     mInitializeUSBDriver();         // See usbdrv.h
     
     UserInit();                     // See user.c & .h
-
-}//end InitializeSystem
+}
 
 /******************************************************************************
- * Function:        void USBTasks(void)
- *
- * PreCondition:    InitializeSystem has been called.
- *
- * Input:           None
- *
- * Output:          None
- *
- * Side Effects:    None
- *
- * Overview:        Service loop for USB tasks.
- *
- * Note:            None
+ * Service loop for USB tasks.
  *****************************************************************************/
 void USBTasks(void)
 {
@@ -128,10 +84,7 @@ void USBTasks(void)
      */
     USBCheckBusStatus();                    // Must use polling method
     if(UCFGbits.UTEYE!=1)
-	{
+    {
         USBDriverService();                 // Interrupt or polling method
-	}//end if
-
-}// end USBTasks
-
-/** EOF main.c ***************************************************************/
+    }
+}
