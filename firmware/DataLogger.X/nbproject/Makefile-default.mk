@@ -41,11 +41,11 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=
-POSSIBLE_DEPFILES=
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1179346605/usbmmap.o ${OBJECTDIR}/_ext/2047694304/usbdrv.o ${OBJECTDIR}/_ext/592281999/usb9.o ${OBJECTDIR}/_ext/1608690841/usbdsc.o ${OBJECTDIR}/_ext/875386773/usbctrltrf.o ${OBJECTDIR}/_ext/760557894/user.o ${OBJECTDIR}/_ext/1230944124/usbgen.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/1472/main.o.d ${OBJECTDIR}/_ext/1179346605/usbmmap.o.d ${OBJECTDIR}/_ext/2047694304/usbdrv.o.d ${OBJECTDIR}/_ext/592281999/usb9.o.d ${OBJECTDIR}/_ext/1608690841/usbdsc.o.d ${OBJECTDIR}/_ext/875386773/usbctrltrf.o.d ${OBJECTDIR}/_ext/760557894/user.o.d ${OBJECTDIR}/_ext/1230944124/usbgen.o.d
 
 # Object Files
-OBJECTFILES=
+OBJECTFILES=${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1179346605/usbmmap.o ${OBJECTDIR}/_ext/2047694304/usbdrv.o ${OBJECTDIR}/_ext/592281999/usb9.o ${OBJECTDIR}/_ext/1608690841/usbdsc.o ${OBJECTDIR}/_ext/875386773/usbctrltrf.o ${OBJECTDIR}/_ext/760557894/user.o ${OBJECTDIR}/_ext/1230944124/usbgen.o
 
 
 CFLAGS=
@@ -76,7 +76,103 @@ endif
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
+${OBJECTDIR}/_ext/1472/main.o: ../main.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
+	@${RM} ${OBJECTDIR}/_ext/1472/main.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/1472/main.o   ../main.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/1472/main.o 
+	
+${OBJECTDIR}/_ext/1179346605/usbmmap.o: ../system/usb/usbmmap.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/1179346605 
+	@${RM} ${OBJECTDIR}/_ext/1179346605/usbmmap.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/1179346605/usbmmap.o   ../system/usb/usbmmap.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/1179346605/usbmmap.o 
+	
+${OBJECTDIR}/_ext/2047694304/usbdrv.o: ../system/usb/usbdrv/usbdrv.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/2047694304 
+	@${RM} ${OBJECTDIR}/_ext/2047694304/usbdrv.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/2047694304/usbdrv.o   ../system/usb/usbdrv/usbdrv.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/2047694304/usbdrv.o 
+	
+${OBJECTDIR}/_ext/592281999/usb9.o: ../system/usb/usb9/usb9.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/592281999 
+	@${RM} ${OBJECTDIR}/_ext/592281999/usb9.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/592281999/usb9.o   ../system/usb/usb9/usb9.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/592281999/usb9.o 
+	
+${OBJECTDIR}/_ext/1608690841/usbdsc.o: ../autofiles/usbdsc.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/1608690841 
+	@${RM} ${OBJECTDIR}/_ext/1608690841/usbdsc.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/1608690841/usbdsc.o   ../autofiles/usbdsc.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/1608690841/usbdsc.o 
+	
+${OBJECTDIR}/_ext/875386773/usbctrltrf.o: ../system/usb/usbctrltrf/usbctrltrf.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/875386773 
+	@${RM} ${OBJECTDIR}/_ext/875386773/usbctrltrf.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/875386773/usbctrltrf.o   ../system/usb/usbctrltrf/usbctrltrf.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/875386773/usbctrltrf.o 
+	
+${OBJECTDIR}/_ext/760557894/user.o: ../user/user.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/760557894 
+	@${RM} ${OBJECTDIR}/_ext/760557894/user.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/760557894/user.o   ../user/user.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/760557894/user.o 
+	
+${OBJECTDIR}/_ext/1230944124/usbgen.o: ../system/usb/class/generic/usbgen.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/1230944124 
+	@${RM} ${OBJECTDIR}/_ext/1230944124/usbgen.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/1230944124/usbgen.o   ../system/usb/class/generic/usbgen.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/1230944124/usbgen.o 
+	
 else
+${OBJECTDIR}/_ext/1472/main.o: ../main.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/1472 
+	@${RM} ${OBJECTDIR}/_ext/1472/main.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/1472/main.o   ../main.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/1472/main.o 
+	
+${OBJECTDIR}/_ext/1179346605/usbmmap.o: ../system/usb/usbmmap.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/1179346605 
+	@${RM} ${OBJECTDIR}/_ext/1179346605/usbmmap.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/1179346605/usbmmap.o   ../system/usb/usbmmap.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/1179346605/usbmmap.o 
+	
+${OBJECTDIR}/_ext/2047694304/usbdrv.o: ../system/usb/usbdrv/usbdrv.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/2047694304 
+	@${RM} ${OBJECTDIR}/_ext/2047694304/usbdrv.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/2047694304/usbdrv.o   ../system/usb/usbdrv/usbdrv.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/2047694304/usbdrv.o 
+	
+${OBJECTDIR}/_ext/592281999/usb9.o: ../system/usb/usb9/usb9.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/592281999 
+	@${RM} ${OBJECTDIR}/_ext/592281999/usb9.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/592281999/usb9.o   ../system/usb/usb9/usb9.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/592281999/usb9.o 
+	
+${OBJECTDIR}/_ext/1608690841/usbdsc.o: ../autofiles/usbdsc.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/1608690841 
+	@${RM} ${OBJECTDIR}/_ext/1608690841/usbdsc.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/1608690841/usbdsc.o   ../autofiles/usbdsc.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/1608690841/usbdsc.o 
+	
+${OBJECTDIR}/_ext/875386773/usbctrltrf.o: ../system/usb/usbctrltrf/usbctrltrf.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/875386773 
+	@${RM} ${OBJECTDIR}/_ext/875386773/usbctrltrf.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/875386773/usbctrltrf.o   ../system/usb/usbctrltrf/usbctrltrf.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/875386773/usbctrltrf.o 
+	
+${OBJECTDIR}/_ext/760557894/user.o: ../user/user.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/760557894 
+	@${RM} ${OBJECTDIR}/_ext/760557894/user.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/760557894/user.o   ../user/user.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/760557894/user.o 
+	
+${OBJECTDIR}/_ext/1230944124/usbgen.o: ../system/usb/class/generic/usbgen.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/1230944124 
+	@${RM} ${OBJECTDIR}/_ext/1230944124/usbgen.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"/C:/3DAQ/firmware" -I".." -I"../system/usb" -I"../autofiles" -I"../system" -I"../system/usb/class/generic" -I"../user" -I"../system/usb/usbdrv" -Ou- -Ot- -Ob- -Op- -Or- -Od- -Opa-  -I ${MP_CC_DIR}\\..\\h  -fo ${OBJECTDIR}/_ext/1230944124/usbgen.o   ../system/usb/class/generic/usbgen.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/_ext/1230944124/usbgen.o 
+	
 endif
 
 # ------------------------------------------------------------------------------------
@@ -84,11 +180,11 @@ endif
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 dist/${CND_CONF}/${IMAGE_TYPE}/DataLogger.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_LD} $(MP_EXTRA_LD_PRE)    -w -x -u_DEBUG   -z__MPLAB_BUILD=1  -z__MPLAB_DEBUG=1 -z__MPLAB_DEBUGGER_ICD3=1 $(MP_LINKER_DEBUG_OPTION) -l ${MP_CC_DIR}\\..\\lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/DataLogger.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
+	${MP_LD} $(MP_EXTRA_LD_PRE) "..\rm18f4550.lkr"   -w -x -u_DEBUG -m"$(BINDIR_)$(TARGETBASE).map" -l"/c:/mcc18/lib"  -z__MPLAB_BUILD=1  -z__MPLAB_DEBUG=1 -z__MPLAB_DEBUGGER_ICD3=1 $(MP_LINKER_DEBUG_OPTION) -l ${MP_CC_DIR}\\..\\lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/DataLogger.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
 else
 dist/${CND_CONF}/${IMAGE_TYPE}/DataLogger.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_LD} $(MP_EXTRA_LD_PRE)    -w    -z__MPLAB_BUILD=1  -l ${MP_CC_DIR}\\..\\lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/DataLogger.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
+	${MP_LD} $(MP_EXTRA_LD_PRE) "..\rm18f4550.lkr"   -w  -m"$(BINDIR_)$(TARGETBASE).map" -l"/c:/mcc18/lib"  -z__MPLAB_BUILD=1  -l ${MP_CC_DIR}\\..\\lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/DataLogger.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
 endif
 
 

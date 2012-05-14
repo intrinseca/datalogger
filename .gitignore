@@ -4,3 +4,7 @@ firmware/_output
 *.suo
 new-software/DataLogger/DataLogger/bin
 new-software/DataLogger/DataLogger/obj/
+firmware/DataLogger.X/.map
+firmware/DataLogger.X/build/
+firmware/DataLogger.X/dist/
+firmware/DataLogger.X/usbdsc.err
