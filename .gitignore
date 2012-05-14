@@ -2,10 +2,11 @@ firmware/hex
 firmware/_output
 *.o
 *.suo
+*.err
 new-software/DataLogger/DataLogger/bin
-new-software/DataLogger/DataLogger/obj/
+new-software/DataLogger/DataLogger/obj
 firmware/DataLogger.X/.map
 firmware/DataLogger.X/build/
 firmware/DataLogger.X/dist/
-firmware/DataLogger.X/usbdsc.err
-firmware/DataLogger.X/nbproject/Makefile-genesis.properties
+firmware/DataLogger.X/nbproject/private/private.xml
+firmware/DataLogger.X/nbproject/Makefile*
