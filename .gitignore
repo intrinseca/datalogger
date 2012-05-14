@@ -8,3 +8,4 @@ firmware/DataLogger.X/.map
 firmware/DataLogger.X/build/
 firmware/DataLogger.X/dist/
 firmware/DataLogger.X/usbdsc.err
+firmware/DataLogger.X/nbproject/Makefile-genesis.properties
