@@ -86,7 +86,7 @@
         <property key="enable-ou" value="false"/>
         <property key="enable-ow" value="true"/>
         <property key="extra-include-directories"
-                  value="/C:/3DAQ/firmware;..;../system/usb;../autofiles;../system;../system/usb/class/generic;../user;../system/usb/usbdrv;"/>
+                  value="..;../system/usb;../autofiles;../system;../system/usb/class/generic;../user;../system/usb/usbdrv"/>
         <property key="optimization-master" value="Custom"/>
         <property key="preprocessor-macros" value=""/>
         <property key="procedural-abstraction-passes" value="0"/>
