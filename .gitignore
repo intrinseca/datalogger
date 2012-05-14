@@ -1,3 +1,6 @@
 firmware/hex
 firmware/_output
 *.o
+*.suo
+new-software/DataLogger/DataLogger/bin
+new-software/DataLogger/DataLogger/obj/
