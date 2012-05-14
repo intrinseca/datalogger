@@ -42,7 +42,7 @@ void ServiceRequests(void)
         counter = 0;
         switch(dataPacket.CMD)
         {
-            case BLINK_LED_COMMAND: //[0xEE, Onstate]
+            case SET_LED_COMMAND: //[0xEE, Onstate]
                 Blink(dataPacket._byte[1]);
                 counter=0x02; //sends back same command
                 break;
