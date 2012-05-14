@@ -4,15 +4,6 @@
 /** I N C L U D E S **********************************************************/
 #include "system\typedefs.h"
 
-/** D E F I N I T I O N S ****************************************************/
-/* PICDEM FS USB Demo Version */
-#define MINOR_VERSION   0x00    //Demo Version 1.00
-#define MAJOR_VERSION   0x01
-
-/* Temperature Mode */
-#define TEMP_REAL_TIME  0x00
-#define TEMP_LOGGING    0x01
-
 /** S T R U C T U R E S ******************************************************/
 typedef union DATA_PACKET
 {
@@ -25,8 +16,7 @@ typedef union DATA_PACKET
             READ_VERSION    = 0x00,
             ID_BOARD        = 0x31,
             UPDATE_LED      = 0x32,
-            //UCAM
-			GET_ADC_COMMAND	= 0xED,
+            GET_ADC_COMMAND = 0xED,
             BLINK_LED_COMMAND = 0xEE,
             RESET           = 0xFF
         }CMD;
