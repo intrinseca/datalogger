@@ -1,0 +1,3 @@
+firmware/hex
+firmware/_output
+*.o
