@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LibUsbDotNet;
 using LibUsbDotNet.Main;
+using System.Windows.Threading;
 
 namespace DataLogger
 {
@@ -21,9 +22,24 @@ namespace DataLogger
     /// </summary>
     public partial class wndMain : Window
     {
+        public bool LED
+        {
+            get { return (bool)GetValue(LEDProperty); }
+            set { SetValue(LEDProperty, value); }
+        }
+
+        public static readonly DependencyProperty LEDProperty = DependencyProperty.Register(
+            "LED",
+            typeof(bool),
+            typeof(wndMain), 
+            new UIPropertyMetadata(false));
+
         UsbDevice logger;
         UsbDeviceFinder finder = new UsbDeviceFinder(0x04D8, 0x000C);
         UsbEndpointWriter writer;
+        UsbEndpointReader reader;
+
+        DispatcherTimer poll = new DispatcherTimer();
 
         public wndMain()
         {
@@ -36,25 +52,72 @@ namespace DataLogger
             if (logger == null) throw new Exception("Device Not Found.");
 
             writer = logger.OpenEndpointWriter(WriteEndpointID.Ep01);
+            reader = logger.OpenEndpointReader(ReadEndpointID.Ep01);
 
+            poll.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            poll.Tick += new EventHandler(poll_Tick);
+            poll.Start();
+
+            chkLED.SetBinding(CheckBox.IsCheckedProperty, new Binding("LED") { Source = this });
         }
 
-        private void chkLED_Checked(object sender, RoutedEventArgs e)
+        void poll_Tick(object sender, EventArgs e)
         {
-            int sent;
-            writer.Write(new byte[] { 0xEE, 1 }, 1000, out sent);
+            readADC();
+            LED = !LED;
+            updateLED();
         }
 
-        private void chkLED_Unchecked(object sender, RoutedEventArgs e)
+        private void updateLED()
         {
-            int sent;
-            writer.Write(new byte[] { 0xEE, 0 }, 1000, out sent);
+            if (LED)
+            {
+                var response = commandWithResponse(new byte[] { 0xEE, 1 }, 2);
+            }
+            else
+            {
+                var response = commandWithResponse(new byte[] { 0xEE, 0 }, 2);
+            }
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            if(logger.IsOpen) logger.Close();
+            if (logger.IsOpen) logger.Close();
             logger = null;
+        }
+
+        private byte[] commandWithResponse(byte command, int responseLength)
+        {
+            return commandWithResponse(new byte[] { command }, responseLength);
+        }
+
+        private byte[] commandWithResponse(byte[] command, int responseLength)
+        {
+            int sent;
+            writer.Write(command, 1000, out sent);
+
+            int received = 0;
+            int count;
+            byte[] buffer = new byte[responseLength];
+
+            while (received < responseLength)
+            {
+                reader.Read(buffer, 1000, out count);
+                received += count;
+            }
+
+            return buffer;
+        }
+
+        private void btnRead_Click(object sender, RoutedEventArgs e)
+        {
+            readADC();
+        }
+
+        private void readADC()
+        {
+            var result = commandWithResponse(0xED, 2);
+            sldValue.Value = result[1];
         }
     }
 }

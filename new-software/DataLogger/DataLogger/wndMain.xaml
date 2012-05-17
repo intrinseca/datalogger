@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525"
         Closed="Window_Closed">
-    <Grid>
-        <CheckBox Name="chkLED" Checked="chkLED_Checked" Unchecked="chkLED_Unchecked">LED</CheckBox>
-    </Grid>
+    <StackPanel>
+        <CheckBox Name="chkLED">LED</CheckBox>
+        <Button Name="btnRead" Click="btnRead_Click">Read ADC</Button>
+        <Slider Name="sldValue" Minimum="0" Maximum="255" Value="0" />
+    </StackPanel>
 </Window>
