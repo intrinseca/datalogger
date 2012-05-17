@@ -34,10 +34,7 @@ namespace DataLogger
             typeof(wndMain), 
             new UIPropertyMetadata(false));
 
-        UsbDevice logger;
-        UsbDeviceFinder finder = new UsbDeviceFinder(0x04D8, 0x000C);
-        UsbEndpointWriter writer;
-        UsbEndpointReader reader;
+        private Driver logger = new Driver();
 
         DispatcherTimer poll = new DispatcherTimer();
 
@@ -46,13 +43,7 @@ namespace DataLogger
             InitializeComponent();
 
             // Find and open the usb device.
-            logger = UsbDevice.OpenUsbDevice(finder);
-
-            // If the device is open and ready
-            if (logger == null) throw new Exception("Device Not Found.");
-
-            writer = logger.OpenEndpointWriter(WriteEndpointID.Ep01);
-            reader = logger.OpenEndpointReader(ReadEndpointID.Ep01);
+            logger.Open();
 
             poll.Interval = new TimeSpan(0, 0, 0, 0, 10);
             poll.Tick += new EventHandler(poll_Tick);
@@ -72,41 +63,17 @@ namespace DataLogger
         {
             if (LED)
             {
-                var response = commandWithResponse(new byte[] { 0xEE, 1 }, 2);
+                var response = logger.SendCommand(new byte[] { 0xEE, 1 }, 2);
             }
             else
             {
-                var response = commandWithResponse(new byte[] { 0xEE, 0 }, 2);
+                var response = logger.SendCommand(new byte[] { 0xEE, 0 }, 2);
             }
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            if (logger.IsOpen) logger.Close();
-            logger = null;
-        }
-
-        private byte[] commandWithResponse(byte command, int responseLength)
-        {
-            return commandWithResponse(new byte[] { command }, responseLength);
-        }
-
-        private byte[] commandWithResponse(byte[] command, int responseLength)
-        {
-            int sent;
-            writer.Write(command, 1000, out sent);
-
-            int received = 0;
-            int count;
-            byte[] buffer = new byte[responseLength];
-
-            while (received < responseLength)
-            {
-                reader.Read(buffer, 1000, out count);
-                received += count;
-            }
-
-            return buffer;
+            logger.Close();
         }
 
         private void btnRead_Click(object sender, RoutedEventArgs e)
@@ -116,7 +83,7 @@ namespace DataLogger
 
         private void readADC()
         {
-            var result = commandWithResponse(0xED, 2);
+            var result = logger.SendCommand(0xED, 2);
             sldValue.Value = result[1];
         }
     }
