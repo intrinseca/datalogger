@@ -92,12 +92,13 @@ void ServiceRequests(void)
         {
             case SET_PORTA:
                 LATD = INPacket._byte[1];
+                counter=0x02;
                 break;
+            
             case RD_POT:
                 mInitPOT();
 
                 INPacket._byte[1] = ReadPOT();
-
                 counter=0x02;
                 break;
                 
@@ -114,11 +115,11 @@ void ServiceRequests(void)
         {
             if(!USBHandleBusy(USBGenericInHandle))
             {
-                USBGenericInHandle = USBGenWrite(USBGEN_EP_NUM,(BYTE*)&INPacket,counter);
+                USBGenericInHandle = USBGenWrite(USBGEN_EP_NUM, (BYTE*)&INPacket, counter);
             }
         }
         
         //Re-arm the OUT endpoint for the next packet
-        USBGenericOutHandle = USBGenRead(USBGEN_EP_NUM,(BYTE*)&OUTPacket,USBGEN_EP_SIZE);
+        USBGenericOutHandle = USBGenRead(USBGEN_EP_NUM, (BYTE*)&OUTPacket, USBGEN_EP_SIZE);
     }
 }
