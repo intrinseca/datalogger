@@ -170,7 +170,7 @@ ROM USB_DEVICE_DESCRIPTOR device_dsc=
     0x00,                   // Class Code
     0x00,                   // Subclass code
     0x00,                   // Protocol code
-    USB_EP0_BUFF_SIZE,          // Max packet size for EP0, see usb_config.h
+    USB_EP0_BUFF_SIZE,      // Max packet size for EP0, see usb_config.h
     0x04D8,                 // Vendor ID: 0x04D8 is Microchip's Vendor ID
     0x000C,                 // Product ID: 0x000C
     0x0000,                 // Device release number in BCD format
