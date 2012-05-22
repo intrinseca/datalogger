@@ -24,18 +24,6 @@ namespace DataLogger
     /// </summary>
     public partial class wndMain : Window
     {
-        public bool LED
-        {
-            get { return (bool)GetValue(LEDProperty); }
-            set { SetValue(LEDProperty, value); }
-        }
-
-        public static readonly DependencyProperty LEDProperty = DependencyProperty.Register(
-            "LED",
-            typeof(bool),
-            typeof(wndMain),
-            new UIPropertyMetadata(false));
-
         private Driver logger = new Driver();
         private IDeviceNotifier notifier = DeviceNotifier.OpenDeviceNotifier();
 
@@ -60,8 +48,6 @@ namespace DataLogger
 
             poll.Interval = new TimeSpan(0, 0, 0, 0, 5);
             poll.Tick += new EventHandler(poll_Tick);
-
-            chkLED.SetBinding(CheckBox.IsCheckedProperty, new Binding("LED") { Source = this });
         }
 
         private void connect()
@@ -99,11 +85,6 @@ namespace DataLogger
             readADC();
         }
 
-        private void updateLED()
-        {
-            var response = logger.SendCommand(new byte[] { 0xEE, (byte)(LED ? 1 : 0) }, 2);
-        }
-
         private void Window_Closed(object sender, EventArgs e)
         {
             logger.Close();
@@ -123,11 +104,16 @@ namespace DataLogger
                 gphData.AddPoint(t, (float)(result[1] / 255.0f) - 0.5f);
                 t++;
             }
-            catch(DriverException ex)
+            catch (DriverException ex)
             {
                 Debug.Print("DriverException: {0}", ex.Message);
                 return;
             }
+        }
+
+        private void sldPoll_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            poll.Interval = new TimeSpan(0, 0, 0, 0, (int)sldPoll.Value);
         }
     }
 }
