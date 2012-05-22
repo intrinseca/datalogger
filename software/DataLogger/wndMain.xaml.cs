@@ -13,7 +13,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LibUsbDotNet;
 using LibUsbDotNet.Main;
+using LibUsbDotNet.DeviceNotify;
 using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace DataLogger
 {
@@ -35,6 +37,7 @@ namespace DataLogger
             new UIPropertyMetadata(false));
 
         private Driver logger = new Driver();
+        private IDeviceNotifier notifier = DeviceNotifier.OpenDeviceNotifier();
 
         DispatcherTimer poll = new DispatcherTimer();
 
@@ -44,14 +47,51 @@ namespace DataLogger
         {
             InitializeComponent();
 
-            // Find and open the usb device.
-            logger.Open();
+            notifier.OnDeviceNotify += new EventHandler<DeviceNotifyEventArgs>(notifier_OnDeviceNotify);
+
+            try
+            {
+                connect();
+            }
+            catch (DeviceNotFoundException)
+            {
+
+            }
 
             poll.Interval = new TimeSpan(0, 0, 0, 0, 5);
             poll.Tick += new EventHandler(poll_Tick);
-            poll.Start();
 
             chkLED.SetBinding(CheckBox.IsCheckedProperty, new Binding("LED") { Source = this });
+        }
+
+        private void connect()
+        {
+            logger.Open();
+            poll.Start();
+            sbiConnectionStatus.Content = "Connected";
+        }
+
+        private void disconnect()
+        {
+            poll.Stop();
+            logger.Close();
+            sbiConnectionStatus.Content = "Not Connected";
+        }
+
+        void notifier_OnDeviceNotify(object sender, DeviceNotifyEventArgs e)
+        {
+            if (e.Device.IdVendor == Driver.VID && e.Device.IdProduct == Driver.PID)
+            {
+                switch (e.EventType)
+                {
+                    case EventType.DeviceArrival:
+                        connect();
+                        break;
+                    case EventType.DeviceRemoveComplete:
+                        disconnect();
+                        break;
+                }
+            }
         }
 
         void poll_Tick(object sender, EventArgs e)
@@ -76,10 +116,18 @@ namespace DataLogger
 
         private void readADC()
         {
-            var result = logger.SendCommand(0xED, 2);
-            sldValue.Value = result[1];
-            gphData.AddPoint(t, (float)(result[1] / 255.0f) - 0.5f);
-            t++;
+            try
+            {
+                var result = logger.SendCommand(0xED, 2);
+                sldValue.Value = result[1];
+                gphData.AddPoint(t, (float)(result[1] / 255.0f) - 0.5f);
+                t++;
+            }
+            catch(DriverException ex)
+            {
+                Debug.Print("DriverException: {0}", ex.Message);
+                return;
+            }
         }
     }
 }

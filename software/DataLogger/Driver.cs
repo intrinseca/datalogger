@@ -7,6 +7,30 @@ using LibUsbDotNet.Main;
 
 namespace DataLogger
 {
+    [Serializable]
+    public class DeviceNotFoundException : Exception
+    {
+        public DeviceNotFoundException() { }
+        public DeviceNotFoundException(string message) : base(message) { }
+        public DeviceNotFoundException(string message, Exception inner) : base(message, inner) { }
+        protected DeviceNotFoundException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class DriverException : Exception
+    {
+        public DriverException() { }
+        public DriverException(string message) : base(message) { }
+        public DriverException(string message, Exception inner) : base(message, inner) { }
+        protected DriverException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
     class Driver
     {
         public const int VID = 0x04D8;
@@ -30,8 +54,7 @@ namespace DataLogger
         {
             device = UsbDevice.OpenUsbDevice(finder);
 
-            // If the device is open and ready
-            if (device == null) throw new Exception("Device Not Found.");
+            if (device == null) throw new DeviceNotFoundException("Could not find device");
 
             bulkWriter = device.OpenEndpointWriter(WriteEndpointID.Ep01, EndpointType.Bulk);
             bulkReader = device.OpenEndpointReader(ReadEndpointID.Ep01, 64, EndpointType.Bulk);
@@ -39,7 +62,7 @@ namespace DataLogger
 
         public void Close()
         {
-            if (device.IsOpen)
+            if (device != null && device.IsOpen)
                 device.Close();
         }
 
@@ -59,7 +82,15 @@ namespace DataLogger
 
             while (received < responseLength)
             {
-                bulkReader.Read(buffer, RW_TIMEOUT, out count);
+                try
+                {
+                    bulkReader.Read(buffer, RW_TIMEOUT, out count);
+                }
+                catch (ObjectDisposedException ex)
+                {
+                    throw new DriverException("Read aborted by disconnect", ex);
+                }
+
                 received += count;
             }
 

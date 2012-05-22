@@ -4,17 +4,22 @@
         xmlns:dl="clr-namespace:DataLogger"
         Title="MainWindow" Height="350" Width="525"
         Closed="Window_Closed">
-    <StackPanel>
-        <CheckBox Name="chkLED">LED</CheckBox>
-        <Button Name="btnRead" Click="btnRead_Click">Read ADC</Button>
-        
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <dl:Graph x:Name="gphData" Height="200" />
-            <Slider Name="sldValue" Minimum="0" Maximum="255" Value="0" Orientation="Vertical" Grid.Column="1" />
-        </Grid>
-    </StackPanel>
+    <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem Name="sbiConnectionStatus">Not Connected</StatusBarItem>
+        </StatusBar>
+        <StackPanel>
+            <CheckBox Name="chkLED">LED</CheckBox>
+            <Button Name="btnRead" Click="btnRead_Click">Read ADC</Button>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <dl:Graph x:Name="gphData" Height="200" />
+                <Slider Name="sldValue" Minimum="0" Maximum="255" Value="0" Orientation="Vertical" Grid.Column="1" />
+            </Grid>
+        </StackPanel>
+    </DockPanel>
 </Window>
