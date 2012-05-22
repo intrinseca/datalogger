@@ -19,7 +19,6 @@ namespace DataLogger
 
         UsbEndpointWriter bulkWriter;
         UsbEndpointReader bulkReader;
-        UsbEndpointReader isoReader;
 
         UsbTransferQueue queue;
 
@@ -36,27 +35,6 @@ namespace DataLogger
 
             bulkWriter = device.OpenEndpointWriter(WriteEndpointID.Ep01, EndpointType.Bulk);
             bulkReader = device.OpenEndpointReader(ReadEndpointID.Ep01, 64, EndpointType.Bulk);
-
-            //isoReader = device.OpenEndpointReader(ReadEndpointID.Ep02, 1024, EndpointType.Isochronous);
-        }
-
-        public void ReceiveIso()
-        {
-            queue = new UsbTransferQueue(isoReader, 3, 64, 1000, 64);
-
-            int transferCount = 0;
-            ErrorCode ec;
-
-            do
-            {
-                UsbTransferQueue.Handle h;
-
-                ec = queue.Transfer(out h);
-                if (ec != ErrorCode.Success)
-                    throw new Exception("Read Failed");
-
-                transferCount++;
-            } while (transferCount < 10);
         }
 
         public void Close()

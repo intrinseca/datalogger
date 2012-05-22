@@ -7,7 +7,6 @@
     <StackPanel>
         <CheckBox Name="chkLED">LED</CheckBox>
         <Button Name="btnRead" Click="btnRead_Click">Read ADC</Button>
-        <Button Name="btnIso" Click="btnIso_Click">Isochronous Read</Button>
         
         <Grid>
             <Grid.ColumnDefinitions>
