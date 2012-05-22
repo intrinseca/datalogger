@@ -143,7 +143,7 @@
     #define sw3                 PORTBbits.RB5
     
     /** POT ************************************************************/
-    #define mInitPOT()          {TRISAbits.TRISA0=1;ADCON0=0x01;ADCON2=0x3C;ADCON2bits.ADFM = 1;}
+    #define mInitPOT()          {TRISAbits.TRISA0=1;ADCON0=0x05;ADCON2=0x3C;ADCON2bits.ADFM = 1;}
     
     /** SPI : Chip Select Lines ****************************************/
     #define tris_cs_temp_sensor TRISBbits.TRISB2    // Output
