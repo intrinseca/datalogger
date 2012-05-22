@@ -64,6 +64,9 @@ namespace DataLogger
                 y * Yscale + grdPoints.ActualHeight / 2.0
                 ));
 
+            if (plGraph.Points.Count > 500)
+                plGraph.Points.RemoveAt(0);
+
             scrGraph.ScrollToRightEnd();
         }
     }
