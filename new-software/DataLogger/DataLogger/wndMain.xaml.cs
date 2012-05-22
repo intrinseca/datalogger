@@ -81,10 +81,5 @@ namespace DataLogger
             gphData.AddPoint(t, (float)(result[1] / 255.0f) - 0.5f);
             t++;
         }
-
-        private void btnIso_Click(object sender, RoutedEventArgs e)
-        {
-            logger.ReceiveIso();
-        }
     }
 }
