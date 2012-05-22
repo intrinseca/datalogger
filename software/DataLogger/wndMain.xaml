@@ -2,69 +2,210 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dl="clr-namespace:DataLogger"
-        Title="MainWindow" Height="450" Width="695"
+        Title="USB Data Logger" Height="450" Width="695"
         Closed="Window_Closed"
+        UseLayoutRounding="True"
         Background="{StaticResource LightBrush}" Foreground="{StaticResource DarkBrush}">
 
     <Window.Resources>
         <Style TargetType="Slider">
-            <Setter Property="Margin" Value="3" />
+            <Setter Property="Margin" Value="5" />
         </Style>
+
         <Style TargetType="Label">
-            <Setter Property="Margin" Value="3" />
+            <Setter Property="Margin" Value="5" />
             <Setter Property="Foreground" Value="{StaticResource DarkBrush}" />
         </Style>
+
         <Style TargetType="CheckBox">
-            <Setter Property="Margin" Value="3" />
+            <Setter Property="Margin" Value="5" />
         </Style>
+
         <Style TargetType="Button">
-            <Setter Property="Margin" Value="3" />
+            <Setter Property="Margin" Value="5" />
         </Style>
+
         <Style TargetType="GroupBox">
-            <Setter Property="Margin" Value="3" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Foreground" Value="{StaticResource AccentRedBrush}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <StackPanel>
+                            <Border BorderBrush="{TemplateBinding Foreground}" BorderThickness="0,0,0,1" Margin="0,0,0,3">
+                                <TextBlock Text="{TemplateBinding Header}" Foreground="{TemplateBinding Foreground}" FontSize="15" />
+                            </Border>
+                            <ContentPresenter />
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
-    </Window.Resources>
 
-    <DockPanel>
-        <TextBlock DockPanel.Dock="Top" FontSize="20" Padding="10" Background="{StaticResource AccentBlueBrush}">USB Data Logger</TextBlock>
+        <Style TargetType="ToolBar">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToolBar">
+                        <StackPanel Orientation="Horizontal" IsItemsHost="True" Background="{StaticResource AccentRedBrush}" Margin="5" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        <StatusBar DockPanel.Dock="Bottom">
-            <StatusBarItem Name="sbiConnectionStatus">Not Connected</StatusBarItem>
-        </StatusBar>
+        <Style TargetType="Button" x:Key="{x:Static ToolBar.ButtonStyleKey}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="TBB_border" Padding="5" Background="Transparent" BorderBrush="{StaticResource AccentRedBrush}" BorderThickness="0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Effect">
+                                                <Setter.Value>
+                                                    <DropShadowEffect Color="{StaticResource Dark}" ShadowDepth="0" Opacity="0.8" />
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <ContentPresenter x:Name="TBB_content" TextBlock.Foreground="{StaticResource LightBrush}" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        <GroupBox Header="Tasks" DockPanel.Dock="Left">
-            <StackPanel>
-                <Label>View Raw Input</Label>
-                <Label>Analyse Tones</Label>
-                <Label>Virtual Dial Pad</Label>
-                <Label>Call Log</Label>
-            </StackPanel>
-        </GroupBox>
+        <ControlTemplate TargetType="TabControl" x:Key="MainTabControl">
+            <ControlTemplate.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="OverridesDefaultStyle" Value="True" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border Name="TAB_outer_border" Background="{StaticResource LightBrush}" Margin="0,0,0,5">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="SelectionStates">
+                                            <VisualState x:Name="Unselected" />
+                                            <VisualState x:Name="Selected">
+                                                <Storyboard>
+                                                    <ColorAnimation
+                                                            Storyboard.TargetProperty="Background.Color" 
+                                                            Storyboard.TargetName="TAB_border"
+                                                            To="{StaticResource AccentRed}"
+                                                            Duration="0:0:0" />
+                                                    <ThicknessAnimation
+                                                            Storyboard.TargetProperty="Margin"
+                                                            Storyboard.TargetName="TAB_border" To="0,0,-5,0" Duration="0:0:0.05" />
+                                                </Storyboard>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                    <Border Padding="5" Margin="0,0,0,0" x:Name="TAB_border" Background="Transparent">
+                                        <ContentPresenter x:Name="TAB_header" VerticalAlignment="Center" ContentSource="Header" TextBlock.FontSize="16" TextBlock.Foreground="{StaticResource DarkBrush}" />
+                                    </Border>
+                                    <Border.Triggers>
+                                        <EventTrigger RoutedEvent="MouseEnter">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation 
+                                                            Storyboard.TargetProperty="Background.Color" 
+                                                            Storyboard.TargetName="TAB_outer_border"
+                                                            To="{StaticResource AccentRed}"
+                                                            Duration="0:0:0.05" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                        <EventTrigger RoutedEvent="MouseLeave">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation 
+                                                            Storyboard.TargetProperty="Background.Color" 
+                                                            Storyboard.TargetName="TAB_outer_border"
+                                                            To="Transparent"
+                                                            Duration="0:0:0.5" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Border.Triggers>
 
-        <StackPanel>            
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger SourceName="TAB_border" Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="TAB_header" Property="TextBlock.Foreground" Value="{StaticResource LightBrush}" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="TAB_header" Property="TextBlock.Foreground" Value="{StaticResource LightBrush}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ControlTemplate.Resources>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                
-                <Label>Polling Rate</Label>
-                <Slider Name="sldPoll" ValueChanged="sldPoll_ValueChanged" Minimum="10" Maximum="1000" IsDirectionReversed="True" Grid.Column="1" TickPlacement="BottomRight" TickFrequency="100" SmallChange="50" LargeChange="100" />
+                <StackPanel Margin="5,5,5,5" Width="150">
+                    <Border BorderBrush="{StaticResource AccentRedBrush}" BorderThickness="0,0,0,1" Margin="0,0,0,5" Padding="5,0,0,0">
+                        <TextBlock Text="tasks" Foreground="{StaticResource AccentRedBrush}" FontSize="15" />
+                    </Border>
+                    <StackPanel IsItemsHost="True" />
+                </StackPanel>
+                <Border Grid.Column="1" BorderThickness="20,2,2,2" Margin="0,8,8,8" BorderBrush="{StaticResource AccentRedBrush}">
+                    <ContentPresenter ContentSource="SelectedContent"/>
+                </Border>
             </Grid>
-            
-            <GroupBox Header="Waveform">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <dl:Graph x:Name="gphData" Height="200" />
-                    <Slider Name="sldValue" Minimum="0" Maximum="255" Value="0" Orientation="Vertical" Grid.Column="1" />
-                </Grid>
-            </GroupBox>
-        </StackPanel>
+        </ControlTemplate>
+    </Window.Resources>
+
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" FontSize="20" Padding="10,10,10,12" Background="{StaticResource AccentBlueBrush}" Foreground="{StaticResource LightBrush}">USB Data Logger</TextBlock>
+
+        <StatusBar DockPanel.Dock="Bottom" Background="{StaticResource AccentBlueBrush}" Foreground="{StaticResource LightBrush}">
+            <StatusBarItem Name="sbiConnectionStatus">Not Connected</StatusBarItem>
+        </StatusBar>
+
+        <TabControl Template="{StaticResource MainTabControl}">
+            <TabItem Header="View Raw Input">
+                <StackPanel>
+                    <ToolBar>
+                        <Button Name="btnStartSampling" Click="btnStartSampling_Click">Begin Sampling</Button>
+                        <Button Name="btnStopSampling" Click="btnStopSampling_Click">Stop Sampling</Button>
+                    </ToolBar>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Label>Polling Rate</Label>
+                        <Slider Name="sldPoll" ValueChanged="sldPoll_ValueChanged" Minimum="10" Maximum="1000" IsDirectionReversed="True" Grid.Column="1" TickPlacement="BottomRight" TickFrequency="100" SmallChange="50" LargeChange="100" />
+                    </Grid>
+
+                    <GroupBox Header="waveform">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <dl:Graph x:Name="gphData" Height="200" />
+                            <Slider Name="sldValue" Minimum="0" Maximum="255" Value="0" Orientation="Vertical" Grid.Column="1" />
+                        </Grid>
+                    </GroupBox>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Analyse" />
+            <TabItem Header="Virtual Dial Pad" />
+            <TabItem Header="Call Log" />
+        </TabControl>
     </DockPanel>
 </Window>

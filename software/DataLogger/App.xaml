@@ -12,7 +12,7 @@
         <Color R="13" G="26" B="28" A="255" x:Key="Dark" />
 
         <SolidColorBrush Color="{StaticResource AccentBlue}" x:Key="AccentBlueBrush" />
-        <SolidColorBrush Color="{StaticResource AccentPurple}" x:Key="AccentBluePurpleBrush" />
+        <SolidColorBrush Color="{StaticResource AccentPurple}" x:Key="AccentPurpleBrush" />
         <SolidColorBrush Color="{StaticResource AccentRed}" x:Key="AccentRedBrush" />
         <SolidColorBrush Color="{StaticResource AccentGreen}" x:Key="AccentGreenBrush" />
         <SolidColorBrush Color="{StaticResource AccentYellow}" x:Key="AccentYellowBrush" />

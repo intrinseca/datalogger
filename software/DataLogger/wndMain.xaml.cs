@@ -24,6 +24,9 @@ namespace DataLogger
     /// </summary>
     public partial class wndMain : Window
     {
+        public bool IsConnected { get; set; }
+        public bool IsPolling { get; set; }
+
         private Driver logger = new Driver();
         private IDeviceNotifier notifier = DeviceNotifier.OpenDeviceNotifier();
 
@@ -48,20 +51,32 @@ namespace DataLogger
 
             poll.Interval = new TimeSpan(0, 0, 0, 0, 5);
             poll.Tick += new EventHandler(poll_Tick);
+            IsPolling = false;
+            IsConnected = false;
         }
 
         private void connect()
         {
             logger.Open();
-            poll.Start();
+            IsConnected = true;
+
             sbiConnectionStatus.Content = "Connected";
         }
 
         private void disconnect()
         {
-            poll.Stop();
+            stopSampling();
+
             logger.Close();
+            IsConnected = false;
+
             sbiConnectionStatus.Content = "Not Connected";
+        }
+
+        private void stopSampling()
+        {
+            poll.Stop();
+            IsPolling = false;
         }
 
         void notifier_OnDeviceNotify(object sender, DeviceNotifyEventArgs e)
@@ -114,6 +129,22 @@ namespace DataLogger
         private void sldPoll_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             poll.Interval = new TimeSpan(0, 0, 0, 0, (int)sldPoll.Value);
+        }
+
+        private void btnStopSampling_Click(object sender, RoutedEventArgs e)
+        {
+            stopSampling();
+        }
+
+        private void btnStartSampling_Click(object sender, RoutedEventArgs e)
+        {
+            startSampling();
+        }
+
+        private void startSampling()
+        {
+            IsPolling = true;
+            poll.Start();
         }
     }
 }

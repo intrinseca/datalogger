@@ -9,10 +9,10 @@
              d:DesignHeight="201" d:DesignWidth="438" 
              Background="{StaticResource LightBrush}">
 
-    <Border BorderThickness="2" BorderBrush="{StaticResource DarkBrush}" CornerRadius="4,4,0,0" ClipToBounds="True">
+    <Border BorderThickness="2" ClipToBounds="True" BorderBrush="{StaticResource AccentPurpleBrush}">
         <ScrollViewer Name="scrGraph"  CanContentScroll="True" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Visible" HorizontalContentAlignment="Right">
             <Grid Name="grdPoints">
-                <Polyline Stroke="{StaticResource AccentBluePurpleBrush}" Name="plGraph" />
+                <Polyline Stroke="{StaticResource AccentPurpleBrush}" Name="plGraph" />
             </Grid>
         </ScrollViewer>
     </Border>
