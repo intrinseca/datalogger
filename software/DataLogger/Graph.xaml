@@ -5,13 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dl="clr-namespace:DataLogger"
              Name="graph"
-             mc:Ignorable="d" 
-             d:DesignHeight="201" d:DesignWidth="438">
+             mc:Ignorable="d"             
+             d:DesignHeight="201" d:DesignWidth="438" 
+             Background="{StaticResource LightBrush}">
 
-    <ScrollViewer Name="scrGraph"  CanContentScroll="True" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Visible" HorizontalContentAlignment="Right">
-        <Grid Name="grdPoints">
-            <Polyline Stroke="Black" Name="plGraph" />
-        </Grid>
-    </ScrollViewer>
-
+    <Border BorderThickness="2" BorderBrush="{StaticResource DarkBrush}" CornerRadius="4,4,0,0" ClipToBounds="True">
+        <ScrollViewer Name="scrGraph"  CanContentScroll="True" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Visible" HorizontalContentAlignment="Right">
+            <Grid Name="grdPoints">
+                <Polyline Stroke="{StaticResource AccentBluePurpleBrush}" Name="plGraph" />
+            </Grid>
+        </ScrollViewer>
+    </Border>
 </UserControl>
