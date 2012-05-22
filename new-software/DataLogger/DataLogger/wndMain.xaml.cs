@@ -31,12 +31,14 @@ namespace DataLogger
         public static readonly DependencyProperty LEDProperty = DependencyProperty.Register(
             "LED",
             typeof(bool),
-            typeof(wndMain), 
+            typeof(wndMain),
             new UIPropertyMetadata(false));
 
         private Driver logger = new Driver();
 
         DispatcherTimer poll = new DispatcherTimer();
+
+        int t = 0;
 
         public wndMain()
         {
@@ -45,7 +47,7 @@ namespace DataLogger
             // Find and open the usb device.
             logger.Open();
 
-            poll.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            poll.Interval = new TimeSpan(0, 0, 0, 0, 5);
             poll.Tick += new EventHandler(poll_Tick);
             poll.Start();
 
@@ -55,20 +57,11 @@ namespace DataLogger
         void poll_Tick(object sender, EventArgs e)
         {
             readADC();
-            LED = !LED;
-            updateLED();
         }
 
         private void updateLED()
         {
-            if (LED)
-            {
-                var response = logger.SendCommand(new byte[] { 0xEE, 1 }, 2);
-            }
-            else
-            {
-                var response = logger.SendCommand(new byte[] { 0xEE, 0 }, 2);
-            }
+            var response = logger.SendCommand(new byte[] { 0xEE, (byte)(LED ? 1 : 0) }, 2);
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -85,6 +78,13 @@ namespace DataLogger
         {
             var result = logger.SendCommand(0xED, 2);
             sldValue.Value = result[1];
+            gphData.AddPoint(t, (float)(result[1] / 255.0f) - 0.5f);
+            t++;
+        }
+
+        private void btnIso_Click(object sender, RoutedEventArgs e)
+        {
+            logger.ReceiveIso();
         }
     }
 }

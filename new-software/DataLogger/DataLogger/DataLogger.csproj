@@ -58,6 +58,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Graph.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="wndMain.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,6 +71,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Driver.cs" />
+    <Compile Include="Graph.xaml.cs">
+      <DependentUpon>Graph.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PercentageConverter.cs" />
     <Compile Include="wndMain.xaml.cs">
       <DependentUpon>wndMain.xaml</DependentUpon>
       <SubType>Code</SubType>
