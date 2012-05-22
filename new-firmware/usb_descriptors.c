@@ -173,7 +173,7 @@ ROM USB_DEVICE_DESCRIPTOR device_dsc=
     USB_EP0_BUFF_SIZE,      // Max packet size for EP0, see usb_config.h
     0x04D8,                 // Vendor ID: 0x04D8 is Microchip's Vendor ID
     0x000C,                 // Product ID: 0x000C
-    0x0000,                 // Device release number in BCD format
+    0x0001,                 // Device release number in BCD format
     0x01,                   // Manufacturer string index
     0x02,                   // Product string index
     0x00,                   // Device serial number string index
@@ -184,12 +184,12 @@ ROM USB_DEVICE_DESCRIPTOR device_dsc=
 ROM BYTE configDescriptor1[]={
     /* Configuration Descriptor */
     0x09,//sizeof(USB_CFG_DSC),    // Size of this descriptor in bytes
-    USB_DESCRIPTOR_CONFIGURATION,                // CONFIGURATION descriptor type
-    0x20,0x00,            // Total length of data for this cfg
+    USB_DESCRIPTOR_CONFIGURATION,  // CONFIGURATION descriptor type
+    0x27,0x00,              // Total length of data for this cfg
     1,                      // Number of interfaces in this cfg
     1,                      // Index value of this configuration
     0,                      // Configuration string index
-    _DEFAULT | _SELF,               // Attributes, see usb_device.h
+    _DEFAULT | _SELF,       // Attributes, see usb_device.h
     50,                     // Max power consumption (2X mA)
 							
     /* Interface Descriptor */
@@ -197,7 +197,7 @@ ROM BYTE configDescriptor1[]={
     USB_DESCRIPTOR_INTERFACE,               // INTERFACE descriptor type
     0,                      // Interface Number
     0,                      // Alternate Setting Number
-    2,                      // Number of endpoints in this intf
+    3,                      // Number of endpoints in this intf
     0xFF,                   // Class code
     0xFF,                   // Subclass code
     0xFF,                   // Protocol code
@@ -207,16 +207,23 @@ ROM BYTE configDescriptor1[]={
     0x07,                       /*sizeof(USB_EP_DSC)*/
     USB_DESCRIPTOR_ENDPOINT,    //Endpoint Descriptor
     _EP01_OUT,                  //EndpointAddress
-    _BULK,                       //Attributes
+    _BULK,                      //Attributes
     USBGEN_EP_SIZE,0x00,        //size
-    1,                         //Interval
+    1,                          //Interval
     
     0x07,                       /*sizeof(USB_EP_DSC)*/
     USB_DESCRIPTOR_ENDPOINT,    //Endpoint Descriptor
     _EP01_IN,                   //EndpointAddress
-    _BULK,                       //Attributes
+    _BULK,                      //Attributes
     USBGEN_EP_SIZE,0x00,        //size
-    1                          //Interval
+    1,                          //Interval
+    
+    0x07,                       /*sizeof(USB_EP_DSC)*/
+    USB_DESCRIPTOR_ENDPOINT,    //Endpoint Descriptor
+    _EP02_IN,                   //EndpointAddress
+    (_ISO | _NS | _DE),         //Attributes
+    USBGEN_EP_SIZE,0x00,        //size
+    1                           //Interval
 };
 
 

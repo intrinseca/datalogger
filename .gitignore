@@ -15,3 +15,6 @@ new-firmware/dist/*
 new-firmware/nbproject/Makefile*
 new-firmware/Makefile
 new-firmware/nbproject/Package-default.bash
+new-firmware/nbproject/private/private.xml
+firmware/DataLogger.X/nbproject/private/*
+new-firmware/nbproject/private/*

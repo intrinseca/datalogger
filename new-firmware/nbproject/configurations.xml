@@ -33,6 +33,7 @@
       <itemPath>usb_descriptors.c</itemPath>
       <itemPath>usb_hal_pic24.c</itemPath>
       <itemPath>user.c</itemPath>
+      <itemPath>program.bat</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

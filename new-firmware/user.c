@@ -82,7 +82,7 @@ void ServiceRequests(void)
     //Check to see if data has arrived
     if(!USBHandleBusy(USBGenericOutHandle))
     {   
-        counter = 0;
+        counter = 1;
 
         INPacket.CMD=OUTPacket.CMD;
         INPacket.len=OUTPacket.len;

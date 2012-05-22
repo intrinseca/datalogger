@@ -58,15 +58,15 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 // Peripheral Configuration
 
-#define MY_VID            0x04D8
-#define MY_PID            0x000C
-#define USB_SPEED_OPTION       USB_FULL_SPEED
+#define MY_VID                  0x04D8
+#define MY_PID                  0x000C
+#define USB_SPEED_OPTION        USB_FULL_SPEED
 #define USB_POLLING
-#define USB_PULLUP_OPTION      USB_PULLUP_ENABLE
-#define USB_TRANSCEIVER_OPTION USB_INTERNAL_TRANSCEIVER
-#define USB_EP0_BUFF_SIZE     8
-#define USB_MAX_NUM_INT       (0+1)
-#define USB_MAX_EP_NUMBER 3
+#define USB_PULLUP_OPTION       USB_PULLUP_ENABLE
+#define USB_TRANSCEIVER_OPTION  USB_INTERNAL_TRANSCEIVER
+#define USB_EP0_BUFF_SIZE       8
+#define USB_MAX_NUM_INT         (0+1)
+#define USB_MAX_EP_NUMBER       3
 #define USB_NUM_STRING_DESCRIPTORS 3
 
 //#define USB_DISABLE_SOF_HANDLER                 
