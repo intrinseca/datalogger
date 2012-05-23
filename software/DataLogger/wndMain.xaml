@@ -5,9 +5,13 @@
         Title="USB Data Logger" Height="450" Width="695"
         Closed="Window_Closed"
         UseLayoutRounding="True"
-        Background="{StaticResource LightBrush}" Foreground="{StaticResource DarkBrush}">
+        Background="{StaticResource LightBrush}" 
+        Foreground="{StaticResource DarkBrush}" Icon="/DataLogger;component/Images/icon.png">
 
     <Window.Resources>
+        <dl:UpperCaseConverter x:Key="UpperCaseConverter" />
+        <dl:LowerCaseConverter x:Key="LowerCaseConverter" />
+
         <Style TargetType="Slider">
             <Setter Property="Margin" Value="5" />
         </Style>
@@ -21,42 +25,28 @@
             <Setter Property="Margin" Value="5" />
         </Style>
 
-        <Style TargetType="Button">
-            <Setter Property="Margin" Value="5" />
-        </Style>
-
         <Style TargetType="GroupBox">
             <Setter Property="Margin" Value="5" />
             <Setter Property="Foreground" Value="{StaticResource AccentRedBrush}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="GroupBox">
-                        <StackPanel>
-                            <Border BorderBrush="{TemplateBinding Foreground}" BorderThickness="0,0,0,1" Margin="0,0,0,3">
+                        <DockPanel>
+                            <Border DockPanel.Dock="Top" BorderBrush="{TemplateBinding Foreground}" BorderThickness="0,0,0,1" Margin="0,0,0,3">
                                 <TextBlock Text="{TemplateBinding Header}" Foreground="{TemplateBinding Foreground}" FontSize="15" />
                             </Border>
                             <ContentPresenter />
-                        </StackPanel>
+                        </DockPanel>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
-        <Style TargetType="ToolBar">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToolBar">
-                        <StackPanel Orientation="Horizontal" IsItemsHost="True" Background="{StaticResource AccentRedBrush}" Margin="5" />
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style TargetType="Button" x:Key="{x:Static ToolBar.ButtonStyleKey}">
+        <Style TargetType="Button">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="TBB_border" Padding="5" Background="Transparent" BorderBrush="{StaticResource AccentRedBrush}" BorderThickness="0">
+                        <Border Margin="5" x:Name="TBB_border" Padding="5" Background="{StaticResource AccentRedBrush}" BorderBrush="{StaticResource AccentRedBrush}" BorderThickness="0">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Style.Triggers>
@@ -70,7 +60,8 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
-                            <ContentPresenter x:Name="TBB_content" TextBlock.Foreground="{StaticResource LightBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content, Converter={StaticResource LowerCaseConverter}}" />
+                            <!--<ContentPresenter x:Name="TBB_content" TextBlock.Foreground="{StaticResource LightBrush}" VerticalAlignment="Center" />-->
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -103,37 +94,18 @@
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
                                     <Border Padding="5" Margin="0,0,0,0" x:Name="TAB_border" Background="Transparent">
-                                        <ContentPresenter x:Name="TAB_header" VerticalAlignment="Center" ContentSource="Header" TextBlock.FontSize="16" TextBlock.Foreground="{StaticResource DarkBrush}" />
+                                        <ContentPresenter 
+                                            x:Name="TAB_header" 
+                                            VerticalAlignment="Center" 
+                                            ContentSource="Header"
+                                            TextBlock.FontSize="16" 
+                                            TextBlock.Foreground="{StaticResource DarkBrush}" 
+                                            TextBlock.FontWeight="Bold" />
                                     </Border>
-                                    <Border.Triggers>
-                                        <EventTrigger RoutedEvent="MouseEnter">
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <ColorAnimation 
-                                                            Storyboard.TargetProperty="Background.Color" 
-                                                            Storyboard.TargetName="TAB_outer_border"
-                                                            To="{StaticResource AccentRed}"
-                                                            Duration="0:0:0.05" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </EventTrigger>
-                                        <EventTrigger RoutedEvent="MouseLeave">
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <ColorAnimation 
-                                                            Storyboard.TargetProperty="Background.Color" 
-                                                            Storyboard.TargetName="TAB_outer_border"
-                                                            To="Transparent"
-                                                            Duration="0:0:0.5" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </EventTrigger>
-                                    </Border.Triggers>
-
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger SourceName="TAB_border" Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="TAB_header" Property="TextBlock.Foreground" Value="{StaticResource LightBrush}" />
+                                        <Setter TargetName="TAB_header" Property="TextBlock.Foreground" Value="{StaticResource AccentRedBrush}" />
                                     </Trigger>
                                     <Trigger Property="IsSelected" Value="True">
                                         <Setter TargetName="TAB_header" Property="TextBlock.Foreground" Value="{StaticResource LightBrush}" />
@@ -170,12 +142,12 @@
         </StatusBar>
 
         <TabControl Template="{StaticResource MainTabControl}">
-            <TabItem Header="View Raw Input">
+            <TabItem Header="AUDIO">
                 <StackPanel>
-                    <ToolBar>
+                    <StackPanel Orientation="Horizontal">
                         <Button Name="btnStartSampling" Click="btnStartSampling_Click">Begin Sampling</Button>
                         <Button Name="btnStopSampling" Click="btnStopSampling_Click">Stop Sampling</Button>
-                    </ToolBar>
+                    </StackPanel>
 
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -203,9 +175,39 @@
                 </StackPanel>
             </TabItem>
 
-            <TabItem Header="Analyse" />
-            <TabItem Header="Virtual Dial Pad" />
-            <TabItem Header="Call Log" />
+            <TabItem Header="ANALYSE">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="waveform">
+                        <dl:Graph />
+                    </GroupBox>
+                    <GroupBox Header="spectrum" Grid.Row="1">
+                        <dl:Graph />
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="CALL LOG">
+                <DockPanel>
+                    <ToolBar DockPanel.Dock="Top">
+                        <Button>Clear Log</Button>
+                    </ToolBar>
+
+                    <GroupBox Header="detected calls">
+                        <ListView Foreground="{StaticResource DarkBrush}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Time" Width="75" DisplayMemberBinding="{Binding Tag}" />
+                                    <GridViewColumn Header="Number" DisplayMemberBinding="{Binding .}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </GroupBox>
+                </DockPanel>
+            </TabItem>
         </TabControl>
     </DockPanel>
 </Window>
