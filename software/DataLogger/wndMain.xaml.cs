@@ -143,8 +143,11 @@ namespace DataLogger
 
         private void startSampling()
         {
-            IsPolling = true;
-            poll.Start();
+            if (IsConnected)
+            {
+                IsPolling = true;
+                poll.Start();
+            }
         }
     }
 }
