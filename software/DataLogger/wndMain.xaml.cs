@@ -27,8 +27,8 @@ namespace DataLogger
         public bool IsConnected { get; set; }
         public bool IsPolling { get; set; }
 
-        private Driver logger = new Driver();
-        private Audio audio = new Audio(8000, 1024);
+        private IDriver logger = new MockDriver();
+        private Audio audio = new Audio(8000, 256);
 
         private IDeviceNotifier notifier = DeviceNotifier.OpenDeviceNotifier();
 
@@ -116,7 +116,7 @@ namespace DataLogger
         {
             try
             {
-                var result = logger.SendCommand(0xED, 2)[1];
+                var result = logger.SendCommand(COMMANDS.ADC_READ, 2)[1];
 
                 int sample = 128 - result;
 

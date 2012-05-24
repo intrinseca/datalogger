@@ -8,3 +8,8 @@ firmware/dist/*
 firmware/nbproject/Makefile*
 firmware/Makefile
 firmware/nbproject/Package-default.bash
+firmware/DataLogger.X/.map
+firmware/DataLogger.X/build/*
+firmware/DataLogger.X/dist/*
+firmware/DataLogger.X/nbproject/Makefile*
+firmware/DataLogger.X/nbproject/private/*
