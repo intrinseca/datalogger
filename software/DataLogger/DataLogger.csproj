@@ -82,6 +82,8 @@
     <Compile Include="Graph.xaml.cs">
       <DependentUpon>Graph.xaml</DependentUpon>
     </Compile>
+    <Compile Include="IDriver.cs" />
+    <Compile Include="MockDriver.cs" />
     <Compile Include="PercentageConverter.cs" />
     <Compile Include="CaseConverters.cs" />
     <Compile Include="Spectrum.xaml.cs">

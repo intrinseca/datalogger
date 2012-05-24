@@ -7,31 +7,7 @@ using LibUsbDotNet.Main;
 
 namespace DataLogger
 {
-    [Serializable]
-    public class DeviceNotFoundException : Exception
-    {
-        public DeviceNotFoundException() { }
-        public DeviceNotFoundException(string message) : base(message) { }
-        public DeviceNotFoundException(string message, Exception inner) : base(message, inner) { }
-        protected DeviceNotFoundException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
-    }
-
-    [Serializable]
-    public class DriverException : Exception
-    {
-        public DriverException() { }
-        public DriverException(string message) : base(message) { }
-        public DriverException(string message, Exception inner) : base(message, inner) { }
-        protected DriverException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
-    }
-
-    class Driver
+    class Driver : IDriver
     {
         public const int VID = 0x04D8;
         public const int PID = 0x000C;
@@ -66,9 +42,9 @@ namespace DataLogger
                 device.Close();
         }
 
-        public byte[] SendCommand(byte command, int responseLength)
+        public byte[] SendCommand(COMMANDS command, int responseLength)
         {
-            return SendCommand(new byte[] { command }, responseLength);
+            return SendCommand(new byte[] { (byte)command }, responseLength);
         }
 
         public byte[] SendCommand(byte[] command, int responseLength)
