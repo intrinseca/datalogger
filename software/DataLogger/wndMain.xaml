@@ -178,14 +178,18 @@
             <TabItem Header="ANALYSE">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
                         <RowDefinition />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <GroupBox Header="waveform">
-                        <dl:Graph />
+                    <StackPanel Orientation="Horizontal">
+                        <Button Name="btnAnalyse" Click="btnAnalyse_Click">Analyse</Button>
+                    </StackPanel>
+                    <GroupBox Header="waveform" Grid.Row="1">
+                        <dl:Graph x:Name="grhWaveform" />
                     </GroupBox>
-                    <GroupBox Header="spectrum" Grid.Row="1">
-                        <dl:Graph />
+                    <GroupBox Header="spectrum" Grid.Row="2">
+                        <dl:Spectrum x:Name="grhSpectrum" />
                     </GroupBox>
                 </Grid>
             </TabItem>

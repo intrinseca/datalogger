@@ -28,6 +28,8 @@ namespace DataLogger
         public bool IsPolling { get; set; }
 
         private Driver logger = new Driver();
+        private Audio audio = new Audio(8000, 1024);
+
         private IDeviceNotifier notifier = DeviceNotifier.OpenDeviceNotifier();
 
         DispatcherTimer poll = new DispatcherTimer();
@@ -40,6 +42,11 @@ namespace DataLogger
 
             notifier.OnDeviceNotify += new EventHandler<DeviceNotifyEventArgs>(notifier_OnDeviceNotify);
 
+            poll.Interval = new TimeSpan(0, 0, 0, 0, 5);
+            poll.Tick += new EventHandler(poll_Tick);
+            IsPolling = false;
+            IsConnected = false;
+
             try
             {
                 connect();
@@ -48,11 +55,6 @@ namespace DataLogger
             {
 
             }
-
-            poll.Interval = new TimeSpan(0, 0, 0, 0, 5);
-            poll.Tick += new EventHandler(poll_Tick);
-            IsPolling = false;
-            IsConnected = false;
         }
 
         private void connect()
@@ -114,9 +116,14 @@ namespace DataLogger
         {
             try
             {
-                var result = logger.SendCommand(0xED, 2);
-                sldValue.Value = result[1];
-                gphData.AddPoint(t, (float)(result[1] / 255.0f) - 0.5f);
+                var result = logger.SendCommand(0xED, 2)[1];
+
+                int sample = 128 - result;
+
+                sldValue.Value = result;
+                audio.Samples.Add((short)sample);
+
+                gphData.AddPoint(t, (float)(sample / 255.0f));
                 t++;
             }
             catch (DriverException ex)
@@ -148,6 +155,14 @@ namespace DataLogger
                 IsPolling = true;
                 poll.Start();
             }
+        }
+
+        private void btnAnalyse_Click(object sender, RoutedEventArgs e)
+        {
+            audio.ProcessSpectrum();
+            grhSpectrum.BlockSize = audio.BlockSize;
+            grhSpectrum.Data = audio.Spectrum;
+            grhSpectrum.Refresh();
         }
     }
 }
