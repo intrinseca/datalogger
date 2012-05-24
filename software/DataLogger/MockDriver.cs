@@ -8,6 +8,7 @@ namespace DataLogger
     class MockDriver : IDriver
     {
         int t;
+        float f = 100f;
 
         public void Open()
         {
@@ -19,22 +20,30 @@ namespace DataLogger
 
         public byte[] SendCommand(COMMANDS command, int responseLength)
         {
-            t++;
-
             switch (command)
             {
                 case COMMANDS.ADC_READ:
-                    double result;
-                    if (t < 256)
+                    double audio;
+                    byte[] response = new byte[responseLength];
+                    response[0] = (byte)command;
+
+                    for (int i = 1; i < responseLength; i++)
                     {
-                        result = 128.0 + 50.0 * Math.Sin(2.0 * Math.PI * t / 30.9) + 50.0 * Math.Sin(2.0 * Math.PI * t / 10.0);
-                        //double result = 128.0 + (50.0 * Math.Cos(Math.PI * t));
+                        audio = 128.0 + 50.0 * Math.Sin(2.0 * Math.PI * t / f);
+                        t++;
+
+                        response[i] = (byte)audio;
+
+                        if (t % 200 == 0)
+                        {
+                            f -= 1f;
+
+                            if (f < 0.5f)
+                                f = 100f;
+                        }
                     }
-                    else
-                    {
-                        result = 0;
-                    }
-                    return new byte[] { (byte)COMMANDS.ADC_READ, (byte)result };
+
+                    return response;
                 default:
                     throw new NotImplementedException();
             }

@@ -54,7 +54,7 @@ namespace DataLogger
             Data.Add(new DataPoint(0, 0));
         }
 
-        public void AddPoint(float t, float y)
+        public void AddPoint(float t, float y, bool trim = true)
         {
             Yscale = (float) grdPoints.ActualHeight;
             Data.Add(new DataPoint(t, y));
@@ -64,10 +64,16 @@ namespace DataLogger
                 y * Yscale + grdPoints.ActualHeight / 2.0
                 ));
 
-            if (plGraph.Points.Count > 500)
+            if (trim && plGraph.Points.Count > 500)
                 plGraph.Points.RemoveAt(0);
 
             scrGraph.ScrollToRightEnd();
+        }
+
+        public void ClearPoints()
+        {
+            plGraph.Points.Clear();
+            Data.Clear();
         }
     }
 }

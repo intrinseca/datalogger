@@ -28,7 +28,7 @@ namespace DataLogger
         public bool IsPolling { get; set; }
 
         private IDriver logger = new MockDriver();
-        private Audio audio = new Audio(8000, 256);
+        private Audio audio = new Audio(800, 256);
 
         private IDeviceNotifier notifier = DeviceNotifier.OpenDeviceNotifier();
 
@@ -42,7 +42,7 @@ namespace DataLogger
 
             notifier.OnDeviceNotify += new EventHandler<DeviceNotifyEventArgs>(notifier_OnDeviceNotify);
 
-            poll.Interval = new TimeSpan(0, 0, 0, 0, 5);
+            poll.Interval = new TimeSpan(0, 0, 0, 0, 10);
             poll.Tick += new EventHandler(poll_Tick);
             IsPolling = false;
             IsConnected = false;
@@ -53,7 +53,7 @@ namespace DataLogger
             }
             catch (DeviceNotFoundException)
             {
-
+                IsConnected = false;
             }
         }
 
@@ -116,15 +116,18 @@ namespace DataLogger
         {
             try
             {
-                var result = logger.SendCommand(COMMANDS.ADC_READ, 2)[1];
+                var result = logger.SendCommand(COMMANDS.ADC_READ, 64);
 
-                int sample = 128 - result;
+                for (int i = 1; i < result.Length; i++)
+                {
+                    int sample = 128 - result[i];
+                    audio.Samples.Add((short)sample);
 
-                sldValue.Value = result;
-                audio.Samples.Add((short)sample);
+                    sldValue.Value = result[i];
 
-                gphData.AddPoint(t, (float)(sample / 255.0f));
-                t++;
+                    gphData.AddPoint(t, (float)(sample / 255.0f));
+                    t++;
+                }
             }
             catch (DriverException ex)
             {
@@ -160,6 +163,15 @@ namespace DataLogger
         private void btnAnalyse_Click(object sender, RoutedEventArgs e)
         {
             audio.ProcessSpectrum();
+
+            //grhWaveform.ClearPoints();
+            grhWaveform.Timebase = 1.0f / audio.SamplingRate;
+            //for (int i = 0; i < audio.Samples.Count; i++)
+            //{
+            //    grhWaveform.AddPoint(i, audio.Samples[i], false);
+            //}
+
+            grhSpectrum.Timebase = grhWaveform.Timebase;
             grhSpectrum.BlockSize = audio.BlockSize;
             grhSpectrum.Data = audio.Spectrum;
             grhSpectrum.Refresh();
