@@ -18,7 +18,6 @@ namespace DataLogger
     /// <summary>
     /// Interaction logic for Graph.xaml
     /// </summary>
-    /// 
 
     public class DataPoint
     {

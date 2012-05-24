@@ -18,6 +18,11 @@ namespace DataLogger
         {
         }
 
+        public bool DevicePresent()
+        {
+            return true;
+        }
+
         public byte[] SendCommand(COMMANDS command, int responseLength)
         {
             switch (command)

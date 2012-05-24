@@ -26,11 +26,22 @@ namespace DataLogger
         {
         }
 
-        public void Open()
+        public bool DevicePresent()
         {
             device = UsbDevice.OpenUsbDevice(finder);
 
-            if (device == null) throw new DeviceNotFoundException("Could not find device");
+            return (device != null);
+        }
+
+        public void Open()
+        {
+            if (!DevicePresent())
+            {
+                throw new DeviceNotFoundException("Could not find device");
+            }
+
+            device = UsbDevice.OpenUsbDevice(finder);
+
 
             bulkWriter = device.OpenEndpointWriter(WriteEndpointID.Ep01, EndpointType.Bulk);
             bulkReader = device.OpenEndpointReader(ReadEndpointID.Ep01, 64, EndpointType.Bulk);

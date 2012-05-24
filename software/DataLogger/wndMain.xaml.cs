@@ -24,13 +24,12 @@ namespace DataLogger
     /// </summary>
     public partial class wndMain : Window
     {
-        public bool IsConnected { get; set; }
         public bool IsPolling { get; set; }
 
         private IDriver logger = new MockDriver();
-        private Audio audio = new Audio(800, 256);
+        private Audio audio = new Audio(10, 256);
 
-        private IDeviceNotifier notifier = DeviceNotifier.OpenDeviceNotifier();
+        private DeviceMonitor monitor;
 
         DispatcherTimer poll = new DispatcherTimer();
 
@@ -40,61 +39,35 @@ namespace DataLogger
         {
             InitializeComponent();
 
-            notifier.OnDeviceNotify += new EventHandler<DeviceNotifyEventArgs>(notifier_OnDeviceNotify);
+            monitor = new DeviceMonitor(logger);
+
+            monitor.Connected += new EventHandler(monitor_Connected);
+            monitor.Disconnected += new EventHandler(monitor_Disconnected);
 
             poll.Interval = new TimeSpan(0, 0, 0, 0, 10);
             poll.Tick += new EventHandler(poll_Tick);
+
             IsPolling = false;
-            IsConnected = false;
-
-            try
-            {
-                connect();
-            }
-            catch (DeviceNotFoundException)
-            {
-                IsConnected = false;
-            }
         }
 
-        private void connect()
-        {
-            logger.Open();
-            IsConnected = true;
-
-            sbiConnectionStatus.Content = "Connected";
-        }
-
-        private void disconnect()
+        void monitor_Disconnected(object sender, EventArgs e)
         {
             stopSampling();
-
             logger.Close();
-            IsConnected = false;
 
             sbiConnectionStatus.Content = "Not Connected";
+        }
+
+        void monitor_Connected(object sender, EventArgs e)
+        {
+            logger.Open();
+            sbiConnectionStatus.Content = "Connected";
         }
 
         private void stopSampling()
         {
             poll.Stop();
             IsPolling = false;
-        }
-
-        void notifier_OnDeviceNotify(object sender, DeviceNotifyEventArgs e)
-        {
-            if (e.Device.IdVendor == Driver.VID && e.Device.IdProduct == Driver.PID)
-            {
-                switch (e.EventType)
-                {
-                    case EventType.DeviceArrival:
-                        connect();
-                        break;
-                    case EventType.DeviceRemoveComplete:
-                        disconnect();
-                        break;
-                }
-            }
         }
 
         void poll_Tick(object sender, EventArgs e)
@@ -153,7 +126,7 @@ namespace DataLogger
 
         private void startSampling()
         {
-            if (IsConnected)
+            if (monitor.DevicePresent)
             {
                 IsPolling = true;
                 poll.Start();

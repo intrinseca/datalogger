@@ -42,6 +42,7 @@ namespace DataLogger
     {
         void Open();
         void Close();
+        bool DevicePresent();
 
         byte[] SendCommand(COMMANDS command, int responseLength);
         byte[] SendCommand(byte[] command, int responseLength);

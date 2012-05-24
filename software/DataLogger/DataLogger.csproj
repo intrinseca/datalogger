@@ -78,6 +78,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Audio.cs" />
+    <Compile Include="DeviceMonitor.cs" />
     <Compile Include="Driver.cs" />
     <Compile Include="Graph.xaml.cs">
       <DependentUpon>Graph.xaml</DependentUpon>
