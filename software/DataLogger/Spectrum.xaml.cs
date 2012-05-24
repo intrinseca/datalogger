@@ -20,6 +20,9 @@ namespace DataLogger
     /// </summary>
     public partial class Spectrum : UserControl
     {
+        /// <summary>
+        /// The length of the FFT block that was used to calculate the FFT
+        /// </summary>
         public int BlockSize
         {
             get { return (int)GetValue(BlockSizeProperty); }
@@ -29,6 +32,9 @@ namespace DataLogger
         public static readonly DependencyProperty BlockSizeProperty =
             DependencyProperty.Register("BlockSize", typeof(int), typeof(Spectrum), new UIPropertyMetadata(128));
         
+        /// <summary>
+        /// The horizontal scale factor
+        /// </summary>
         public float Timebase
         {
             get { return (float)GetValue(TimebaseProperty); }
@@ -38,6 +44,9 @@ namespace DataLogger
         public static readonly DependencyProperty TimebaseProperty =
             DependencyProperty.Register("Timebase", typeof(float), typeof(Spectrum), new UIPropertyMetadata(1.0f));
       
+        /// <summary>
+        /// The FFT data
+        /// </summary>
         public List<float[]> Data
         {
             get { return (List<float[]>)GetValue(DataProperty); }
@@ -94,32 +103,44 @@ namespace DataLogger
             }
         }
 
+        /// <summary>
+        /// Generate the spectogram
+        /// </summary>
         public void Refresh()
         {
             if (Data.Count == 0)
                 return;
 
+            //Set horizontal scale
             int blockWidth = (int)(BlockSize * Timebase);
 
+            //Calculate dimensions
             int imageHeight = BlockSize / 2;
             int imageWidth = Data.Count * blockWidth;
 
             int stride = imageWidth * 3;
+
+            //Default magnitude scaling
             float scale = 1.0f;
 
             byte[] image = new byte[stride * imageHeight];
             float valueF;
 
+            //for each FFT result
             for (int i = 0; i < Data.Count; i++)
             {
+                //Scale block to its maximum magnitude
                 scale = 1.0f / Data[i].Max();
 
+                //for each frequency component
                 for (int j = 0; j < imageHeight; j++)
                 {
+                    //scale and clip the value
                     valueF = scale * Data[i][j];
                     if (valueF > 1.0f) valueF = 1.0f;
                     if (valueF < 0.0f) valueF = 0.0f;
 
+                    //calculate colour and set pixel values
                     byte[] color = mapRainbowColor(valueF, true);
 
                     for (int k = 0; k < blockWidth; k++)
@@ -132,6 +153,7 @@ namespace DataLogger
                 }
             }
 
+            //load pixel data into image
             BitmapSource specGraph = BitmapSource.Create(imageWidth, imageHeight, 120, 120, PixelFormats.Rgb24, null, image, stride);
             imgSpectrum.Source = specGraph;
         }
