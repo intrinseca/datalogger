@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Timers;
 
 namespace DataLogger
 {
@@ -11,8 +12,8 @@ namespace DataLogger
     /// </summary>
     class TelephoneLogger
     {
-        private const int SAMPLING_RATE = 10;
-        private const int BLOCK_SIZE = 256;
+        private const int SAMPLING_RATE = 8192;
+        private const int BLOCK_SIZE = 1024;
 
         /// <summary>
         /// Connection to the USB device
@@ -26,6 +27,8 @@ namespace DataLogger
 
         public bool Connected { get; private set; }
 
+        private Timer pollTimer;
+
         /// <summary>
         /// TODO: Move into device class
         /// </summary>
@@ -34,6 +37,30 @@ namespace DataLogger
         public TelephoneLogger()
         {
             monitor = new DeviceMonitor(Device);
+
+            pollTimer = new Timer(8);
+            pollTimer.AutoReset = true;
+            pollTimer.Elapsed += new ElapsedEventHandler(pollTimer_Elapsed);
+        }
+
+        void pollTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            PollDevice();
+        }
+
+        public void BeginPolling()
+        {
+            pollTimer.Start();
+        }
+
+        public void StopPolling()
+        {
+            pollTimer.Stop();
+        }
+
+        private void pollTimerCallback(object state)
+        {
+            PollDevice();
         }
 
         public void PollDevice()

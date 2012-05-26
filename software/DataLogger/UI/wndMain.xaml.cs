@@ -30,8 +30,6 @@ namespace DataLogger
 
         DispatcherTimer poll = new DispatcherTimer();
 
-        int t = 0;
-
         public wndMain()
         {
             InitializeComponent();
@@ -42,6 +40,10 @@ namespace DataLogger
             poll.Tick += new EventHandler(poll_Tick);
 
             IsPolling = false;
+
+            var b = new Binding("Samples");
+            b.Source = tLogger.Audio;
+            gphData.SetBinding(Graph.DataProperty, b);
         }
 
         void monitor_Disconnected(object sender, EventArgs e)
@@ -71,7 +73,7 @@ namespace DataLogger
             sldValue.Value = sample;
 
             //TODO: Add all recently added samples
-            gphData.AddPoint(t, sample);
+            //gphData.AddPoint(t, sample);
         }
 
         private void sldPoll_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -102,8 +104,9 @@ namespace DataLogger
         {
             tLogger.Audio.ProcessSpectrum();
 
+            //TODO: Waveform display or something here
             //grhWaveform.ClearPoints();
-            grhWaveform.Timebase = 1.0f / tLogger.Audio.SamplingRate;
+            grhWaveform.Timebase = 8.0f / tLogger.Audio.SamplingRate;
             //for (int i = 0; i < audio.Samples.Count; i++)
             //{
             //    grhWaveform.AddPoint(i, audio.Samples[i], false);

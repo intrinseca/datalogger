@@ -12,6 +12,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Collections.Specialized;
 
 namespace DataLogger
 {
@@ -19,45 +21,62 @@ namespace DataLogger
     /// Interaction logic for Graph.xaml
     /// </summary>
 
-    public class DataPoint
-    {
-        public double t;
-        public double y;
-
-        public DataPoint(float _t, float _y)
-        {
-            t = _t;
-            y = _y;
-        }
-    }
-
     public partial class Graph : UserControl
     {
+        /// <summary>
+        /// The 'width' of each sample, in pixels
+        /// </summary>
         public float Timebase = 1;
-        public float Yscale = 75;
 
-        private ObservableCollection<DataPoint> Data
+        /// <summary>
+        /// The number of pixels per unit value vertically
+        /// </summary>
+        public float Yscale = 1.0f;
+
+        public ObservableCollection<short> Data
         {
-            get { return (ObservableCollection<DataPoint>)GetValue(DataProperty); }
+            get { return (ObservableCollection<short>)GetValue(DataProperty); }
             set { SetValue(DataProperty, value); }
         }
 
         public static readonly DependencyProperty DataProperty =
-            DependencyProperty.Register("Data", typeof(ObservableCollection<DataPoint>), typeof(Graph), new UIPropertyMetadata(null));
+            DependencyProperty.Register(
+            "Data",
+            typeof(ObservableCollection<short>),
+            typeof(Graph),
+            new UIPropertyMetadata(null, new PropertyChangedCallback(dataChanged)));
 
         public Graph()
         {
             InitializeComponent();
 
-            Data = new ObservableCollection<DataPoint>();
-            Data.Add(new DataPoint(0, 0));
+            Data = new ObservableCollection<short>();
+            Data.Add(0);
         }
 
-        public void AddPoint(float t, float y, bool trim = true)
+        private static void dataChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            Yscale = (float) grdPoints.ActualHeight;
-            Data.Add(new DataPoint(t, y));
+            var g = (Graph)sender;
 
+            g.Data.CollectionChanged += new NotifyCollectionChangedEventHandler(g.Data_CollectionChanged);
+        }
+
+        void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                int t = e.NewStartingIndex;
+
+                foreach (short item in e.NewItems)
+                {
+                    AddPoint(t, item, true);
+                    t++;
+                }
+            }
+        }
+
+        public void AddPoint(int t, short y, bool trim = true)
+        {
             plGraph.Points.Add(new Point(
                 t * Timebase,
                 y * Yscale + grdPoints.ActualHeight / 2.0
@@ -72,7 +91,6 @@ namespace DataLogger
         public void ClearPoints()
         {
             plGraph.Points.Clear();
-            Data.Clear();
         }
     }
 }

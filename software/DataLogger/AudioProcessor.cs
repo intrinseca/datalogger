@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Exocortex.DSP;
+using System.Collections.ObjectModel;
 
 namespace DataLogger
 {
@@ -22,7 +23,7 @@ namespace DataLogger
         /// Contains all samples
         /// </summary>
 
-        public List<short> Samples { get; private set; }
+        public ObservableCollection<short> Samples { get; private set; }
         public List<float[]> Spectrum { get; private set; }
 
         //Pre-calculated, 1/SamplingRate
@@ -35,7 +36,7 @@ namespace DataLogger
         /// <param name="_blockSize">The block size used to calculate the spectrum of the signal, must be a power of two</param>
         public AudioProcessor(int _samplingRate = 8000, int _blockSize = 128)
         {
-            Samples = new List<short>();
+            Samples = new ObservableCollection<short>();
             Spectrum = new List<float[]>();
 
             SamplingRate = _samplingRate;
