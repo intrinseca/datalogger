@@ -146,6 +146,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Button Name="btnStartSampling" Click="btnStartSampling_Click">Begin Sampling</Button>
                         <Button Name="btnStopSampling" Click="btnStopSampling_Click">Stop Sampling</Button>
+                        <Button Name="btnLoadWav" Click="btnLoadWav_Click">Load File</Button>
                     </StackPanel>
 
                     <Grid>

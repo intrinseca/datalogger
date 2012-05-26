@@ -91,6 +91,7 @@
     <Compile Include="UI\Spectrum.xaml.cs">
       <DependentUpon>Spectrum.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WaveFile.cs" />
     <Compile Include="UI\wndMain.xaml.cs">
       <DependentUpon>wndMain.xaml</DependentUpon>
       <SubType>Code</SubType>

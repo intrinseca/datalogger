@@ -65,12 +65,24 @@ namespace DataLogger
 
         public void PollDevice()
         {
-            var result = Device.SendCommand(COMMANDS.ADC_READ, 128);
+            var result = Device.SendCommand(COMMANDS.ADC_READ, 64);
 
             for (int i = 2; i < result[1]; i++)
             {
                 int sample = 128 - result[i];
                 Audio.Samples.Add((short)sample);
+            }
+        }
+
+        public void LoadFile(string filePath)
+        {
+            Audio.Samples.Clear();
+
+            byte[] data = WaveFile.GetSamples(filePath);
+
+            foreach (byte sample in data)
+            {
+                Audio.Samples.Add((short)(128 - sample));
             }
         }
     }

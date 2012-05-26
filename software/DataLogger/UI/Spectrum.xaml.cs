@@ -130,7 +130,7 @@ namespace DataLogger
             for (int i = 0; i < Data.Count; i++)
             {
                 //Scale block to its maximum magnitude
-                scale = 1.0f / Data[i].Max();
+                //scale = 1.0f / Data[i].Max();
 
                 //for each frequency component
                 for (int j = 0; j < imageHeight; j++)

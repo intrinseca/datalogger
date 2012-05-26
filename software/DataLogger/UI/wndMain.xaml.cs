@@ -16,6 +16,7 @@ using LibUsbDotNet.Main;
 using LibUsbDotNet.DeviceNotify;
 using System.Windows.Threading;
 using System.Diagnostics;
+using Microsoft.Win32;
 
 namespace DataLogger
 {
@@ -116,6 +117,17 @@ namespace DataLogger
             grhSpectrum.BlockSize = tLogger.Audio.BlockSize;
             grhSpectrum.Data = tLogger.Audio.Spectrum;
             grhSpectrum.Refresh();
+        }
+
+        private void btnLoadWav_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog();
+            dlg.Filter = "Wave Audio (.wvav)|*.wav";
+
+            if (dlg.ShowDialog() == true)
+            {
+                tLogger.LoadFile(dlg.FileName);
+            }
         }
     }
 }
