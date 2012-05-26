@@ -7,12 +7,16 @@ namespace DataLogger
 {
     class MockDriver : IDriver
     {
-        double f1 = 941;
-        double f2 = 1209;
+        double f1 = 941; //941
+        double f2 = 1209; //1209
+
+        double sigma = 20;
 
         long startTicks;
 
         double previousTime;
+
+        Random r = new Random();
 
         public MockDriver()
         {
@@ -58,7 +62,8 @@ namespace DataLogger
 
                     for (i = 2; (i < responseLength && t < currentTime); i++)
                     {
-                        audio = 128.0 + 50.0 * Math.Sin(2.0 * Math.PI * f1 * t) + 50.0 * Math.Sin(2.0 * Math.PI * f2 * t);
+                        audio = 128.0 + 50.0 * Math.Sin(2.0 * Math.PI * f1 * t) + 50.0 * Math.Sin(2.0 * Math.PI * f2 * t) + (sigma * (r.NextDouble() - 0.5));
+                        //audio = 128.0 + 10 * (sigma * (r.NextDouble() - 0.5));
 
                         response[i] = (byte)audio;
 
