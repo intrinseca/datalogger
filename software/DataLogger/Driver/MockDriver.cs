@@ -7,8 +7,17 @@ namespace DataLogger
 {
     class MockDriver : IDriver
     {
-        int t;
-        float f = 100f;
+        double f1 = 941;
+        double f2 = 1209;
+
+        long startTicks;
+
+        double previousTime;
+
+        public MockDriver()
+        {
+            startTicks = System.DateTime.Now.Ticks;
+        }
 
         public bool IsOpen
         {
@@ -33,33 +42,37 @@ namespace DataLogger
 
         public byte[] SendCommand(COMMANDS command, int responseLength)
         {
+            double currentTime = (System.DateTime.Now.Ticks - startTicks) / 10000000.0;
+            var t = previousTime;
+            previousTime = currentTime;
+
+            byte[] response = new byte[responseLength];
+            response[0] = (byte)command;
+
             switch (command)
             {
                 case COMMANDS.ADC_READ:
                     double audio;
-                    byte[] response = new byte[responseLength];
-                    response[0] = (byte)command;
 
-                    for (int i = 1; i < responseLength; i++)
+                    int i;
+
+                    for (i = 2; (i < responseLength && t < currentTime); i++)
                     {
-                        audio = 128.0 + 50.0 * Math.Sin(2.0 * Math.PI * t / f);
-                        t++;
+                        audio = 128.0 + 50.0 * Math.Sin(2.0 * Math.PI * f1 * t) + 50.0 * Math.Sin(2.0 * Math.PI * f2 * t);
 
                         response[i] = (byte)audio;
 
-                        if (t % 200 == 0)
-                        {
-                            f -= 1f;
-
-                            if (f < 0.5f)
-                                f = 100f;
-                        }
+                        t += 1.0 / 8192.0;
                     }
 
-                    return response;
+                    response[1] = (byte)i;
+
+                    break;
                 default:
                     throw new NotImplementedException();
             }
+
+            return response;
         }
 
         public byte[] SendCommand(byte[] command, int responseLength)

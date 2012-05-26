@@ -12,7 +12,7 @@ namespace DataLogger
         /// <summary>
         /// The sampling rate assumed, in Hz
         /// </summary>
-        public int SamplingRate { get; private set; }
+        public int SamplingFrequency { get; private set; }
 
         /// <summary>
         /// The block size used to calculate the spectrum of the signal
@@ -24,7 +24,9 @@ namespace DataLogger
         /// </summary>
 
         public ObservableCollection<short> Samples { get; private set; }
+
         public List<float[]> Spectrum { get; private set; }
+        public List<float> SpectrumFrequencies { get; private set; }
 
         //Pre-calculated, 1/SamplingRate
         private double sampleInterval;
@@ -38,8 +40,9 @@ namespace DataLogger
         {
             Samples = new ObservableCollection<short>();
             Spectrum = new List<float[]>();
+            SpectrumFrequencies = new List<float>();
 
-            SamplingRate = _samplingRate;
+            SamplingFrequency = _samplingRate;
 
             if (!isPowerOfTwo(_blockSize))
             {
@@ -48,7 +51,7 @@ namespace DataLogger
 
             BlockSize = _blockSize;
 
-            sampleInterval = 1.0 / SamplingRate;
+            sampleInterval = 1.0 / SamplingFrequency;
         }
 
         /// <summary>
@@ -89,6 +92,12 @@ namespace DataLogger
 
                 Spectrum.Add(result);
                 blockStart += BlockSize;
+            }
+
+            SpectrumFrequencies.Clear();
+            for (int i = 0; i < (BlockSize / 2); i++)
+            {
+                SpectrumFrequencies.Add((float)((i / (float)BlockSize) * SamplingFrequency));
             }
         }
     }

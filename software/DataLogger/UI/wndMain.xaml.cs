@@ -106,7 +106,7 @@ namespace DataLogger
 
             //TODO: Waveform display or something here
             //grhWaveform.ClearPoints();
-            grhWaveform.Timebase = 8.0f / tLogger.Audio.SamplingRate;
+            grhWaveform.Timebase = 8.0f / tLogger.Audio.SamplingFrequency;
             //for (int i = 0; i < audio.Samples.Count; i++)
             //{
             //    grhWaveform.AddPoint(i, audio.Samples[i], false);

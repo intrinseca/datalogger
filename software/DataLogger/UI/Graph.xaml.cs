@@ -82,7 +82,7 @@ namespace DataLogger
                 y * Yscale + grdPoints.ActualHeight / 2.0
                 ));
 
-            if (trim && plGraph.Points.Count > 500)
+            if (trim && plGraph.Points.Count > 1000)
                 plGraph.Points.RemoveAt(0);
 
             scrGraph.ScrollToRightEnd();

@@ -38,7 +38,7 @@ namespace DataLogger
         {
             monitor = new DeviceMonitor(Device);
 
-            pollTimer = new Timer(8);
+            pollTimer = new Timer(4);
             pollTimer.AutoReset = true;
             pollTimer.Elapsed += new ElapsedEventHandler(pollTimer_Elapsed);
         }
@@ -65,9 +65,9 @@ namespace DataLogger
 
         public void PollDevice()
         {
-            var result = Device.SendCommand(COMMANDS.ADC_READ, 64);
+            var result = Device.SendCommand(COMMANDS.ADC_READ, 128);
 
-            for (int i = 1; i < result.Length; i++)
+            for (int i = 2; i < result[1]; i++)
             {
                 int sample = 128 - result[i];
                 Audio.Samples.Add((short)sample);
