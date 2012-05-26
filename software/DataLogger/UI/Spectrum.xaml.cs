@@ -145,10 +145,9 @@ namespace DataLogger
 
                     for (int k = 0; k < blockWidth; k++)
                     {
-
-                        image[(j * stride) + (blockWidth * i * 3) + k * 3] = color[0];
-                        image[(j * stride) + (blockWidth * i * 3) + k * 3 + 1] = color[1];
-                        image[(j * stride) + (blockWidth * i * 3) + k * 3 + 2] = color[2];
+                        image[((imageHeight - 1 - j) * stride) + (blockWidth * i * 3) + k * 3] = color[0];
+                        image[((imageHeight - 1 - j) * stride) + (blockWidth * i * 3) + k * 3 + 1] = color[1];
+                        image[((imageHeight - 1 - j) * stride) + (blockWidth * i * 3) + k * 3 + 2] = color[2];
                     }
                 }
             }
