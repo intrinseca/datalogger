@@ -13,7 +13,7 @@ namespace DataLogger
             byte[] byteArray;
 
             BinaryReader reader = new BinaryReader(new FileStream(file, FileMode.Open, FileAccess.Read));
-            
+
             int chunkID = reader.ReadInt32();
             int fileSize = reader.ReadInt32();
             int riffType = reader.ReadInt32();
@@ -39,6 +39,35 @@ namespace DataLogger
             byteArray = reader.ReadBytes(dataSize);
 
             return byteArray;
+        }
+
+        public static Stream WriteWav(IList<short> samples)
+        {
+            MemoryStream ms = new MemoryStream();
+
+            BinaryWriter writer = new BinaryWriter(ms);
+
+            writer.Write(new char[] { 'R', 'I', 'F', 'F' }); //chunkID RIFF
+            writer.Write(36 + samples.Count); //chunkLength
+            writer.Write(new char[] { 'W', 'A', 'V', 'E' }); //chunkFormat WAVE
+            writer.Write(new char[] { 'f', 'm', 't', ' ' }); ; //subchunkID fmt
+            writer.Write(16); //fmt size
+            writer.Write((short)1); //audio format PCM
+            writer.Write((short)1); //num channels 
+            writer.Write(8192); //sample rate
+            writer.Write(8192 * 1); //byte rate
+            writer.Write((short)1); //block align
+            writer.Write((short)8); //bits per sample
+
+            writer.Write(new char[] { 'd', 'a', 't', 'a' }); //subchunkID DATA
+            writer.Write(samples.Count); //subchunk length
+
+            foreach (var sample in samples)
+            {
+                writer.Write((byte)(sample + 128));
+            }
+
+            return ms;
         }
     }
 }

@@ -17,6 +17,8 @@ using LibUsbDotNet.DeviceNotify;
 using System.Windows.Threading;
 using System.Diagnostics;
 using Microsoft.Win32;
+using System.Media;
+using System.IO;
 
 namespace DataLogger
 {
@@ -128,6 +130,29 @@ namespace DataLogger
             {
                 tLogger.LoadFile(dlg.FileName);
             }
+        }
+
+        private void btnPlay_Click(object sender, RoutedEventArgs e)
+        {
+            var s = new SoundPlayer();
+
+            var data = WaveFile.WriteWav(tLogger.Audio.Samples);
+
+            data.Seek(0, SeekOrigin.Begin);
+
+            var file = new FileStream("test.wav", FileMode.OpenOrCreate);
+            data.CopyTo(file);
+            file.Close();
+            
+            data.Seek(0, SeekOrigin.Begin);
+
+            s.Stream = data;
+            s.Play();
+        }
+
+        private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+            tLogger.Audio.Samples.Clear();
         }
     }
 }
