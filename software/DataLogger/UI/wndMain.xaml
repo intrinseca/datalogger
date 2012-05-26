@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dl="clr-namespace:DataLogger"
         Title="USB Data Logger" Height="450" Width="695"
-        Closed="Window_Closed"
         UseLayoutRounding="True"
         Background="{StaticResource LightBrush}" 
         Foreground="{StaticResource DarkBrush}" Icon="/DataLogger;component/Images/icon.png">

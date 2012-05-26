@@ -26,10 +26,7 @@ namespace DataLogger
     {
         public bool IsPolling { get; set; }
 
-        private IDriver logger = new MockDriver();
-        private Audio audio = new Audio(10, 256);
-
-        private DeviceMonitor monitor;
+        private TelephoneLogger tLogger;
 
         DispatcherTimer poll = new DispatcherTimer();
 
@@ -39,10 +36,7 @@ namespace DataLogger
         {
             InitializeComponent();
 
-            monitor = new DeviceMonitor(logger);
-
-            monitor.Connected += new EventHandler(monitor_Connected);
-            monitor.Disconnected += new EventHandler(monitor_Disconnected);
+            tLogger = new TelephoneLogger();
 
             poll.Interval = new TimeSpan(0, 0, 0, 0, 10);
             poll.Tick += new EventHandler(poll_Tick);
@@ -53,14 +47,12 @@ namespace DataLogger
         void monitor_Disconnected(object sender, EventArgs e)
         {
             stopSampling();
-            logger.Close();
 
             sbiConnectionStatus.Content = "Not Connected";
         }
 
         void monitor_Connected(object sender, EventArgs e)
         {
-            logger.Open();
             sbiConnectionStatus.Content = "Connected";
         }
 
@@ -72,41 +64,14 @@ namespace DataLogger
 
         void poll_Tick(object sender, EventArgs e)
         {
-            readADC();
-        }
+            tLogger.PollDevice();
 
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            logger.Close();
-        }
+            short sample = tLogger.Audio.Samples[tLogger.Audio.Samples.Count - 1];
 
-        private void btnRead_Click(object sender, RoutedEventArgs e)
-        {
-            readADC();
-        }
+            sldValue.Value = sample;
 
-        private void readADC()
-        {
-            try
-            {
-                var result = logger.SendCommand(COMMANDS.ADC_READ, 64);
-
-                for (int i = 1; i < result.Length; i++)
-                {
-                    int sample = 128 - result[i];
-                    audio.Samples.Add((short)sample);
-
-                    sldValue.Value = result[i];
-
-                    gphData.AddPoint(t, (float)(sample / 255.0f));
-                    t++;
-                }
-            }
-            catch (DriverException ex)
-            {
-                Debug.Print("DriverException: {0}", ex.Message);
-                return;
-            }
+            //TODO: Add all recently added samples
+            gphData.AddPoint(t, sample);
         }
 
         private void sldPoll_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -126,7 +91,7 @@ namespace DataLogger
 
         private void startSampling()
         {
-            if (monitor.DevicePresent)
+            if (tLogger.Device.IsOpen)
             {
                 IsPolling = true;
                 poll.Start();
@@ -135,18 +100,18 @@ namespace DataLogger
 
         private void btnAnalyse_Click(object sender, RoutedEventArgs e)
         {
-            audio.ProcessSpectrum();
+            tLogger.Audio.ProcessSpectrum();
 
             //grhWaveform.ClearPoints();
-            grhWaveform.Timebase = 1.0f / audio.SamplingRate;
+            grhWaveform.Timebase = 1.0f / tLogger.Audio.SamplingRate;
             //for (int i = 0; i < audio.Samples.Count; i++)
             //{
             //    grhWaveform.AddPoint(i, audio.Samples[i], false);
             //}
 
             grhSpectrum.Timebase = grhWaveform.Timebase;
-            grhSpectrum.BlockSize = audio.BlockSize;
-            grhSpectrum.Data = audio.Spectrum;
+            grhSpectrum.BlockSize = tLogger.Audio.BlockSize;
+            grhSpectrum.Data = tLogger.Audio.Spectrum;
             grhSpectrum.Refresh();
         }
     }

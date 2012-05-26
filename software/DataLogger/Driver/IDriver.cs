@@ -40,6 +40,8 @@ namespace DataLogger
 
     interface IDriver
     {
+        bool IsOpen { get; }
+
         void Open();
         void Close();
         bool CheckDevicePresent();

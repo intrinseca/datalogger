@@ -6,7 +6,7 @@ using Exocortex.DSP;
 
 namespace DataLogger
 {
-    class Audio
+    class AudioProcessor
     {
         /// <summary>
         /// The sampling rate assumed, in Hz
@@ -32,8 +32,8 @@ namespace DataLogger
         /// Create a new audio interface
         /// </summary>
         /// <param name="_samplingRate">The sampling rate assumed, in Hz</param>
-        /// <param name="_blockSize">The block size used to calculate the spectrum of the signal</param>
-        public Audio(int _samplingRate = 8000, int _blockSize = 128)
+        /// <param name="_blockSize">The block size used to calculate the spectrum of the signal, must be a power of two</param>
+        public AudioProcessor(int _samplingRate = 8000, int _blockSize = 128)
         {
             Samples = new List<short>();
             Spectrum = new List<float[]>();

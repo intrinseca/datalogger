@@ -22,6 +22,14 @@ namespace DataLogger
 
         UsbTransferQueue queue;
 
+        public bool IsOpen
+        {
+            get
+            {
+                return device.IsOpen;
+            }
+        }
+
         public Driver()
         {
         }

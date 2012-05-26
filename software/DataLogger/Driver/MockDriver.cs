@@ -10,6 +10,14 @@ namespace DataLogger
         int t;
         float f = 100f;
 
+        public bool IsOpen
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public void Open()
         {
         }
