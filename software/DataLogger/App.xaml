@@ -1,7 +1,7 @@
 ﻿<Application x:Class="DataLogger.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="wndMain.xaml">
+             StartupUri="UI/wndMain.xaml">
     <Application.Resources>
         <Color R="31" G="150" B="191" A="255" x:Key="AccentBlue" />
         <Color R="129" G="54" B="245" A="255" x:Key="AccentPurple" />

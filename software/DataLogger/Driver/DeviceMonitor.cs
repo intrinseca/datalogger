@@ -22,7 +22,7 @@ namespace DataLogger
             driver = _driver;
             notifier.OnDeviceNotify += new EventHandler<DeviceNotifyEventArgs>(notifier_OnDeviceNotify);
 
-            DevicePresent = driver.DevicePresent();
+            DevicePresent = driver.CheckDevicePresent();
             tryOpen();
         }
 
@@ -34,7 +34,7 @@ namespace DataLogger
                 {
                     case EventType.DeviceArrival:
 
-                        DevicePresent = driver.DevicePresent();
+                        DevicePresent = driver.CheckDevicePresent();
                         tryOpen();
                         break;
                     case EventType.DeviceRemoveComplete:
@@ -42,7 +42,7 @@ namespace DataLogger
                         {
                             onDisconnect();
                             driver.Close();
-                            DevicePresent = driver.DevicePresent();
+                            DevicePresent = driver.CheckDevicePresent();
                         }
                         break;
                 }

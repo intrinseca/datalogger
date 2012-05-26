@@ -18,7 +18,7 @@ namespace DataLogger
         {
         }
 
-        public bool DevicePresent()
+        public bool CheckDevicePresent()
         {
             return true;
         }

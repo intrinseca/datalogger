@@ -26,7 +26,7 @@ namespace DataLogger
         {
         }
 
-        public bool DevicePresent()
+        public bool CheckDevicePresent()
         {
             device = UsbDevice.OpenUsbDevice(finder);
 
@@ -35,7 +35,7 @@ namespace DataLogger
 
         public void Open()
         {
-            if (!DevicePresent())
+            if (!CheckDevicePresent())
             {
                 throw new DeviceNotFoundException("Could not find device");
             }
