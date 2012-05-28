@@ -56,6 +56,8 @@ namespace DataLogger
         public static readonly DependencyProperty DataProperty =
             DependencyProperty.Register("Data", typeof(List<float[]>), typeof(Spectrum), new UIPropertyMetadata(null));
 
+        public event ScrollChangedEventHandler ScrollChanged;
+
         public Spectrum()
         {
             InitializeComponent();
@@ -112,7 +114,9 @@ namespace DataLogger
                 return;
 
             //Set horizontal scale
-            int blockWidth = (int)(BlockSize * Timebase);
+            int blockWidth = (int)(Timebase);
+            if (blockWidth == 0)
+                blockWidth = 1;
 
             //Calculate dimensions
             int imageHeight = BlockSize / 2;
@@ -153,8 +157,24 @@ namespace DataLogger
             }
 
             //load pixel data into image
-            BitmapSource specGraph = BitmapSource.Create(imageWidth, imageHeight, 120, 120, PixelFormats.Rgb24, null, image, stride);
+            BitmapSource specGraph = BitmapSource.Create(imageWidth, imageHeight, 96, 96, PixelFormats.Rgb24, null, image, stride);
             imgSpectrum.Source = specGraph;
+        }
+
+        private void onScrollChanged(ScrollChangedEventArgs e)
+        {
+            if (ScrollChanged != null)
+                ScrollChanged(this, e);
+        }
+
+        private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            onScrollChanged(e);
+        }
+
+        public void ScrollTo(double offset)
+        {
+            scroll.ScrollToHorizontalOffset(offset);
         }
     }
 }

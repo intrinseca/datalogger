@@ -47,6 +47,10 @@ namespace DataLogger
             var b = new Binding("Samples");
             b.Source = tLogger.Audio;
             gphData.SetBinding(Graph.DataProperty, b);
+
+            var b2 = new Binding("Tones");
+            b2.Source = tLogger.Analyser;
+            tones.SetBinding(ToneDisplay.TonesProperty, b2);
         }
 
         void monitor_Disconnected(object sender, EventArgs e)
@@ -109,18 +113,18 @@ namespace DataLogger
 
             //TODO: Waveform display or something here
             //grhWaveform.ClearPoints();
-            grhWaveform.Timebase = 16.0f / tLogger.Audio.SamplingFrequency;
+            //grhWaveform.Timebase = 32.0f / tLogger.Audio.SamplingFrequency;
             //for (int i = 0; i < audio.Samples.Count; i++)
             //{
             //    grhWaveform.AddPoint(i, audio.Samples[i], false);
             //}
 
-            grhSpectrum.Timebase = grhWaveform.Timebase;
+            grhSpectrum.Timebase = 16.0f;
             grhSpectrum.BlockSize = tLogger.Audio.BlockSize;
             grhSpectrum.Data = tLogger.Audio.Spectrum;
             grhSpectrum.Refresh();
 
-
+            tones.Timebase = grhSpectrum.Timebase;
         }
 
         private void btnLoadWav_Click(object sender, RoutedEventArgs e)
@@ -155,6 +159,16 @@ namespace DataLogger
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             tLogger.Audio.Samples.Clear();
+        }
+
+        private void tones_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            grhSpectrum.ScrollTo(e.HorizontalOffset);
+        }
+
+        private void grhSpectrum_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            tones.ScrollTo(e.HorizontalOffset);
         }
     }
 }

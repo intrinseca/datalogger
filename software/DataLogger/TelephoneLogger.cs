@@ -13,7 +13,7 @@ namespace DataLogger
     class TelephoneLogger
     {
         private const int SAMPLING_RATE = 8192;
-        private const int BLOCK_SIZE = 1024;
+        private const int BLOCK_SIZE = 256;
 
         /// <summary>
         /// Connection to the USB device

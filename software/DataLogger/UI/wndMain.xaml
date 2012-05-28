@@ -26,13 +26,12 @@
 
         <Style TargetType="GroupBox">
             <Setter Property="Margin" Value="5" />
-            <Setter Property="Foreground" Value="{StaticResource AccentRedBrush}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="GroupBox">
                         <DockPanel>
-                            <Border DockPanel.Dock="Top" BorderBrush="{TemplateBinding Foreground}" BorderThickness="0,0,0,1" Margin="0,0,0,3">
-                                <TextBlock Text="{TemplateBinding Header}" Foreground="{TemplateBinding Foreground}" FontSize="15" />
+                            <Border DockPanel.Dock="Top" BorderBrush="{StaticResource AccentRedBrush}" BorderThickness="0,0,0,1" Margin="0,0,0,3">
+                                <TextBlock Text="{TemplateBinding Header}" Foreground="{StaticResource AccentRedBrush}" FontSize="15" />
                             </Border>
                             <ContentPresenter />
                         </DockPanel>
@@ -187,11 +186,11 @@
                     <StackPanel Orientation="Horizontal">
                         <Button Name="btnAnalyse" Click="btnAnalyse_Click">Analyse</Button>
                     </StackPanel>
-                    <GroupBox Header="waveform" Grid.Row="1">
-                        <dl:Graph x:Name="grhWaveform" />
+                    <GroupBox Header="tones" Grid.Row="1">
+                        <dl:ToneDisplay x:Name="tones" ScrollChanged="tones_ScrollChanged" />
                     </GroupBox>
                     <GroupBox Header="spectrum" Grid.Row="2">
-                        <dl:Spectrum x:Name="grhSpectrum" />
+                        <dl:Spectrum x:Name="grhSpectrum" ScrollChanged="grhSpectrum_ScrollChanged" />
                     </GroupBox>
                 </Grid>
             </TabItem>

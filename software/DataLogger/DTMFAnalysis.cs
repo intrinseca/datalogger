@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
+using System.Collections.ObjectModel;
 
 namespace DataLogger
 {
-    enum DTMFTones
+    public enum DTMFTones
     {
         Num1,
         Num2,
@@ -21,7 +23,7 @@ namespace DataLogger
         Hash
     }
 
-    class DTMFFrequencies
+    public class DTMFFrequencies
     {
         public static int[] Rows = new int[] { 687, 770, 852, 941 };
         public static int[] Columns = new int[] { 1209, 1336, 1477 };
@@ -41,26 +43,32 @@ namespace DataLogger
         }
     }
 
-    class Tone
+    public class Tone
     {
-        public int BlockNumber;
+        public int StartBlock;
         public DTMFTones Key;
+        public int Duration;
 
         public override string ToString()
         {
-            return string.Format("{0}: {1}", BlockNumber, Key.ToString());
+            return string.Format("{0}: {1}", StartBlock, Key.ToString());
         }
     }
 
-    class DTMFAnalysis
+    public class DTMFAnalysis
     {
-        const float THRESHOLD = 2.5f;
+        const float THRESHOLD = 4.0f;
 
-        public List<Tone> Tones;
+        public ObservableCollection<Tone> Tones { get; set; }
+
+        public DTMFAnalysis()
+        {
+            Tones = new ObservableCollection<Tone>();
+        }
 
         public void Analyse(List<float[]> spectrum, List<float> spectrumFrequencies)
         {
-            Tones = new List<Tone>();
+            Tones.Clear();
 
             int[] rowIndexes = new int[DTMFFrequencies.Rows.Length];
             float[] rowMagnitudes = new float[rowIndexes.Length];
@@ -83,11 +91,20 @@ namespace DataLogger
                 row = findTone(spectrum[block], rowIndexes);
                 column = findTone(spectrum[block], columnIndexes);
 
-                if (row != -1 && column != -1 && row != previousRow && column != previousColumn)
+                if (row != -1 && column != -1)
                 {
-                    int x = row * DTMFFrequencies.Columns.Length + column;
-
-                    Tones.Add(new Tone() { BlockNumber = block, Key = (DTMFTones)x });
+                    //found a tone
+                    if ((row != previousRow || column != previousColumn))
+                    {
+                        //tone has changed
+                        int x = row * DTMFFrequencies.Columns.Length + column;
+                        Tones.Add(new Tone() { StartBlock = block, Key = (DTMFTones)x, Duration = 1 });
+                    }
+                    else
+                    {
+                        //same tone
+                        Tones[Tones.Count - 1].Duration++;
+                    }
                 }
             }
         }
