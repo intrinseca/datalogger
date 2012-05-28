@@ -25,6 +25,8 @@ namespace DataLogger
         /// </summary>
         public AudioProcessor Audio = new AudioProcessor(SAMPLING_RATE, BLOCK_SIZE);
 
+        public DTMFAnalysis Analyser = new DTMFAnalysis();
+
         public bool Connected { get; private set; }
 
         private Timer pollTimer;
@@ -37,6 +39,7 @@ namespace DataLogger
         public TelephoneLogger()
         {
             monitor = new DeviceMonitor(Device);
+            Analyser = new DTMFAnalysis();
 
             pollTimer = new Timer(4);
             pollTimer.AutoReset = true;
@@ -84,6 +87,12 @@ namespace DataLogger
             {
                 Audio.Samples.Add((short)(128 - sample));
             }
+        }
+
+        public void UpdateAnalysis()
+        {
+            Audio.ProcessSpectrum();
+            Analyser.Analyse(Audio.Spectrum, Audio.SpectrumFrequencies);
         }
     }
 }

@@ -80,6 +80,7 @@
     <Compile Include="AudioProcessor.cs" />
     <Compile Include="Driver\DeviceMonitor.cs" />
     <Compile Include="Driver\Driver.cs" />
+    <Compile Include="DTMFAnalysis.cs" />
     <Compile Include="TelephoneLogger.cs" />
     <Compile Include="UI\Graph.xaml.cs">
       <DependentUpon>Graph.xaml</DependentUpon>

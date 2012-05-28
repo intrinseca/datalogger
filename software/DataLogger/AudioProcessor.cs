@@ -22,7 +22,6 @@ namespace DataLogger
         /// <summary>
         /// Contains all samples
         /// </summary>
-
         public ObservableCollection<short> Samples { get; private set; }
 
         public List<float[]> Spectrum { get; private set; }

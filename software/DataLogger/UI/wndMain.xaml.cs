@@ -105,11 +105,11 @@ namespace DataLogger
 
         private void btnAnalyse_Click(object sender, RoutedEventArgs e)
         {
-            tLogger.Audio.ProcessSpectrum();
+            tLogger.UpdateAnalysis();
 
             //TODO: Waveform display or something here
             //grhWaveform.ClearPoints();
-            grhWaveform.Timebase = 8.0f / tLogger.Audio.SamplingFrequency;
+            grhWaveform.Timebase = 16.0f / tLogger.Audio.SamplingFrequency;
             //for (int i = 0; i < audio.Samples.Count; i++)
             //{
             //    grhWaveform.AddPoint(i, audio.Samples[i], false);
@@ -119,6 +119,8 @@ namespace DataLogger
             grhSpectrum.BlockSize = tLogger.Audio.BlockSize;
             grhSpectrum.Data = tLogger.Audio.Spectrum;
             grhSpectrum.Refresh();
+
+
         }
 
         private void btnLoadWav_Click(object sender, RoutedEventArgs e)
