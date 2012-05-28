@@ -58,7 +58,8 @@ namespace DataLogger
         {
             var g = (Graph)sender;
 
-            g.Data.CollectionChanged += new NotifyCollectionChangedEventHandler(g.Data_CollectionChanged);
+            if(g.Data != null)
+                g.Data.CollectionChanged += new NotifyCollectionChangedEventHandler(g.Data_CollectionChanged);
         }
 
         void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

@@ -28,7 +28,7 @@ namespace DataLogger
         }
 
         public static readonly DependencyProperty TimebaseProperty =
-            DependencyProperty.Register("Timebase", typeof(float), typeof(ToneDisplay), new UIPropertyMetadata(100f));
+            DependencyProperty.Register("Timebase", typeof(float), typeof(ToneDisplay), new UIPropertyMetadata(100f, new PropertyChangedCallback(timeBaseChanged)));
               
         public ObservableCollection<Tone> Tones
         {
@@ -52,15 +52,28 @@ namespace DataLogger
             Tones = new ObservableCollection<Tone>();
         }
 
+        private static void timeBaseChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var t = (ToneDisplay)sender;
+            t.refresh();
+        }
+
         private static void tonesChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var t = (ToneDisplay)sender;
-
-            t.Tones.CollectionChanged += new NotifyCollectionChangedEventHandler(t.Tones_CollectionChanged);
+            if(t.Tones != null)
+                t.Tones.CollectionChanged += new NotifyCollectionChangedEventHandler(t.Tones_CollectionChanged);
         }
 
         private void Tones_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            refresh();
+        }
+
+        private void refresh()
+        {
+            int width = (int)Timebase;
+
             grdTones.Children.Clear();
 
             foreach (var tone in Tones)
@@ -68,10 +81,10 @@ namespace DataLogger
                 var b = new Border();
 
                 var t = new TextBlock();
-                t.Text = tone.Key.ToString();
+                t.Text = tone.KeyString();
 
-                b.Margin = new Thickness(Timebase * tone.StartBlock, 0, 0, 0);
-                b.Width = Timebase * tone.Duration;
+                b.Margin = new Thickness(width * tone.StartBlock, 0, 0, 0);
+                b.Width = width * tone.Duration;
 
                 b.Child = t;
                 grdTones.Children.Add(b);

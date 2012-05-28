@@ -23,9 +23,9 @@ namespace DataLogger
         /// <summary>
         /// Storage and processing of audio data
         /// </summary>
-        public AudioProcessor Audio = new AudioProcessor(SAMPLING_RATE, BLOCK_SIZE);
+        public AudioProcessor Audio {get; private set;}
 
-        public DTMFAnalysis Analyser = new DTMFAnalysis();
+        public DTMFAnalysis Analyser { get; private set; }
 
         public bool Connected { get; private set; }
 
@@ -38,6 +38,7 @@ namespace DataLogger
 
         public TelephoneLogger()
         {
+            Audio = new AudioProcessor(SAMPLING_RATE, BLOCK_SIZE);
             monitor = new DeviceMonitor(Device);
             Analyser = new DTMFAnalysis();
 

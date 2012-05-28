@@ -24,8 +24,8 @@ namespace DataLogger
         /// </summary>
         public ObservableCollection<short> Samples { get; private set; }
 
-        public List<float[]> Spectrum { get; private set; }
-        public List<float> SpectrumFrequencies { get; private set; }
+        public ObservableCollection<float[]> Spectrum { get; private set; }
+        public ObservableCollection<float> SpectrumFrequencies { get; private set; }
 
         //Pre-calculated, 1/SamplingRate
         private double sampleInterval;
@@ -38,8 +38,8 @@ namespace DataLogger
         public AudioProcessor(int _samplingRate = 8000, int _blockSize = 128)
         {
             Samples = new ObservableCollection<short>();
-            Spectrum = new List<float[]>();
-            SpectrumFrequencies = new List<float>();
+            Spectrum = new ObservableCollection<float[]>();
+            SpectrumFrequencies = new ObservableCollection<float>();
 
             SamplingFrequency = _samplingRate;
 

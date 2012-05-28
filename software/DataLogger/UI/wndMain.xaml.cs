@@ -43,14 +43,10 @@ namespace DataLogger
             poll.Tick += new EventHandler(poll_Tick);
 
             IsPolling = false;
+            
+            grhSpectrum.BlockSize = tLogger.Audio.BlockSize;
 
-            var b = new Binding("Samples");
-            b.Source = tLogger.Audio;
-            gphData.SetBinding(Graph.DataProperty, b);
-
-            var b2 = new Binding("Tones");
-            b2.Source = tLogger.Analyser;
-            tones.SetBinding(ToneDisplay.TonesProperty, b2);
+            this.DataContext = tLogger;
         }
 
         void monitor_Disconnected(object sender, EventArgs e)
@@ -110,21 +106,6 @@ namespace DataLogger
         private void btnAnalyse_Click(object sender, RoutedEventArgs e)
         {
             tLogger.UpdateAnalysis();
-
-            //TODO: Waveform display or something here
-            //grhWaveform.ClearPoints();
-            //grhWaveform.Timebase = 32.0f / tLogger.Audio.SamplingFrequency;
-            //for (int i = 0; i < audio.Samples.Count; i++)
-            //{
-            //    grhWaveform.AddPoint(i, audio.Samples[i], false);
-            //}
-
-            grhSpectrum.Timebase = 16.0f;
-            grhSpectrum.BlockSize = tLogger.Audio.BlockSize;
-            grhSpectrum.Data = tLogger.Audio.Spectrum;
-            grhSpectrum.Refresh();
-
-            tones.Timebase = grhSpectrum.Timebase;
         }
 
         private void btnLoadWav_Click(object sender, RoutedEventArgs e)

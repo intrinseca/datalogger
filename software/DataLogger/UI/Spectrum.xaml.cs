@@ -12,6 +12,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace DataLogger
 {
@@ -42,25 +44,42 @@ namespace DataLogger
         }
 
         public static readonly DependencyProperty TimebaseProperty =
-            DependencyProperty.Register("Timebase", typeof(float), typeof(Spectrum), new UIPropertyMetadata(1.0f));
+            DependencyProperty.Register("Timebase", typeof(float), typeof(Spectrum), new UIPropertyMetadata(1.0f, new PropertyChangedCallback(timebaseChanged)));
       
         /// <summary>
         /// The FFT data
         /// </summary>
-        public List<float[]> Data
+        public ObservableCollection<float[]> Data
         {
-            get { return (List<float[]>)GetValue(DataProperty); }
+            get { return (ObservableCollection<float[]>)GetValue(DataProperty); }
             set { SetValue(DataProperty, value); }
         }
 
         public static readonly DependencyProperty DataProperty =
-            DependencyProperty.Register("Data", typeof(List<float[]>), typeof(Spectrum), new UIPropertyMetadata(null));
+            DependencyProperty.Register("Data", typeof(ObservableCollection<float[]>), typeof(Spectrum), new UIPropertyMetadata(null, new PropertyChangedCallback(dataChanged)));
 
         public event ScrollChangedEventHandler ScrollChanged;
 
         public Spectrum()
         {
             InitializeComponent();
+        }
+
+        private static void dataChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var s = (Spectrum)sender;
+            s.Data.CollectionChanged += new NotifyCollectionChangedEventHandler(s.Data_CollectionChanged);
+        }
+
+        void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            Refresh();
+        }
+
+        private static void timebaseChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var s = (Spectrum)sender;
+            s.Refresh();
         }
 
         /// <summary>
@@ -110,8 +129,11 @@ namespace DataLogger
         /// </summary>
         public void Refresh()
         {
-            if (Data.Count == 0)
+            if (Data == null || Data.Count == 0)
+            {
+                imgSpectrum.Source = null;
                 return;
+            }
 
             //Set horizontal scale
             int blockWidth = (int)(Timebase);
@@ -125,16 +147,22 @@ namespace DataLogger
             int stride = imageWidth * 3;
 
             //Default magnitude scaling
-            float scale = 1.0f;
+            float scale = float.MaxValue;
 
             byte[] image = new byte[stride * imageHeight];
             float valueF;
 
+            //find the scale factor
+            for (int i = 0; i < Data.Count; i++)
+            {
+                float newScale = 1.0f / Data[i].Max();
+                if (newScale < scale)
+                    scale = newScale;
+            }
+
             //for each FFT result
             for (int i = 0; i < Data.Count; i++)
             {
-                //Scale block to its maximum magnitude
-                //scale = 1.0f / Data[i].Max();
 
                 //for each frequency component
                 for (int j = 0; j < imageHeight; j++)

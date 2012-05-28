@@ -49,9 +49,16 @@ namespace DataLogger
         public DTMFTones Key;
         public int Duration;
 
+        private string[] keyStrings = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#" };
+
+        public string KeyString()
+        {
+            return keyStrings[(int)Key];
+        }
+
         public override string ToString()
         {
-            return string.Format("{0}: {1}", StartBlock, Key.ToString());
+            return string.Format("{0}-{1}: {2}", StartBlock, StartBlock + Duration, Key.ToString());
         }
     }
 
@@ -66,7 +73,7 @@ namespace DataLogger
             Tones = new ObservableCollection<Tone>();
         }
 
-        public void Analyse(List<float[]> spectrum, List<float> spectrumFrequencies)
+        public void Analyse(IList<float[]> spectrum, IList<float> spectrumFrequencies)
         {
             Tones.Clear();
 
@@ -109,7 +116,7 @@ namespace DataLogger
             }
         }
 
-        private int[] findFrequencies(List<float> spectrumFrequencies, int[] toneFrequencies)
+        private int[] findFrequencies(IList<float> spectrumFrequencies, int[] toneFrequencies)
         {
 
             int[] indexes = new int[toneFrequencies.Length];

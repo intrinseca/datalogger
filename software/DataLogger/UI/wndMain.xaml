@@ -169,7 +169,7 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <dl:Graph x:Name="gphData" Height="200" />
+                            <dl:Graph x:Name="gphData" Height="200" Data="{Binding Audio.Samples}" />
                             <Slider Name="sldValue" Minimum="0" Maximum="255" Value="0" Orientation="Vertical" Grid.Column="1" />
                         </Grid>
                     </GroupBox>
@@ -181,16 +181,19 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition />
-                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
+                    <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
                         <Button Name="btnAnalyse" Click="btnAnalyse_Click">Analyse</Button>
                     </StackPanel>
+                        <Slider Name="sldAnalyseTimebase" Minimum="1" Maximum="256" Value="64" />
+                    </StackPanel>
                     <GroupBox Header="tones" Grid.Row="1">
-                        <dl:ToneDisplay x:Name="tones" ScrollChanged="tones_ScrollChanged" />
+                        <dl:ToneDisplay x:Name="tones" ScrollChanged="tones_ScrollChanged" Timebase="{Binding ElementName=sldAnalyseTimebase, Path=Value}" Tones="{Binding Analyser.Tones}" />
                     </GroupBox>
                     <GroupBox Header="spectrum" Grid.Row="2">
-                        <dl:Spectrum x:Name="grhSpectrum" ScrollChanged="grhSpectrum_ScrollChanged" />
+                        <dl:Spectrum x:Name="grhSpectrum" ScrollChanged="grhSpectrum_ScrollChanged" Timebase="{Binding ElementName=sldAnalyseTimebase, Path=Value}" Data="{Binding Audio.Spectrum}" />
                     </GroupBox>
                 </Grid>
             </TabItem>
