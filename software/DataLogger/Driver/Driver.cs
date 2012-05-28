@@ -7,7 +7,7 @@ using LibUsbDotNet.Main;
 
 namespace DataLogger
 {
-    class Driver
+    class Driver : IDriver
     {
         public const int VID = 0x04D8;
         public const int PID = 0x000C;
@@ -22,16 +22,34 @@ namespace DataLogger
 
         UsbTransferQueue queue;
 
+        public bool IsOpen
+        {
+            get
+            {
+                return device.IsOpen;
+            }
+        }
+
         public Driver()
         {
         }
 
-        public void Open()
+        public bool CheckDevicePresent()
         {
             device = UsbDevice.OpenUsbDevice(finder);
 
-            // If the device is open and ready
-            if (device == null) throw new Exception("Device Not Found.");
+            return (device != null);
+        }
+
+        public void Open()
+        {
+            if (!CheckDevicePresent())
+            {
+                throw new DeviceNotFoundException("Could not find device");
+            }
+
+            device = UsbDevice.OpenUsbDevice(finder);
+
 
             bulkWriter = device.OpenEndpointWriter(WriteEndpointID.Ep01, EndpointType.Bulk);
             bulkReader = device.OpenEndpointReader(ReadEndpointID.Ep01, 64, EndpointType.Bulk);
@@ -39,13 +57,13 @@ namespace DataLogger
 
         public void Close()
         {
-            if (device.IsOpen)
+            if (device != null && device.IsOpen)
                 device.Close();
         }
 
-        public byte[] SendCommand(byte command, int responseLength)
+        public byte[] SendCommand(COMMANDS command, int responseLength)
         {
-            return SendCommand(new byte[] { command }, responseLength);
+            return SendCommand(new byte[] { (byte)command }, responseLength);
         }
 
         public byte[] SendCommand(byte[] command, int responseLength)
@@ -59,7 +77,15 @@ namespace DataLogger
 
             while (received < responseLength)
             {
-                bulkReader.Read(buffer, RW_TIMEOUT, out count);
+                try
+                {
+                    bulkReader.Read(buffer, RW_TIMEOUT, out count);
+                }
+                catch (ObjectDisposedException ex)
+                {
+                    throw new DriverException("Read aborted by disconnect", ex);
+                }
+
                 received += count;
             }
 

@@ -36,11 +36,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Exocortex.DSP, Version=1.0.1373.38032, Culture=neutral" />
     <Reference Include="LibUsbDotNet">
       <HintPath>C:\Program Files\LibUsbDotNet\LibUsbDotNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -58,11 +61,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Graph.xaml">
+    <Page Include="UI\ToneDisplay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="wndMain.xaml">
+    <Page Include="UI\Graph.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Spectrum.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\wndMain.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -70,12 +81,26 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Driver.cs" />
-    <Compile Include="Graph.xaml.cs">
+    <Compile Include="AudioProcessor.cs" />
+    <Compile Include="Driver\DeviceMonitor.cs" />
+    <Compile Include="Driver\Driver.cs" />
+    <Compile Include="DTMFAnalysis.cs" />
+    <Compile Include="TelephoneLogger.cs" />
+    <Compile Include="UI\ToneDisplay.xaml.cs">
+      <DependentUpon>ToneDisplay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Graph.xaml.cs">
       <DependentUpon>Graph.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PercentageConverter.cs" />
-    <Compile Include="wndMain.xaml.cs">
+    <Compile Include="Driver\IDriver.cs" />
+    <Compile Include="Driver\MockDriver.cs" />
+    <Compile Include="UI\PercentageConverter.cs" />
+    <Compile Include="UI\CaseConverters.cs" />
+    <Compile Include="UI\Spectrum.xaml.cs">
+      <DependentUpon>Spectrum.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WaveFile.cs" />
+    <Compile Include="UI\wndMain.xaml.cs">
       <DependentUpon>wndMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -103,6 +128,12 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libraries\Exocortex.DSP.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

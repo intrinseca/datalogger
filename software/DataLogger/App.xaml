@@ -1,8 +1,22 @@
 ﻿<Application x:Class="DataLogger.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="wndMain.xaml">
+             StartupUri="UI/wndMain.xaml">
     <Application.Resources>
-         
+        <Color R="31" G="150" B="191" A="255" x:Key="AccentBlue" />
+        <Color R="129" G="54" B="245" A="255" x:Key="AccentPurple" />
+        <Color R="204" G="38" B="38" A="255" x:Key="AccentRed" />
+        <Color R="19" G="181" B="31" A="255" x:Key="AccentGreen" />
+        <Color R="252" G="235" B="27" A="255" x:Key="AccentYellow" />
+        <Color R="241" G="255" B="252" A="255" x:Key="Light" />
+        <Color R="13" G="26" B="28" A="255" x:Key="Dark" />
+
+        <SolidColorBrush Color="{StaticResource AccentBlue}" x:Key="AccentBlueBrush" />
+        <SolidColorBrush Color="{StaticResource AccentPurple}" x:Key="AccentPurpleBrush" />
+        <SolidColorBrush Color="{StaticResource AccentRed}" x:Key="AccentRedBrush" />
+        <SolidColorBrush Color="{StaticResource AccentGreen}" x:Key="AccentGreenBrush" />
+        <SolidColorBrush Color="{StaticResource AccentYellow}" x:Key="AccentYellowBrush" />
+        <SolidColorBrush Color="{StaticResource Light}" x:Key="LightBrush" />
+        <SolidColorBrush Color="{StaticResource Dark}" x:Key="DarkBrush" />
     </Application.Resources>
 </Application>
