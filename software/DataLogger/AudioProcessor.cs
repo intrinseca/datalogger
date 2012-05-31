@@ -91,6 +91,12 @@ namespace DataLogger
             return (x & (x - 1)) == 0;
         }
 
+        private float hammingWindow(int n, int N)
+        {
+            float w  = (float)(0.5 * (1.0 - Math.Cos((2 * Math.PI * n) / (N - 1))));
+            return w;
+        }
+
         /// <summary>
         /// Calculate the spectrum of the signal, in blocks of BlockSize
         /// </summary>
@@ -98,13 +104,18 @@ namespace DataLogger
         {
             ComplexF[] data = new ComplexF[BlockSize];
 
+            int j = 0;
+            float w;
+
             while (blockStart + BlockSize < Samples.Count)
             {
                 float[] result = new float[BlockSize];
 
                 for (int i = 0; i < BlockSize; i++)
                 {
-                    data[i].Re = (float)(Samples[blockStart + i] / (float)short.MaxValue);
+                    w = hammingWindow(i, BlockSize);
+
+                    data[i].Re = w * (float)(Samples[blockStart + i] / (float)short.MaxValue);
                     data[i].Im = 0.0f;
                 }
 
@@ -117,6 +128,7 @@ namespace DataLogger
 
                 Spectrum.Add(result);
                 blockStart += BlockSize;
+                j++;
             }
 
             return blockStart;

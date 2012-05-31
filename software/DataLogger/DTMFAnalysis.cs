@@ -67,7 +67,8 @@ namespace DataLogger
 
     public class DTMFAnalysis
     {
-        const float THRESHOLD = 4.0f;
+        const float RATIO_THRESHOLD = 4.0f;
+        const float ABS_THRESHOLD = 0.01f;
 
         public ObservableCollection<Tone> Tones { get; set; }
 
@@ -153,7 +154,7 @@ namespace DataLogger
             float max = magnitudes.Max();
             float min = magnitudes.Min();
 
-            if (max / min > THRESHOLD)
+            if (max / min > RATIO_THRESHOLD && max > ABS_THRESHOLD)
                 tone = findValue(max, magnitudes);
 
             return tone;

@@ -14,7 +14,7 @@ namespace DataLogger
 
         long startTicks;
 
-        double previousTime;
+        double t;
 
         Random r = new Random();
 
@@ -46,10 +46,6 @@ namespace DataLogger
 
         public byte[] SendCommand(COMMANDS command, int responseLength)
         {
-            double currentTime = (System.DateTime.Now.Ticks - startTicks) / 10000000.0;
-            var t = previousTime;
-            previousTime = currentTime;
-
             byte[] response = new byte[responseLength];
             response[0] = (byte)command;
 
@@ -60,14 +56,14 @@ namespace DataLogger
 
                     int i;
 
-                    for (i = 2; (i < responseLength && t < currentTime); i++)
+                    for (i = 2; i < responseLength; i++)
                     {
                         audio = 128.0 + 50.0 * Math.Sin(2.0 * Math.PI * f1 * t) + 50.0 * Math.Sin(2.0 * Math.PI * f2 * t) + (sigma * (r.NextDouble() - 0.5));
                         //audio = 128.0 + 10 * (sigma * (r.NextDouble() - 0.5));
 
                         response[i] = (byte)audio;
 
-                        t += 1.0 / 8192.0;
+                        t += 1.0 / TelephoneLogger.SAMPLING_RATE;
                     }
 
                     response[1] = (byte)i;
