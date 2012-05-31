@@ -3,11 +3,59 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using WPFSoundVisualizationLib;
+using System.ComponentModel;
+using NAudio.Wave;
+using NAudio.CoreAudioApi;
 
 namespace DataLogger
 {
-    class WaveFile
+    class WaveFile : ISoundPlayer, IWaveformPlayer
     {
+        IWavePlayer waveOutDevice;
+        WaveStream mainOutputStream;
+
+        public WaveFile()
+        {
+            waveOutDevice = new DirectSoundOut();
+        }
+
+        public void Play(AudioProcessor audio)
+        {
+            var format = new WaveFormat(TelephoneLogger.SAMPLING_RATE, 8, 1);
+            var reader = new WaveFileReader(WriteWav(audio.Samples));
+            var stream = new WaveChannel32(reader);
+
+            waveOutDevice.Init(stream);
+            waveOutDevice.Play();
+        }
+
+        private WaveStream CreateInputStream(string fileName)
+        {
+            WaveChannel32 inputStream;
+            if (fileName.EndsWith(".wav"))
+            {
+                WaveStream readerStream = new WaveFileReader(fileName);
+                if (readerStream.WaveFormat.Encoding != WaveFormatEncoding.Pcm)
+                {
+                    readerStream = WaveFormatConversionStream.CreatePcmStream(readerStream);
+                    readerStream = new BlockAlignReductionStream(readerStream);
+                }
+                if (readerStream.WaveFormat.BitsPerSample != 16)
+                {
+                    var format = new WaveFormat(readerStream.WaveFormat.SampleRate,
+                       16, readerStream.WaveFormat.Channels);
+                    readerStream = new WaveFormatConversionStream(format, readerStream);
+                }
+                inputStream = new WaveChannel32(readerStream);
+            }
+            else
+            {
+                throw new InvalidOperationException("Unsupported extension");
+            }
+            return inputStream;
+        }
+
         public static byte[] GetSamples(string file)
         {
             byte[] byteArray;
@@ -67,7 +115,62 @@ namespace DataLogger
                 writer.Write((byte)(sample + 128));
             }
 
+            ms.Seek(0, SeekOrigin.Begin);
+
             return ms;
+        }
+
+        public bool IsPlaying
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public double ChannelLength
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public double ChannelPosition
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public TimeSpan SelectionBegin
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public TimeSpan SelectionEnd
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public float[] WaveformData
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 }

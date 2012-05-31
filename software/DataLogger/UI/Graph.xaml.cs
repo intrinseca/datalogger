@@ -58,22 +58,30 @@ namespace DataLogger
         {
             var g = (Graph)sender;
 
-            if(g.Data != null)
+            if (g.Data != null)
                 g.Data.CollectionChanged += new NotifyCollectionChangedEventHandler(g.Data_CollectionChanged);
         }
 
         void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Add)
+            switch (e.Action)
             {
-                int t = e.NewStartingIndex;
+                case NotifyCollectionChangedAction.Add:
+                    int t = e.NewStartingIndex;
 
-                foreach (short item in e.NewItems)
-                {
-                    AddPoint(t, item, true);
-                    t++;
-                }
+                    foreach (short item in e.NewItems)
+                    {
+                        AddPoint(t, item, true);
+                        t++;
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    ClearPoints();
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
+
         }
 
         public void AddPoint(int t, short y, bool trim = true)

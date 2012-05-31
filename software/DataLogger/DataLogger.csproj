@@ -36,9 +36,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Bass.Net, Version=2.4.7.1, Culture=neutral, PublicKeyToken=b7566c273e6ef480, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\Bass.Net.dll</HintPath>
+    </Reference>
     <Reference Include="Exocortex.DSP, Version=1.0.1373.38032, Culture=neutral" />
     <Reference Include="LibUsbDotNet">
       <HintPath>C:\Program Files\LibUsbDotNet\LibUsbDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio, Version=1.5.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\NAudio.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -55,6 +63,10 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WPFSoundVisualizationLib, Version=0.3.4442.43191, Culture=neutral, PublicKeyToken=eb44ed7102b4fcc1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\WPFSoundVisualizationLib.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -134,7 +146,12 @@
     <Resource Include="Images\icon.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Libraries\bass.dll" />
+    <Content Include="Libraries\Bass.Net.dll" />
+    <Content Include="Libraries\bass_aac.dll" />
     <Content Include="Libraries\Exocortex.DSP.dll" />
+    <Content Include="Libraries\NAudio.dll" />
+    <Content Include="Libraries\WPFSoundVisualizationLib.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

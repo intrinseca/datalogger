@@ -121,20 +121,23 @@ namespace DataLogger
 
         private void btnPlay_Click(object sender, RoutedEventArgs e)
         {
-            var s = new SoundPlayer();
+            var w = new WaveFile();
+            w.Play(tLogger.Audio);
 
-            var data = WaveFile.WriteWav(tLogger.Audio.Samples);
+            //var s = new SoundPlayer();
 
-            data.Seek(0, SeekOrigin.Begin);
+            //var data = WaveFile.WriteWav(tLogger.Audio.Samples);
 
-            var file = new FileStream("test.wav", FileMode.OpenOrCreate);
-            data.CopyTo(file);
-            file.Close();
+            //data.Seek(0, SeekOrigin.Begin);
+
+            //var file = new FileStream("test.wav", FileMode.OpenOrCreate);
+            //data.CopyTo(file);
+            //file.Close();
             
-            data.Seek(0, SeekOrigin.Begin);
+            //data.Seek(0, SeekOrigin.Begin);
 
-            s.Stream = data;
-            s.Play();
+            //s.Stream = data;
+            //s.Play();
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
