@@ -72,7 +72,11 @@ namespace DataLogger
 
         private void refresh()
         {
-            int width = (int)Timebase;
+            if (Tones == null)
+                return;
+
+            //int width = (int)Timebase;
+            double width = Timebase;
 
             grdTones.Children.Clear();
 

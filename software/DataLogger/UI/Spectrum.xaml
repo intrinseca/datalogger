@@ -6,6 +6,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Disabled" Name="scroll" ScrollChanged="ScrollViewer_ScrollChanged">
-        <Image Name="imgSpectrum" VerticalAlignment="Stretch" Stretch="None" HorizontalAlignment="Left"  />        
+        <StackPanel Orientation="Horizontal" UseLayoutRounding="False" Name="stkSpectrum" Background="Blue" />
     </ScrollViewer>
 </UserControl>

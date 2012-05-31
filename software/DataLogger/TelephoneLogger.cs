@@ -95,5 +95,13 @@ namespace DataLogger
             Audio.ProcessSpectrum();
             Analyser.Analyse(Audio.Spectrum, Audio.SpectrumFrequencies);
         }
+
+        public void Clear()
+        {
+            Audio.Samples.Clear();
+            Audio.Spectrum.Clear();
+            Audio.SpectrumFrequencies.Clear();
+            Analyser.Tones.Clear();
+        }
     }
 }

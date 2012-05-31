@@ -33,7 +33,7 @@ namespace DataLogger
 
         public static readonly DependencyProperty BlockSizeProperty =
             DependencyProperty.Register("BlockSize", typeof(int), typeof(Spectrum), new UIPropertyMetadata(128));
-        
+
         /// <summary>
         /// The horizontal scale factor
         /// </summary>
@@ -44,8 +44,8 @@ namespace DataLogger
         }
 
         public static readonly DependencyProperty TimebaseProperty =
-            DependencyProperty.Register("Timebase", typeof(float), typeof(Spectrum), new UIPropertyMetadata(1.0f, new PropertyChangedCallback(timebaseChanged)));
-      
+            DependencyProperty.Register("Timebase", typeof(float), typeof(Spectrum), new UIPropertyMetadata(1.0f));
+
         /// <summary>
         /// The FFT data
         /// </summary>
@@ -73,13 +73,46 @@ namespace DataLogger
 
         void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            Refresh();
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                addSlice(e.NewItems);
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                for (int i = 0; i < e.OldItems.Count; i++)
+                {
+                    stkSpectrum.Children.RemoveAt(e.OldStartingIndex);
+                }
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                stkSpectrum.Children.Clear();
+                foreach (var slice in Data)
+                {
+                    addSlice(slice);
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Operation not supported by spectrogram");
+            }
         }
 
-        private static void timebaseChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private void addSlice(System.Collections.IList items)
         {
-            var s = (Spectrum)sender;
-            s.Refresh();
+            foreach (float[] slice in items)
+            {
+                var im = new Image();
+                im.Source = generateSlice(slice);
+                im.Stretch = Stretch.Fill;
+                im.Height = slice.Length;
+
+                var b = new Binding("Timebase");
+                b.Source = this;
+                im.SetBinding(Image.WidthProperty, b);
+
+                stkSpectrum.Children.Add(im);
+            }
         }
 
         /// <summary>
@@ -93,7 +126,7 @@ namespace DataLogger
             int scaledValue = (int)(1023 * value);
 
             //Flip if required
-            if(invert)
+            if (invert)
             {
                 scaledValue = 1023 - scaledValue;
             }
@@ -124,69 +157,35 @@ namespace DataLogger
             }
         }
 
-        /// <summary>
-        /// Generate the spectogram
-        /// </summary>
-        public void Refresh()
+        public BitmapSource generateSlice(float[] spectrum)
         {
-            if (Data == null || Data.Count == 0)
-            {
-                imgSpectrum.Source = null;
-                return;
-            }
-
-            //Set horizontal scale
-            int blockWidth = (int)(Timebase);
-            if (blockWidth == 0)
-                blockWidth = 1;
-
-            //Calculate dimensions
-            int imageHeight = BlockSize / 2;
-            int imageWidth = Data.Count * blockWidth;
-
+            int imageHeight = spectrum.Length / 2;
+            int imageWidth = 1;
             int stride = imageWidth * 3;
 
-            //Default magnitude scaling
-            float scale = float.MaxValue;
-
             byte[] image = new byte[stride * imageHeight];
+
+            float scale = 10.0f;
             float valueF;
 
-            //find the scale factor
-            for (int i = 0; i < Data.Count; i++)
+            //for each frequency component
+            for (int j = 0; j < imageHeight; j++)
             {
-                float newScale = 1.0f / Data[i].Max();
-                if (newScale < scale)
-                    scale = newScale;
-            }
+                //scale and clip the value
+                valueF = scale * spectrum[j];
+                if (valueF > 1.0f) valueF = 1.0f;
+                if (valueF < 0.0f) valueF = 0.0f;
 
-            //for each FFT result
-            for (int i = 0; i < Data.Count; i++)
-            {
+                //calculate colour and set pixel values
+                byte[] color = mapRainbowColor(valueF, true);
 
-                //for each frequency component
-                for (int j = 0; j < imageHeight; j++)
-                {
-                    //scale and clip the value
-                    valueF = scale * Data[i][j];
-                    if (valueF > 1.0f) valueF = 1.0f;
-                    if (valueF < 0.0f) valueF = 0.0f;
-
-                    //calculate colour and set pixel values
-                    byte[] color = mapRainbowColor(valueF, true);
-
-                    for (int k = 0; k < blockWidth; k++)
-                    {
-                        image[((imageHeight - 1 - j) * stride) + (blockWidth * i * 3) + k * 3] = color[0];
-                        image[((imageHeight - 1 - j) * stride) + (blockWidth * i * 3) + k * 3 + 1] = color[1];
-                        image[((imageHeight - 1 - j) * stride) + (blockWidth * i * 3) + k * 3 + 2] = color[2];
-                    }
-                }
+                image[((imageHeight - 1 - j) * stride)] = color[0];
+                image[((imageHeight - 1 - j) * stride) + 1] = color[1];
+                image[((imageHeight - 1 - j) * stride) + 2] = color[2];
             }
 
             //load pixel data into image
-            BitmapSource specGraph = BitmapSource.Create(imageWidth, imageHeight, 96, 96, PixelFormats.Rgb24, null, image, stride);
-            imgSpectrum.Source = specGraph;
+            return BitmapSource.Create(imageWidth, imageHeight, 96, 96, PixelFormats.Rgb24, null, image, stride);
         }
 
         private void onScrollChanged(ScrollChangedEventArgs e)

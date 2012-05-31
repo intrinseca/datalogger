@@ -139,7 +139,7 @@ namespace DataLogger
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
-            tLogger.Audio.Samples.Clear();
+            tLogger.Clear();
         }
 
         private void tones_ScrollChanged(object sender, ScrollChangedEventArgs e)
