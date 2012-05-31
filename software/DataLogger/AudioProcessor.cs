@@ -30,6 +30,9 @@ namespace DataLogger
         //Pre-calculated, 1/SamplingRate
         private double sampleInterval;
 
+        //The sample that was last converted to the spectrum
+        private int lastAnalysis = 0;
+
         /// <summary>
         /// Create a new audio interface
         /// </summary>
@@ -39,7 +42,6 @@ namespace DataLogger
         {
             Samples = new ObservableCollection<short>();
             Spectrum = new ObservableCollection<float[]>();
-            SpectrumFrequencies = new ObservableCollection<float>();
 
             SamplingFrequency = _samplingRate;
 
@@ -50,8 +52,36 @@ namespace DataLogger
 
             BlockSize = _blockSize;
 
+            SpectrumFrequencies = new ObservableCollection<float>();
+            for (int i = 0; i < (BlockSize / 2); i++)
+            {
+                SpectrumFrequencies.Add((float)((i / (float)BlockSize) * SamplingFrequency));
+            }
+
             sampleInterval = 1.0 / SamplingFrequency;
+
+            Samples.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Samples_CollectionChanged);
         }
+
+        void Samples_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    if (e.NewStartingIndex + e.NewItems.Count > (lastAnalysis + BlockSize))
+                    {
+                        lastAnalysis = ProcessSpectrum(lastAnalysis);
+                    }
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                    Spectrum.Clear();
+                    lastAnalysis = ProcessSpectrum();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }        
 
         /// <summary>
         /// Check if the parameter is a power of two
@@ -64,13 +94,9 @@ namespace DataLogger
         /// <summary>
         /// Calculate the spectrum of the signal, in blocks of BlockSize
         /// </summary>
-        public void ProcessSpectrum()
+        public int ProcessSpectrum(int blockStart = 0)
         {
-            int blockStart = 0;
-
             ComplexF[] data = new ComplexF[BlockSize];
-
-            Spectrum.Clear();
 
             while (blockStart + BlockSize < Samples.Count)
             {
@@ -93,11 +119,7 @@ namespace DataLogger
                 blockStart += BlockSize;
             }
 
-            SpectrumFrequencies.Clear();
-            for (int i = 0; i < (BlockSize / 2); i++)
-            {
-                SpectrumFrequencies.Add((float)((i / (float)BlockSize) * SamplingFrequency));
-            }
+            return blockStart;
         }
     }
 }

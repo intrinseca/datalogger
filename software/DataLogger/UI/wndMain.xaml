@@ -188,7 +188,7 @@
                         <StackPanel Orientation="Horizontal">
                             <Button Name="btnAnalyse" Click="btnAnalyse_Click">Analyse</Button>
                         </StackPanel>
-                        <Slider Name="sldAnalyseTimebase" Minimum="1" Maximum="256" Value="64" />
+                        <Slider Name="sldAnalyseTimebase" Minimum="1" Maximum="256" Value="32" />
                     </StackPanel>
 
                     <GroupBox Header="tones" Grid.Row="1">

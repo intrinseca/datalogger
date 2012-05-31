@@ -76,9 +76,10 @@ namespace DataLogger
             Tones = new ObservableCollection<Tone>();
         }
 
-        public void Analyse(IList<float[]> spectrum, IList<float> spectrumFrequencies)
+        public void Analyse(IList<float[]> spectrum, IList<float> spectrumFrequencies, int startBlock = 0)
         {
-            Tones.Clear();
+            if(startBlock == 0)
+                Tones.Clear();
 
             int[] rowIndexes = new int[DTMFFrequencies.Rows.Length];
             float[] rowMagnitudes = new float[rowIndexes.Length];
@@ -93,7 +94,7 @@ namespace DataLogger
             int row = -1, column = -1;
             int previousRow, previousColumn;
 
-            for (int block = 0; block < spectrum.Count; block++)
+            for (int block = startBlock; block < spectrum.Count; block++)
             {
                 previousRow = row;
                 previousColumn = column;

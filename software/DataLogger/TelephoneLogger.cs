@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.Timers;
+using System.Collections.Specialized;
 
 namespace DataLogger
 {
@@ -23,7 +24,7 @@ namespace DataLogger
         /// <summary>
         /// Storage and processing of audio data
         /// </summary>
-        public AudioProcessor Audio {get; private set;}
+        public AudioProcessor Audio { get; private set; }
 
         public DTMFAnalysis Analyser { get; private set; }
 
@@ -42,9 +43,19 @@ namespace DataLogger
             monitor = new DeviceMonitor(Device);
             Analyser = new DTMFAnalysis();
 
+            Audio.Spectrum.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Spectrum_CollectionChanged);
+
             pollTimer = new Timer(4);
             pollTimer.AutoReset = true;
             pollTimer.Elapsed += new ElapsedEventHandler(pollTimer_Elapsed);
+        }
+
+        void Spectrum_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                Analyser.Analyse(Audio.Spectrum, Audio.SpectrumFrequencies, e.NewStartingIndex);
+            }
         }
 
         void pollTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -92,15 +103,13 @@ namespace DataLogger
 
         public void UpdateAnalysis()
         {
-            Audio.ProcessSpectrum();
+            //Audio.ProcessSpectrum();
             Analyser.Analyse(Audio.Spectrum, Audio.SpectrumFrequencies);
         }
 
         public void Clear()
         {
             Audio.Samples.Clear();
-            Audio.Spectrum.Clear();
-            Audio.SpectrumFrequencies.Clear();
             Analyser.Tones.Clear();
         }
     }

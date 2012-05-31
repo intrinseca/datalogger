@@ -44,7 +44,7 @@ namespace DataLogger
         }
 
         public static readonly DependencyProperty TimebaseProperty =
-            DependencyProperty.Register("Timebase", typeof(float), typeof(Spectrum), new UIPropertyMetadata(1.0f));
+            DependencyProperty.Register("Timebase", typeof(float), typeof(Spectrum), new UIPropertyMetadata(1.0f));        
 
         /// <summary>
         /// The FFT data
@@ -75,7 +75,7 @@ namespace DataLogger
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                addSlice(e.NewItems);
+                addSlices(e.NewItems);
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
@@ -89,7 +89,7 @@ namespace DataLogger
                 stkSpectrum.Children.Clear();
                 foreach (var slice in Data)
                 {
-                    addSlice(slice);
+                    addSlices(slice);
                 }
             }
             else
@@ -98,7 +98,7 @@ namespace DataLogger
             }
         }
 
-        private void addSlice(System.Collections.IList items)
+        private void addSlices(System.Collections.IList items)
         {
             foreach (float[] slice in items)
             {
