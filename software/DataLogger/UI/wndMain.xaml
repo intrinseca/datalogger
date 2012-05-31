@@ -5,7 +5,7 @@
         Title="USB Data Logger" Height="450" Width="695"
         UseLayoutRounding="True"
         Background="{StaticResource LightBrush}" 
-        Foreground="{StaticResource DarkBrush}" Icon="/DataLogger;component/Images/icon.png">
+        Foreground="{StaticResource DarkBrush}" Icon="/DataLogger;component/Images/icon.png" WindowState="Maximized">
 
     <Window.Resources>
         <dl:UpperCaseConverter x:Key="UpperCaseConverter" />
@@ -114,6 +114,7 @@
                     </Setter>
                 </Style>
             </ControlTemplate.Resources>
+            
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -184,14 +185,31 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal">
-                        <Button Name="btnAnalyse" Click="btnAnalyse_Click">Analyse</Button>
-                    </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Name="btnAnalyse" Click="btnAnalyse_Click">Analyse</Button>
+                        </StackPanel>
                         <Slider Name="sldAnalyseTimebase" Minimum="1" Maximum="256" Value="64" />
                     </StackPanel>
+
                     <GroupBox Header="tones" Grid.Row="1">
-                        <dl:ToneDisplay x:Name="tones" ScrollChanged="tones_ScrollChanged" Timebase="{Binding ElementName=sldAnalyseTimebase, Path=Value}" Tones="{Binding Analyser.Tones}" />
+                        <DockPanel>
+                            <ListBox ItemsSource="{Binding Analyser.Tones}" DockPanel.Dock="Top">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel IsItemsHost="True" Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate DataType="dl:Tone">
+                                        <TextBlock Text="{Binding KeyString}" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <dl:ToneDisplay x:Name="tones" ScrollChanged="tones_ScrollChanged" Timebase="{Binding ElementName=sldAnalyseTimebase, Path=Value}" Tones="{Binding Analyser.Tones}" />
+                        </DockPanel>
                     </GroupBox>
+
                     <GroupBox Header="spectrum" Grid.Row="2">
                         <dl:Spectrum x:Name="grhSpectrum" ScrollChanged="grhSpectrum_ScrollChanged" Timebase="{Binding ElementName=sldAnalyseTimebase, Path=Value}" Data="{Binding Audio.Spectrum}" />
                     </GroupBox>

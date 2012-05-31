@@ -85,7 +85,7 @@ namespace DataLogger
                 var b = new Border();
 
                 var t = new TextBlock();
-                t.Text = tone.KeyString();
+                t.Text = tone.KeyString;
 
                 b.Margin = new Thickness(width * tone.StartBlock, 0, 0, 0);
                 b.Width = width * tone.Duration;
