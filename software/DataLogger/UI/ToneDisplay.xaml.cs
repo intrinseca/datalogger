@@ -88,7 +88,12 @@ namespace DataLogger
                 t.Text = tone.KeyString;
 
                 b.Margin = new Thickness(width * tone.StartBlock, 0, 0, 0);
-                b.Width = width * tone.Duration;
+
+                var binding = new Binding("Duration");
+                binding.Source = tone;
+                binding.Converter = new MultiplyConverter();
+                binding.ConverterParameter = width;
+                b.SetBinding(Border.WidthProperty, binding);
 
                 b.Child = t;
                 grdTones.Children.Add(b);

@@ -86,6 +86,7 @@
     <Compile Include="Driver\Driver.cs" />
     <Compile Include="DTMFAnalysis.cs" />
     <Compile Include="TelephoneLogger.cs" />
+    <Compile Include="UI\MultiplyConverter.cs" />
     <Compile Include="UI\ToneDisplay.xaml.cs">
       <DependentUpon>ToneDisplay.xaml</DependentUpon>
     </Compile>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace DataLogger
 {
@@ -43,13 +44,28 @@ namespace DataLogger
         }
     }
 
-    public class Tone
+    public class Tone : INotifyPropertyChanged
     {
         public int StartBlock;
         public DTMFTones Key;
-        public int Duration;
+
+        private int m_Duration;
+        public int Duration
+        {
+            get
+            {
+                return m_Duration;
+            }
+            set 
+            {
+                m_Duration = value;
+                OnPropertyChanged("Duration");
+            }
+        }
 
         private string[] keyStrings = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#" };
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public string KeyString
         {
@@ -62,6 +78,12 @@ namespace DataLogger
         public override string ToString()
         {
             return string.Format("{0}-{1}: {2}", StartBlock, StartBlock + Duration, Key.ToString());
+        }
+
+        private void OnPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
     }
 
@@ -79,7 +101,7 @@ namespace DataLogger
 
         public void Analyse(IList<float[]> spectrum, IList<float> spectrumFrequencies, int startBlock = 0)
         {
-            if(startBlock == 0)
+            if (startBlock == 0)
                 Tones.Clear();
 
             int[] rowIndexes = new int[DTMFFrequencies.Rows.Length];
@@ -87,35 +109,30 @@ namespace DataLogger
 
             int[] columnIndexes = new int[DTMFFrequencies.Columns.Length];
             float[] columnMagnitudes = new float[columnIndexes.Length];
-                        
+
             //calculate the indexes into spectrum for the row and column frequencies
             rowIndexes = findFrequencies(spectrumFrequencies, DTMFFrequencies.Rows);
             columnIndexes = findFrequencies(spectrumFrequencies, DTMFFrequencies.Columns);
 
             int row = -1, column = -1;
-            int previousRow, previousColumn;
 
             for (int block = startBlock; block < spectrum.Count; block++)
             {
-                previousRow = row;
-                previousColumn = column;
 
                 row = findTone(spectrum[block], rowIndexes);
                 column = findTone(spectrum[block], columnIndexes);
 
                 if (row != -1 && column != -1)
                 {
-                    //found a tone
-                    if ((row != previousRow || column != previousColumn))
+                    int x = row * DTMFFrequencies.Columns.Length + column;
+
+                    if (Tones.Count > 0 && (int)Tones[Tones.Count - 1].Key == x)
                     {
-                        //tone has changed
-                        int x = row * DTMFFrequencies.Columns.Length + column;
-                        Tones.Add(new Tone() { StartBlock = block, Key = (DTMFTones)x, Duration = 1 });
+                        Tones[Tones.Count - 1].Duration++;
                     }
                     else
                     {
-                        //same tone
-                        Tones[Tones.Count - 1].Duration++;
+                        Tones.Add(new Tone() { StartBlock = block, Key = (DTMFTones)x, Duration = 1 });
                     }
                 }
             }
