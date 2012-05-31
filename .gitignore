@@ -13,3 +13,4 @@ firmware/DataLogger.X/dist/*
 firmware/DataLogger.X/nbproject/Makefile*
 firmware/DataLogger.X/nbproject/private/*
 firmware/nbproject/private/*
+libraries/*

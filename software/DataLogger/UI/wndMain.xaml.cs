@@ -43,8 +43,8 @@ namespace DataLogger
             poll.Tick += new EventHandler(poll_Tick);
 
             IsPolling = false;
-            
-            grhSpectrum.BlockSize = tLogger.Audio.BlockSize;
+
+            tones.BlockSize = tLogger.Audio.BlockSize;
 
             this.DataContext = tLogger;
         }
@@ -72,16 +72,6 @@ namespace DataLogger
             tLogger.PollDevice();
 
             short sample = tLogger.Audio.Samples[tLogger.Audio.Samples.Count - 1];
-
-            sldValue.Value = sample;
-
-            //TODO: Add all recently added samples
-            //gphData.AddPoint(t, sample);
-        }
-
-        private void sldPoll_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            poll.Interval = new TimeSpan(0, 0, 0, 0, (int)sldPoll.Value);
         }
 
         private void btnStopSampling_Click(object sender, RoutedEventArgs e)
@@ -121,20 +111,7 @@ namespace DataLogger
 
         private void btnPlay_Click(object sender, RoutedEventArgs e)
         {
-            var s = new SoundPlayer();
-
-            var data = WaveFile.WriteWav(tLogger.Audio.Samples);
-
-            data.Seek(0, SeekOrigin.Begin);
-
-            var file = new FileStream("test.wav", FileMode.OpenOrCreate);
-            data.CopyTo(file);
-            file.Close();
-            
-            data.Seek(0, SeekOrigin.Begin);
-
-            s.Stream = data;
-            s.Play();
+            tLogger.Audio.Play();
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
@@ -150,6 +127,11 @@ namespace DataLogger
         private void grhSpectrum_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             tones.ScrollTo(e.HorizontalOffset);
+        }
+
+        private void btnStop_Click(object sender, RoutedEventArgs e)
+        {
+            tLogger.Audio.Stop();
         }
     }
 }

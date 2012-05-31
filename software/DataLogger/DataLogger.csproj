@@ -40,6 +40,10 @@
     <Reference Include="LibUsbDotNet">
       <HintPath>C:\Program Files\LibUsbDotNet\LibUsbDotNet.dll</HintPath>
     </Reference>
+    <Reference Include="NAudio, Version=1.5.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -65,10 +69,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Graph.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="UI\Spectrum.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -90,9 +90,6 @@
     <Compile Include="UI\ToneDisplay.xaml.cs">
       <DependentUpon>ToneDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Graph.xaml.cs">
-      <DependentUpon>Graph.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Driver\IDriver.cs" />
     <Compile Include="Driver\MockDriver.cs" />
     <Compile Include="UI\PercentageConverter.cs" />
@@ -100,7 +97,7 @@
     <Compile Include="UI\Spectrum.xaml.cs">
       <DependentUpon>Spectrum.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WaveFile.cs" />
+    <Compile Include="ArrayWaveProvider.cs" />
     <Compile Include="UI\wndMain.xaml.cs">
       <DependentUpon>wndMain.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -134,7 +131,12 @@
     <Resource Include="Images\icon.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Libraries\bass.dll" />
+    <Content Include="Libraries\Bass.Net.dll" />
+    <Content Include="Libraries\bass_aac.dll" />
     <Content Include="Libraries\Exocortex.DSP.dll" />
+    <Content Include="Libraries\NAudio.dll" />
+    <Content Include="Libraries\WPFSoundVisualizationLib.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
