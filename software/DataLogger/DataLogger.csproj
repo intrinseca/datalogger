@@ -36,10 +36,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Bass.Net, Version=2.4.7.1, Culture=neutral, PublicKeyToken=b7566c273e6ef480, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Bass.Net.dll</HintPath>
-    </Reference>
     <Reference Include="Exocortex.DSP, Version=1.0.1373.38032, Culture=neutral" />
     <Reference Include="LibUsbDotNet">
       <HintPath>C:\Program Files\LibUsbDotNet\LibUsbDotNet.dll</HintPath>
@@ -63,10 +59,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="WPFSoundVisualizationLib, Version=0.3.4442.43191, Culture=neutral, PublicKeyToken=eb44ed7102b4fcc1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\WPFSoundVisualizationLib.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -74,10 +66,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="UI\ToneDisplay.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Graph.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -102,9 +90,6 @@
     <Compile Include="UI\ToneDisplay.xaml.cs">
       <DependentUpon>ToneDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Graph.xaml.cs">
-      <DependentUpon>Graph.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Driver\IDriver.cs" />
     <Compile Include="Driver\MockDriver.cs" />
     <Compile Include="UI\PercentageConverter.cs" />
@@ -112,7 +97,7 @@
     <Compile Include="UI\Spectrum.xaml.cs">
       <DependentUpon>Spectrum.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WaveFile.cs" />
+    <Compile Include="ArrayWaveProvider.cs" />
     <Compile Include="UI\wndMain.xaml.cs">
       <DependentUpon>wndMain.xaml</DependentUpon>
       <SubType>Code</SubType>

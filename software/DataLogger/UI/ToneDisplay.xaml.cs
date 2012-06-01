@@ -21,6 +21,16 @@ namespace DataLogger
     /// </summary>
     public partial class ToneDisplay : UserControl
     {
+        public int BlockSize
+        {
+            get { return (int)GetValue(BlockSizeProperty); }
+            set { SetValue(BlockSizeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for BlockSize.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty BlockSizeProperty =
+            DependencyProperty.Register("BlockSize", typeof(int), typeof(ToneDisplay), new UIPropertyMetadata(0));
+              
         public float Timebase
         {
             get { return (float)GetValue(TimebaseProperty); }
@@ -76,7 +86,7 @@ namespace DataLogger
                 return;
 
             //int width = (int)Timebase;
-            double width = Timebase;
+            double width = Timebase * BlockSize;
 
             grdTones.Children.Clear();
 

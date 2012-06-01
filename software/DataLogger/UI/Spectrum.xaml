@@ -6,6 +6,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Disabled" Name="scroll" ScrollChanged="ScrollViewer_ScrollChanged">
-        <StackPanel Orientation="Horizontal" UseLayoutRounding="False" Name="stkSpectrum" Background="Blue" />
+        <Grid PreviewMouseDown="grdSpectrum_PreviewMouseDown" PreviewMouseUp="grdSpectrum_PreviewMouseUp" PreviewMouseMove="grdSpectrum_PreviewMouseMove" Name="grdSpectrum">            
+            <StackPanel Orientation="Horizontal" UseLayoutRounding="False" Name="stkSpectrum" Background="Blue" />
+            <Border Width="2" Background="White" Name="bdrCursor" HorizontalAlignment="Left" />
+        </Grid>
     </ScrollViewer>
 </UserControl>

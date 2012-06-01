@@ -92,13 +92,7 @@ namespace DataLogger
         public void LoadFile(string filePath)
         {
             Audio.Samples.Clear();
-
-            byte[] data = WaveFile.GetSamples(filePath);
-
-            foreach (byte sample in data)
-            {
-                Audio.Samples.Add((short)(128 - sample));
-            }
+            Audio.LoadFile(filePath);
         }
 
         public void UpdateAnalysis()

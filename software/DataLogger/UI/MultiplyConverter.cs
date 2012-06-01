@@ -10,7 +10,16 @@ namespace DataLogger
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return (int)value * (double)parameter;
+            double dParam = (double)parameter;
+
+            if (value.GetType() == typeof(int))
+                return (int)value * dParam;
+            if (value.GetType() == typeof(float))
+                return (float)value * dParam;
+            else
+                return (double)value * dParam;
+
+
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

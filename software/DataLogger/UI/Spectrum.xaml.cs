@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.IO;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace DataLogger
 {
@@ -22,20 +23,11 @@ namespace DataLogger
     /// </summary>
     public partial class Spectrum : UserControl
     {
-        /// <summary>
-        /// The length of the FFT block that was used to calculate the FFT
-        /// </summary>
-        public int BlockSize
-        {
-            get { return (int)GetValue(BlockSizeProperty); }
-            set { SetValue(BlockSizeProperty, value); }
-        }
-
         public static readonly DependencyProperty BlockSizeProperty =
             DependencyProperty.Register("BlockSize", typeof(int), typeof(Spectrum), new UIPropertyMetadata(128));
 
         /// <summary>
-        /// The horizontal scale factor
+        /// The horizontal scale factor, pixels per sample
         /// </summary>
         public float Timebase
         {
@@ -44,34 +36,52 @@ namespace DataLogger
         }
 
         public static readonly DependencyProperty TimebaseProperty =
-            DependencyProperty.Register("Timebase", typeof(float), typeof(Spectrum), new UIPropertyMetadata(1.0f));        
+            DependencyProperty.Register("Timebase", typeof(float), typeof(Spectrum), new UIPropertyMetadata(1.0f));
 
-        /// <summary>
-        /// The FFT data
-        /// </summary>
-        public ObservableCollection<float[]> Data
+        public AudioProcessor Audio
         {
-            get { return (ObservableCollection<float[]>)GetValue(DataProperty); }
-            set { SetValue(DataProperty, value); }
+            get { return (AudioProcessor)GetValue(AudioProperty); }
+            set { SetValue(AudioProperty, value); }
         }
 
-        public static readonly DependencyProperty DataProperty =
-            DependencyProperty.Register("Data", typeof(ObservableCollection<float[]>), typeof(Spectrum), new UIPropertyMetadata(null, new PropertyChangedCallback(dataChanged)));
+        public static readonly DependencyProperty AudioProperty =
+            DependencyProperty.Register("Audio", typeof(AudioProcessor), typeof(Spectrum), new UIPropertyMetadata(null, new PropertyChangedCallback(audioChanged)));
+
+        bool restartOnMouseUp;
 
         public event ScrollChangedEventHandler ScrollChanged;
+        private bool dragging;
 
         public Spectrum()
         {
             InitializeComponent();
         }
 
-        private static void dataChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void audioChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var s = (Spectrum)sender;
-            s.Data.CollectionChanged += new NotifyCollectionChangedEventHandler(s.Data_CollectionChanged);
+
+            if (s.Audio != null)
+            {
+                s.Audio.Spectrum.CollectionChanged += new NotifyCollectionChangedEventHandler(s.Spectrum_CollectionChanged);
+                s.Audio.PropertyChanged += new PropertyChangedEventHandler(s.Audio_PropertyChanged);
+            }
+
         }
 
-        void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        void Audio_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "ChannelPosition":
+                    bdrCursor.Margin = new Thickness(Timebase * Audio.ChannelPosition * Audio.SamplingFrequency, 0, 0, 0);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void Spectrum_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
@@ -87,7 +97,7 @@ namespace DataLogger
             else if (e.Action == NotifyCollectionChangedAction.Reset)
             {
                 stkSpectrum.Children.Clear();
-                foreach (var slice in Data)
+                foreach (var slice in Audio.Spectrum)
                 {
                     addSlices(slice);
                 }
@@ -109,6 +119,8 @@ namespace DataLogger
 
                 var b = new Binding("Timebase");
                 b.Source = this;
+                b.Converter = new MultiplyConverter();
+                b.ConverterParameter = (double)Audio.BlockSize;
                 im.SetBinding(Image.WidthProperty, b);
 
                 stkSpectrum.Children.Add(im);
@@ -202,6 +214,45 @@ namespace DataLogger
         public void ScrollTo(double offset)
         {
             scroll.ScrollToHorizontalOffset(offset);
+        }
+
+        private void grdSpectrum_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            repositionCursor(e);
+
+            if (Audio.IsPlaying)
+            {
+                Audio.Pause();
+                restartOnMouseUp = true;
+            }
+
+            dragging = true;
+        }
+
+        private void repositionCursor(MouseEventArgs e)
+        {
+            var position = e.GetPosition(grdSpectrum);
+            var time = position.X / (Timebase * Audio.SamplingFrequency);
+            Audio.ChannelPosition = time;
+        }
+
+        private void grdSpectrum_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (restartOnMouseUp)
+            {
+                restartOnMouseUp = false;
+                Audio.Play();
+            }
+
+            dragging = false;
+        }
+
+        private void grdSpectrum_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && dragging)
+            {
+                repositionCursor(e);
+            }
         }
     }
 }
