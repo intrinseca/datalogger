@@ -23,9 +23,6 @@ namespace DataLogger
     /// </summary>
     public partial class Spectrum : UserControl
     {
-        public static readonly DependencyProperty BlockSizeProperty =
-            DependencyProperty.Register("BlockSize", typeof(int), typeof(Spectrum), new UIPropertyMetadata(128));
-
         /// <summary>
         /// The horizontal scale factor, pixels per sample
         /// </summary>
@@ -38,6 +35,9 @@ namespace DataLogger
         public static readonly DependencyProperty TimebaseProperty =
             DependencyProperty.Register("Timebase", typeof(float), typeof(Spectrum), new UIPropertyMetadata(1.0f));
 
+        /// <summary>
+        /// The source AudioProcessor that manages playback and contains the audio data
+        /// </summary>
         public AudioProcessor Audio
         {
             get { return (AudioProcessor)GetValue(AudioProperty); }
@@ -47,33 +47,55 @@ namespace DataLogger
         public static readonly DependencyProperty AudioProperty =
             DependencyProperty.Register("Audio", typeof(AudioProcessor), typeof(Spectrum), new UIPropertyMetadata(null, new PropertyChangedCallback(audioChanged)));
 
+        //Whether audio was paused by a click and should be restarted on mouse up
         bool restartOnMouseUp;
 
-        public event ScrollChangedEventHandler ScrollChanged;
-        private bool dragging;
+        //Whether the mouse was pressed over the control, and therefore mousemove events should be interpreted as dragging
+        bool dragging;
 
+        /// <summary>
+        /// Raised when the internal ScrollViewer is scrolled
+        /// </summary>
+        public event ScrollChangedEventHandler ScrollChanged;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public Spectrum()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Callback for when the source AudioProcessor is changed
+        /// <see cref="Audio"/>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void audioChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var s = (Spectrum)sender;
 
             if (s.Audio != null)
             {
+                //If Audio has been set to a meaningful value, attach event handlers
                 s.Audio.Spectrum.CollectionChanged += new NotifyCollectionChangedEventHandler(s.Spectrum_CollectionChanged);
                 s.Audio.PropertyChanged += new PropertyChangedEventHandler(s.Audio_PropertyChanged);
             }
 
         }
 
+        /// <summary>
+        /// Handles PropertyChanged events from the audio interface
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void Audio_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
                 case "ChannelPosition":
+                    //Channel position changed, move cursor
                     bdrCursor.Margin = new Thickness(Timebase * Audio.ChannelPosition * Audio.SamplingFrequency, 0, 0, 0);
                     break;
                 default:
@@ -81,14 +103,22 @@ namespace DataLogger
             }
         }
 
+        /// <summary>
+        /// Handles changes in the source spectum data
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void Spectrum_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            //TODO: Replace with switch
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
+                //Process any new slices
                 addSlices(e.NewItems);
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
+                //Remove any deleted slices from the displayed spectrogram
                 for (int i = 0; i < e.OldItems.Count; i++)
                 {
                     stkSpectrum.Children.RemoveAt(e.OldStartingIndex);
@@ -96,6 +126,7 @@ namespace DataLogger
             }
             else if (e.Action == NotifyCollectionChangedAction.Reset)
             {
+                //Reset: delete all existing slices and re-add
                 stkSpectrum.Children.Clear();
                 foreach (var slice in Audio.Spectrum)
                 {
@@ -108,21 +139,31 @@ namespace DataLogger
             }
         }
 
+        /// <summary>
+        /// Create image slices for FFT blocks, and add them to the spectrogram
+        /// </summary>
+        /// <param name="items">The FFT blocks to create slices for</param>
         private void addSlices(System.Collections.IList items)
         {
             foreach (float[] slice in items)
             {
+                //Make a new image control
                 var im = new Image();
+                //Generate source image
                 im.Source = generateSlice(slice);
+
+                //Set layout
                 im.Stretch = Stretch.Fill;
                 im.Height = slice.Length;
 
+                //Bind the width to the Timebase
                 var b = new Binding("Timebase");
                 b.Source = this;
                 b.Converter = new MultiplyConverter();
                 b.ConverterParameter = (double)Audio.BlockSize;
                 im.SetBinding(Image.WidthProperty, b);
 
+                //Add to spectogram
                 stkSpectrum.Children.Add(im);
             }
         }
@@ -169,27 +210,37 @@ namespace DataLogger
             }
         }
 
+        /// <summary>
+        /// Create a one pixel wide image for a given FFT result
+        /// </summary>
+        /// <param name="spectrum"></param>
+        /// <returns></returns>
         public BitmapSource generateSlice(float[] spectrum)
         {
+            //Calculate image dimensions. Only show positive (first half) of spectrum
             int imageHeight = spectrum.Length / 2;
             int imageWidth = 1;
+
+            //Stride = width * bytes per pixel
+            //bytes per pixel = 3 (RGB)
             int stride = imageWidth * 3;
 
+            //Create array for image data
             byte[] image = new byte[stride * imageHeight];
 
+            //Scaling factor to apply to frequency magnitudes
             float scale = 10.0f;
-            float valueF;
 
             //for each frequency component
             for (int j = 0; j < imageHeight; j++)
             {
                 //scale and clip the value
-                valueF = scale * spectrum[j];
-                if (valueF > 1.0f) valueF = 1.0f;
-                if (valueF < 0.0f) valueF = 0.0f;
+                float scaledValue = scale * spectrum[j];
+                if (scaledValue > 1.0f) scaledValue = 1.0f;
+                if (scaledValue < 0.0f) scaledValue = 0.0f;
 
                 //calculate colour and set pixel values
-                byte[] color = mapRainbowColor(valueF, true);
+                byte[] color = mapRainbowColor(scaledValue, true);
 
                 image[((imageHeight - 1 - j) * stride)] = color[0];
                 image[((imageHeight - 1 - j) * stride) + 1] = color[1];
@@ -200,57 +251,97 @@ namespace DataLogger
             return BitmapSource.Create(imageWidth, imageHeight, 96, 96, PixelFormats.Rgb24, null, image, stride);
         }
 
-        private void onScrollChanged(ScrollChangedEventArgs e)
+        /// <summary>
+        /// Helper to raise ScrollChanged
+        /// </summary>
+        /// <param name="e"></param>
+        private void OnScrollChanged(ScrollChangedEventArgs e)
         {
             if (ScrollChanged != null)
                 ScrollChanged(this, e);
         }
 
+        /// <summary>
+        /// Pass on scroll events from the main scrollviewer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            onScrollChanged(e);
+            OnScrollChanged(e);
         }
 
+        /// <summary>
+        /// Scroll to a particular location
+        /// </summary>
+        /// <param name="offset">The new horizontal offset</param>
         public void ScrollTo(double offset)
         {
             scroll.ScrollToHorizontalOffset(offset);
         }
 
+        /// <summary>
+        /// Handle mouse presses on the spectogram
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void grdSpectrum_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
+            //Move the cursor to the new location
             repositionCursor(e);
 
             if (Audio.IsPlaying)
             {
+                //If audio is playing, pause it
                 Audio.Pause();
                 restartOnMouseUp = true;
             }
 
+            //Set flag so cursor will click and drag
             dragging = true;
         }
 
+        /// <summary>
+        /// Move the cursor to sit under the point described in <paramref name="e"/>
+        /// </summary>
+        /// <param name="e">MouseEventArgs from the mouse event that triggered the reposition</param>
         private void repositionCursor(MouseEventArgs e)
         {
+            //Get the relative position
             var position = e.GetPosition(grdSpectrum);
+            //Convert to a time and update source audio processor
             var time = position.X / (Timebase * Audio.SamplingFrequency);
             Audio.ChannelPosition = time;
         }
 
+        /// <summary>
+        /// Handle mouse releases on the spectogram
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void grdSpectrum_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
+            //Restart audio if it was paused
             if (restartOnMouseUp)
             {
                 restartOnMouseUp = false;
                 Audio.Play();
             }
 
+            //Clear dragging flag
             dragging = false;
         }
 
+        /// <summary>
+        /// Handle mouse movement on the spectogram
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void grdSpectrum_PreviewMouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed && dragging)
             {
+                //If the mouse is pressed, and was initially pressed over the spectogram, drag the cursor
                 repositionCursor(e);
             }
         }

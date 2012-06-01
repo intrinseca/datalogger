@@ -6,6 +6,9 @@ using System.Windows.Data;
 
 namespace DataLogger
 {
+    /// <summary>
+    /// Value converter that converts the argument into an upper-case string
+    /// </summary>
     class UpperCaseConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -20,7 +23,9 @@ namespace DataLogger
         }
     }
 
-
+    /// <summary>
+    /// Value converter that converts the argument into a lower-case string
+    /// </summary>
     class LowerCaseConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

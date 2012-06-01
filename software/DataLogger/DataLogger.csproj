@@ -92,7 +92,6 @@
     </Compile>
     <Compile Include="Driver\IDriver.cs" />
     <Compile Include="Driver\MockDriver.cs" />
-    <Compile Include="UI\PercentageConverter.cs" />
     <Compile Include="UI\CaseConverters.cs" />
     <Compile Include="UI\Spectrum.xaml.cs">
       <DependentUpon>Spectrum.xaml</DependentUpon>

@@ -150,7 +150,6 @@
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
-                            <Button Name="btnAnalyse" Click="btnAnalyse_Click">Analyse</Button>
                             <Button Name="btnStartSampling" Click="btnStartSampling_Click">Begin Sampling</Button>
                             <Button Name="btnStopSampling" Click="btnStopSampling_Click">Stop Sampling</Button>
                             <Button Name="btnClear" Click="btnClear_Click">Clear Data</Button>
