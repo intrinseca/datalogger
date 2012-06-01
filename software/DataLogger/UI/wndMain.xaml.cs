@@ -27,28 +27,44 @@ namespace DataLogger
     /// </summary>
     public partial class wndMain : Window
     {
+        /// <summary>
+        /// Flag indicating whether the device is being polled
+        /// </summary>
         public bool IsPolling { get; set; }
 
+
+        /// <summary>
+        /// Wrapper class for business logic
+        /// </summary>
         private TelephoneLogger tLogger;
 
+        /// <summary>
+        /// Timer to trigger polling of the device
+        /// </summary>
+        //TODO: Move to TelephoneLogger
         DispatcherTimer poll = new DispatcherTimer();
 
+        /// <summary>
+        /// Constuctor
+        /// </summary>
         public wndMain()
         {
             InitializeComponent();
 
+            //Initialise business logic
             tLogger = new TelephoneLogger();
+            this.DataContext = tLogger;
 
+            //Initialise poll timer
             poll.Interval = new TimeSpan(0, 0, 0, 0, 10);
             poll.Tick += new EventHandler(poll_Tick);
-
             IsPolling = false;
 
+            //Set up tone display blocksize
             tones.BlockSize = tLogger.Audio.BlockSize;
-
-            this.DataContext = tLogger;
         }
 
+        //TODO: Link with TelephoneLogger
         void monitor_Disconnected(object sender, EventArgs e)
         {
             stopSampling();
@@ -56,22 +72,42 @@ namespace DataLogger
             sbiConnectionStatus.Content = "Not Connected";
         }
 
+        //TODO: Link with TelephoneLogger
         void monitor_Connected(object sender, EventArgs e)
         {
             sbiConnectionStatus.Content = "Connected";
         }
 
+        /// <summary>
+        /// Start sampling
+        /// </summary>
+        private void startSampling()
+        {
+            if (tLogger.Device.IsOpen)
+            {
+                //If the device is connected, start polling
+                IsPolling = true;
+                poll.Start();
+            }
+        }
+
+        /// <summary>
+        /// Stop sampling
+        /// </summary>
         private void stopSampling()
         {
             poll.Stop();
             IsPolling = false;
         }
 
+        /// <summary>
+        /// Request a batch of samples
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void poll_Tick(object sender, EventArgs e)
         {
             tLogger.PollDevice();
-
-            short sample = tLogger.Audio.Samples[tLogger.Audio.Samples.Count - 1];
         }
 
         private void btnStopSampling_Click(object sender, RoutedEventArgs e)
@@ -84,20 +120,11 @@ namespace DataLogger
             startSampling();
         }
 
-        private void startSampling()
-        {
-            if (tLogger.Device.IsOpen)
-            {
-                IsPolling = true;
-                poll.Start();
-            }
-        }
-
-        private void btnAnalyse_Click(object sender, RoutedEventArgs e)
-        {
-            tLogger.UpdateAnalysis();
-        }
-
+        /// <summary>
+        /// Load a file into the interface
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnLoadWav_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog();
@@ -109,21 +136,50 @@ namespace DataLogger
             }
         }
 
+        /// <summary>
+        /// Start audio playback
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnPlay_Click(object sender, RoutedEventArgs e)
         {
             tLogger.Audio.Play();
         }
+        /// <summary>
+        /// Stop audio playback
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnStop_Click(object sender, RoutedEventArgs e)
+        {
+            tLogger.Audio.Stop();
+        }
 
+        /// <summary>
+        /// Clear all data
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             tLogger.Clear();
         }
 
+        /// <summary>
+        /// Sync the scrolling of the tones and the spectrogram
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tones_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             grhSpectrum.ScrollTo(e.HorizontalOffset);
         }
 
+        /// <summary>
+        /// Sync the scrolling of the tones and the spectrogram
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void grhSpectrum_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             tones.ScrollTo(e.HorizontalOffset);

@@ -150,12 +150,12 @@
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
-                            <Button Name="btnAnalyse" Click="btnAnalyse_Click">Analyse</Button>
                             <Button Name="btnStartSampling" Click="btnStartSampling_Click">Begin Sampling</Button>
                             <Button Name="btnStopSampling" Click="btnStopSampling_Click">Stop Sampling</Button>
                             <Button Name="btnClear" Click="btnClear_Click">Clear Data</Button>
                             <Button Name="btnLoadWav" Click="btnLoadWav_Click">Load File</Button>
                             <Button Name="btnPlay" Click="btnPlay_Click">Playback Audio</Button>
+                            <Button Name="btnStop" Click="btnStop_Click">Stop</Button>
                             <Button Name="btnStop" Click="btnStop_Click">Stop</Button>
                         </StackPanel>
                         <Slider Name="sldAnalyseTimebase" Minimum="0.001" Maximum="0.1" Value="0.02" />
