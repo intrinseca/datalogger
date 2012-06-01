@@ -7,13 +7,16 @@ using WPFSoundVisualizationLib;
 using System.ComponentModel;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
+using System.Threading;
 
 namespace DataLogger
 {
     class WaveFile : ISoundPlayer, IWaveformPlayer
     {
         IWavePlayer waveOutDevice;
-        WaveStream mainOutputStream;
+        BufferedWaveProvider provider;
+
+        private Thread loadSamplesThread;
 
         public WaveFile()
         {
@@ -23,11 +26,49 @@ namespace DataLogger
         public void Play(AudioProcessor audio)
         {
             var format = new WaveFormat(TelephoneLogger.SAMPLING_RATE, 8, 1);
-            var reader = new WaveFileReader(WriteWav(audio.Samples));
-            var stream = new WaveChannel32(reader);
+            //var reader = new WaveFileReader(WriteWav(audio.Samples));
+            //var stream = new WaveChannel32(reader);
 
-            waveOutDevice.Init(stream);
+            //waveOutDevice.Init(stream);
+            //waveOutDevice.Play();
+
+            provider = new BufferedWaveProvider(format);
+            provider.BufferDuration = new TimeSpan(0, 0, 1);
+            waveOutDevice.Init(provider);
             waveOutDevice.Play();
+
+            loadSamplesThread = new Thread(new ParameterizedThreadStart(loadSamples));
+            loadSamplesThread.Start(audio.Samples);
+        }
+
+        private void loadSamples(object param)
+        {
+            int i = 0;
+            IList<short> samples = (IList<short>)param;
+
+            while (i < samples.Count)
+            {
+                int bytesToBuffer = provider.BufferLength - provider.BufferedBytes;
+
+                if (i + bytesToBuffer > samples.Count)
+                {
+                    bytesToBuffer = samples.Count - i;
+                }
+
+                byte[] buffer = new byte[bytesToBuffer];
+
+                for (int j = 0; j < bytesToBuffer; j++)
+                {
+                    buffer[j] = (byte)(128 + samples[i]);
+                    i++;
+                }
+
+                provider.AddSamples(buffer, 0, bytesToBuffer);
+
+                Thread.Sleep(0);
+            }
+
+            waveOutDevice.Stop();
         }
 
         private WaveStream CreateInputStream(string fileName)
