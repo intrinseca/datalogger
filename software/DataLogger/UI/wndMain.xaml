@@ -157,12 +157,7 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <StackPanel Margin="5,5,5,5" Width="150">
-                        <Border BorderBrush="{StaticResource AccentRedBrush}" BorderThickness="0,0,0,1" Margin="0,0,0,5" Padding="5,0,0,0">
-                            <TextBlock Text="tasks" Foreground="{StaticResource AccentRedBrush}" FontSize="15" />
-                        </Border>
-                        <StackPanel IsItemsHost="True" />
-                    </StackPanel>
+                    <StackPanel Margin="5,30,5,5" Width="150" IsItemsHost="True" />
                     <Border Grid.Column="1" BorderThickness="20,2,2,2" Margin="0,8,8,8" BorderBrush="{StaticResource AccentRedBrush}">
                         <ContentPresenter ContentSource="SelectedContent"/>
                     </Border>
@@ -183,7 +178,7 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Vertical">
@@ -192,7 +187,7 @@
                             <Button Name="btnLoadWav" Click="btnLoadWav_Click" ToolTip="Load Data from File">
                                 <Image Source="{StaticResource Folder}" />
                             </Button>
-                            
+
                             <Button Name="btnStartSampling" ToolTip="Begin Sampling" Click="btnStartSampling_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{StaticResource Microphone}" />
@@ -206,7 +201,7 @@
                             </Button>
 
                             <TextBlock VerticalAlignment="Center">playback</TextBlock>
-                            
+
                             <Button Name="btnPlay" Click="btnPlay_Click" ToolTip="Play Audio">
                                 <Image Source="{StaticResource Play}" />
                             </Button>
@@ -216,27 +211,31 @@
                         <Slider Name="sldAnalyseTimebase" Minimum="0.001" Maximum="0.1" Value="0.02" />
                     </StackPanel>
 
-                    <GroupBox Header="tones" Grid.Row="1">
-                        <DockPanel>
-                            <ListBox ItemsSource="{Binding Analyser.Tones}" DockPanel.Dock="Top">
-                                <ListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel IsItemsHost="True" Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ListBox.ItemsPanel>
-
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate DataType="dl:Tone">
-                                        <TextBlock Text="{Binding KeyString}" />
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            <dl:ToneDisplay x:Name="tones" ScrollChanged="tones_ScrollChanged" Timebase="{Binding ElementName=sldAnalyseTimebase, Path=Value}" Tones="{Binding Analyser.Tones}" />
-                        </DockPanel>
+                    <GroupBox Header="spectrum" Grid.Row="1">
+                        <StackPanel>
+                            <dl:ToneDisplay x:Name="tones" ScrollChanged="tones_ScrollChanged" Timebase="{Binding ElementName=sldAnalyseTimebase, Path=Value}" Tones="{Binding Analyser.Tones}" MinHeight="23" />
+                            <dl:Spectrum x:Name="grhSpectrum" ScrollChanged="grhSpectrum_ScrollChanged" Timebase="{Binding ElementName=sldAnalyseTimebase, Path=Value}" Audio="{Binding Audio}" MinHeight="128" />
+                        </StackPanel>
                     </GroupBox>
 
-                    <GroupBox Header="spectrum" Grid.Row="2">
-                        <dl:Spectrum x:Name="grhSpectrum" ScrollChanged="grhSpectrum_ScrollChanged" Timebase="{Binding ElementName=sldAnalyseTimebase, Path=Value}" Audio="{Binding Audio}" />
+                    <GroupBox Header="tones" Grid.Row="2">
+                        <ItemsControl ItemsSource="{Binding Analyser.Tones}" MinHeight="20">
+                            <ItemsControl.Template>
+                                <ControlTemplate>
+                                    <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                                        <StackPanel IsItemsHost="True" Orientation="Horizontal" />
+                                    </ScrollViewer>
+                                </ControlTemplate>
+                            </ItemsControl.Template>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="dl:Tone">
+                                    <Border Background="{StaticResource AccentPurpleBrush}" Margin="5,5,0,5" Height="16" Width="16">
+                                        <TextBlock Text="{Binding KeyString}" Foreground="{StaticResource LightBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </GroupBox>
                 </Grid>
             </TabItem>

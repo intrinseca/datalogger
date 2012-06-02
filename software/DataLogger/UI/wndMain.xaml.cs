@@ -56,7 +56,7 @@ namespace DataLogger
             this.DataContext = tLogger;
 
             //Initialise poll timer
-            poll.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            poll.Interval = new TimeSpan(0, 0, 0, 0, 1);
             poll.Tick += new EventHandler(poll_Tick);
             IsPolling = false;
 
