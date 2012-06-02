@@ -145,6 +145,7 @@ namespace DataLogger
         {
             tLogger.Audio.Play();
         }
+
         /// <summary>
         /// Stop audio playback
         /// </summary>
@@ -183,11 +184,6 @@ namespace DataLogger
         private void grhSpectrum_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             tones.ScrollTo(e.HorizontalOffset);
-        }
-
-        private void btnStop_Click(object sender, RoutedEventArgs e)
-        {
-            tLogger.Audio.Stop();
         }
     }
 }

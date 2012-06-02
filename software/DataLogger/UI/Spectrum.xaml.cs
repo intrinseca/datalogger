@@ -34,7 +34,6 @@ namespace DataLogger
         public static readonly DependencyProperty TimebaseProperty =
             DependencyProperty.Register("Timebase", typeof(float), typeof(Spectrum), new UIPropertyMetadata(1.0f));
 
-        public AudioProcessor Audio
         /// The source AudioProcessor that manages playback and contains the audio data
         public AudioProcessor Audio
         {
@@ -55,7 +54,6 @@ namespace DataLogger
         /// Raised when the internal ScrollViewer is scrolled
         /// </summary>
         public event ScrollChangedEventHandler ScrollChanged;
-        private bool dragging;
 
         /// <summary>
         /// Constructor
