@@ -15,8 +15,8 @@ DATA_PACKET OUTPacket;
 
 #pragma udata
 
-USB_HANDLE USBGenericOutHandle;
-USB_HANDLE USBGenericInHandle;
+USB_HANDLE USBCommandOutHandle;
+USB_HANDLE USBCommandInHandle;
 
 BYTE ReadPOT(void);
 void ServiceRequests(void);
@@ -30,8 +30,8 @@ void UserInit(void)
 
     mInitPOT();
 
-    USBGenericInHandle = 0;
-    USBGenericOutHandle = 0;
+    USBCommandInHandle = 0;
+    USBCommandOutHandle = 0;
 }
 
 //Called from the main loop to process user tasks
@@ -74,7 +74,7 @@ BYTE ReadPOT(void)
 void ServiceRequests(void)
 {    
     //Check to see if data has arrived
-    if(!USBHandleBusy(USBGenericOutHandle))
+    if(!USBHandleBusy(USBCommandOutHandle))
     {
         //Length of the response packet
         counter = 0;
@@ -109,13 +109,13 @@ void ServiceRequests(void)
         //If there was some response data, send it back
         if(counter != 0)
         {
-            if(!USBHandleBusy(USBGenericInHandle))
+            if(!USBHandleBusy(USBCommandInHandle))
             {
-                USBGenericInHandle = USBGenWrite(USBGEN_EP_NUM, (BYTE*)&INPacket, counter);
+                USBCommandInHandle = USBGenWrite(COMMAND_EP, (BYTE*)&INPacket, counter);
             }
         }
         
         //Re-arm the OUT endpoint for the next packet
-        USBGenericOutHandle = USBGenRead(USBGEN_EP_NUM, (BYTE*)&OUTPacket, USBGEN_EP_SIZE);
+        USBCommandOutHandle = USBGenRead(COMMAND_EP, (BYTE*)&OUTPacket, EP_SIZE);
     }
 }

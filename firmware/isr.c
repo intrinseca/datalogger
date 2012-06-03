@@ -8,6 +8,7 @@
 
 #include "isr.h"
 #include "timer.h"
+#include "usb.h"
 
 /* forward declerations */
 void high_priority_isr(void);

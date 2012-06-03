@@ -4,8 +4,8 @@
 #include "GenericTypeDefs.h"
 #include "usb_config.h"
 
-extern volatile unsigned char usbgen_out[USBGEN_EP_SIZE];
-extern volatile unsigned char usbgen_in[USBGEN_EP_SIZE];
+extern volatile unsigned char usbgen_out[EP_SIZE];
+extern volatile unsigned char usbgen_in[EP_SIZE];
 
 //Commands from PC to device
 typedef enum
@@ -20,8 +20,8 @@ typedef enum
 //Used to access fields of the data packet being sent
 typedef union DATA_PACKET
 {
-    BYTE _byte[USBGEN_EP_SIZE];  //For byte access
-    WORD _word[USBGEN_EP_SIZE/2];//For word access(USBGEN_EP_SIZE msut be even)
+    BYTE _byte[EP_SIZE];  //For byte access
+    WORD _word[EP_SIZE/2];//For word access(USBGEN_EP_SIZE msut be even)
     struct
     {
         BYTE CMD;

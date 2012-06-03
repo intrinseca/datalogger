@@ -21,8 +21,9 @@ enum DATALOGGER_STATE {
 
 unsigned char datalogger_state;
 
-extern USB_HANDLE USBGenericOutHandle;
-extern USB_HANDLE USBGenericInHandle;
+extern USB_HANDLE USBCommandOutHandle;
+extern USB_HANDLE USBCommandInHandle;
+
 extern DATA_PACKET INPacket;
 extern DATA_PACKET OUTPacket;
 
@@ -65,8 +66,10 @@ static void InitializeSystem()
 
 void USBCBInitEP(void)
 {
-    USBEnableEndpoint(USBGEN_EP_NUM,USB_OUT_ENABLED|USB_IN_ENABLED|USB_HANDSHAKE_ENABLED|USB_DISALLOW_SETUP);
-    USBGenericOutHandle = USBGenRead(USBGEN_EP_NUM,(BYTE*)&OUTPacket,USBGEN_EP_SIZE);
+    USBEnableEndpoint(COMMAND_EP, USB_OUT_ENABLED|USB_IN_ENABLED|USB_HANDSHAKE_ENABLED|USB_DISALLOW_SETUP);
+    USBEnableEndpoint(DATA_EP, USB_IN_ENABLED|USB_HANDSHAKE_DISABLED|USB_DISALLOW_SETUP);
+
+    USBCommandOutHandle = USBGenRead(COMMAND_EP, (BYTE*)&OUTPacket, EP_SIZE);
 }
 
 BOOL USER_USB_CALLBACK_EVENT_HANDLER(USB_EVENT event, void *pdata, WORD size)
