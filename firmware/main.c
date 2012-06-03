@@ -3,6 +3,7 @@
 #include "user.h"
 #include "timer.h"
 #include "isr.h"
+#include "watchdog.h"
 
 extern void _startup (void);        // See c018i.c in your C18 compiler dir
 #pragma code _RESET_INTERRUPT_VECTOR = 0x000800
@@ -22,30 +23,11 @@ void USBDeviceTasks(void);
 
 void main()
 {
-    unsigned char state = 0;
-
     InitializeSystem();
-
-    LATDbits.LATD0 = 0;
-    TRISDbits.TRISD0 = 0;
 
     while(1)
     {
-        isr_disable_interrupts();
-
-        if(watchdog_cntr == 0) {
-            if(state == 0) {
-                watchdog_cntr = 50;
-                LATDbits.LATD0 = 1;
-                state = 1;
-            } else {
-                watchdog_cntr = 950;
-                LATDbits.LATD0 = 0;
-                state = 0;
-            }
-        }
-
-        isr_enable_interrupts();
+        watchdog_tick();
 //        USBDeviceTasks();
 //        ProcessIO();
     }
@@ -55,6 +37,7 @@ static void InitializeSystem()
 {
     isr_init();
     timer_init();
+    watchdog_init();
     //ADCON1 |= 0x0F;
     //UserInit();
     //USBDeviceInit();
