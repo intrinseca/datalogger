@@ -19,6 +19,7 @@
       <itemPath>Compiler.h</itemPath>
       <itemPath>user.h</itemPath>
       <itemPath>timer.h</itemPath>
+      <itemPath>isr.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -36,7 +37,6 @@
       <itemPath>user.c</itemPath>
       <itemPath>timer.c</itemPath>
       <itemPath>isr.c</itemPath>
-      <itemPath>isr.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

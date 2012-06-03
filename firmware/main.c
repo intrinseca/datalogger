@@ -31,9 +31,7 @@ void main()
 
     while(1)
     {
-        // disable interrupts while checking
-        INTCONbits.GIEH = 0;    // disable all interrupts
-        INTCONbits.GIEL = 0;
+        isr_disable_interrupts();
 
         if(watchdog_cntr == 0) {
             if(state == 0) {
@@ -47,8 +45,7 @@ void main()
             }
         }
 
-        INTCONbits.GIEH = 1;    // re-enable all interrupts
-        INTCONbits.GIEL = 1;
+        isr_enable_interrupts();
 //        USBDeviceTasks();
 //        ProcessIO();
     }

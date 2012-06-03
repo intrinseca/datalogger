@@ -43,10 +43,9 @@ void low_priority_isr(void)
  * Initialise the interrupt system. This includes setup of the interrupt
  * priority feature etc..
  */
-void isr_init()
+void isr_init(void)
 {
-    INTCONbits.GIEH = 0;    // disable all interrupts
-    INTCONbits.GIEL = 0;
+    isr_disable_interrupts();
 
     /* disable all interrupt sources */
     INTCONbits.TMR0IE = 0;
@@ -68,6 +67,29 @@ void isr_init()
     IPR1 = 0;
     IPR2 = 0;
 
+    isr_enable_interrupts();
+}
+
+/*
+ * Global disable interrupts.
+ *
+ * Typically used to check volatile variables atomically without possible
+ * interrupts.
+ */
+void isr_disable_interrupts(void)
+{
+    INTCONbits.GIEH = 0;    // disable all interrupts
+    INTCONbits.GIEL = 0;
+}
+
+/*
+ * Global enable interrupts.
+ *
+ * Typically used to check volatile variables atomically without possible
+ * interrupts.
+ */
+void isr_enable_interrupts(void)
+{
     INTCONbits.GIEH = 1;    // globally re-enable interrupts
     INTCONbits.GIEL = 1;
 }
