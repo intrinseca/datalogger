@@ -19,17 +19,17 @@ extern DATA_PACKET INPacket;
 extern DATA_PACKET OUTPacket;
 
 static void InitializeSystem(void);
-void USBDeviceTasks(void);
 
 void main()
 {
     InitializeSystem();
+    USBDeviceAttach();
 
     while(1)
     {
         watchdog_tick();
-//        USBDeviceTasks();
-//        ProcessIO();
+        //USBDeviceTasks();
+        ProcessIO();
     }
 }
 
@@ -38,9 +38,10 @@ static void InitializeSystem()
     isr_init();
     timer_init();
     watchdog_init();
-    //ADCON1 |= 0x0F;
-    //UserInit();
-    //USBDeviceInit();
+
+//    ADCON1 |= 0x0F;
+//    UserInit();
+    USBDeviceInit();
 }
 
 void USBCBInitEP(void)

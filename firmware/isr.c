@@ -32,7 +32,7 @@ void _low_ISR (void)
  */
 void high_priority_isr(void)
 {
-    ;
+    USBDeviceTasks(); // must be high priority (discovered by reading library code
 }
 
 void low_priority_isr(void)
