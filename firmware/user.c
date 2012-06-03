@@ -90,20 +90,16 @@ void ServiceRequests(void)
         //process the command
         switch(OUTPacket.CMD)
         {
-            case SET_PORTA:
+            case PORTD_SET:
                 LATD = INPacket._byte[1];
                 counter=0x02;
                 break;
             
-            case RD_POT:
+            case ADC_READ:
                 mInitPOT();
 
                 INPacket._byte[1] = ReadPOT();
                 counter=0x02;
-                break;
-                
-            case RESET:
-                Reset();
                 break;
                 
             default:

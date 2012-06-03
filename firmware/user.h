@@ -8,20 +8,13 @@
 extern volatile unsigned char usbgen_out[USBGEN_EP_SIZE];
 extern volatile unsigned char usbgen_in[USBGEN_EP_SIZE];
 
-/** D E F I N I T I O N S ****************************************************/
-/* PICDEM FS USB Demo Version */
-#define MINOR_VERSION   0x00    //Demo Version 1.00
-#define MAJOR_VERSION   0x01
-
-/* Temperature Mode */
-#define TEMP_REAL_TIME  0x00
-#define TEMP_LOGGING    0x01
-
 typedef enum
 {
-    RD_POT          = 0xED,
-    SET_PORTA       = 0xEE,
-    RESET           = 0xFF
+    ADC_READ        = 0x10,
+    PORTD_SET       = 0x20,
+    SAMPLING_START  = 0x30,
+    SAMPLING_STOP   = 0x31,
+    SAMPLING_SEND   = 0x32
 }TYPE_CMD;
 
 /** S T R U C T U R E S ******************************************************/
