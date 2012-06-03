@@ -30,11 +30,13 @@ void _low_ISR (void)
  * ISRs at the required memory locations. Therefore they are used merely as a
  * jump pad to reach these functions.
  */
+#pragma interrupt high_priority_isr
 void high_priority_isr(void)
 {
     USBDeviceTasks(); // must be high priority (discovered by reading library code
 }
 
+#pragma interruptlow low_priority_isr
 void low_priority_isr(void)
 {
     timer_isr();

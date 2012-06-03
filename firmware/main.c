@@ -28,7 +28,6 @@ void main()
     while(1)
     {
         watchdog_tick();
-        //USBDeviceTasks();
         ProcessIO();
     }
 }
@@ -39,8 +38,8 @@ static void InitializeSystem()
     timer_init();
     watchdog_init();
 
-//    ADCON1 |= 0x0F;
-//    UserInit();
+    //ADCON1 |= 0x0F;
+    UserInit();
     USBDeviceInit();
 }
 
