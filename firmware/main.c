@@ -13,6 +13,13 @@ void _reset (void)
 }
 #pragma code
 
+enum DATALOGGER_STATE {
+    NOT_CAPTURING,
+    CAPTURING
+};
+
+unsigned char datalogger_state;
+
 extern USB_HANDLE USBGenericOutHandle;
 extern USB_HANDLE USBGenericInHandle;
 extern DATA_PACKET INPacket;
@@ -25,10 +32,21 @@ void main()
     InitializeSystem();
     USBDeviceAttach();
 
+    datalogger_state = NOT_CAPTURING;
+    
     while(1)
     {
         watchdog_tick();
         ProcessIO();
+
+        switch (datalogger_state) {
+            case NOT_CAPTURING:
+                break;
+            case CAPTURING:
+                break;
+            default:
+                break;
+        }
     }
 }
 
