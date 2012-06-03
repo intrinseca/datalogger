@@ -1,25 +1,14 @@
 #include "usb.h"
 #include "USB/usb_function_generic.h"
 #include "user.h"
+#include "timer.h"
+#include "isr.h"
 
 extern void _startup (void);        // See c018i.c in your C18 compiler dir
 #pragma code _RESET_INTERRUPT_VECTOR = 0x000800
 void _reset (void)
 {
     _asm goto _startup _endasm
-}
-#pragma code
-
-#pragma code _HIGH_INTERRUPT_VECTOR = 0x000808
-void _high_ISR (void)
-{
-    ;
-}
-
-#pragma code _LOW_INTERRUPT_VECTOR = 0x000818
-void _low_ISR (void)
-{
-    ;
 }
 #pragma code
 
@@ -33,20 +22,45 @@ void USBDeviceTasks(void);
 
 void main()
 {
+    unsigned char state = 0;
+
     InitializeSystem();
+
+    LATDbits.LATD0 = 0;
+    TRISDbits.TRISD0 = 0;
 
     while(1)
     {
-        USBDeviceTasks();
-        ProcessIO();
+        // disable interrupts while checking
+        INTCONbits.GIEH = 0;    // disable all interrupts
+        INTCONbits.GIEL = 0;
+
+        if(watchdog_cntr == 0) {
+            if(state == 0) {
+                watchdog_cntr = 50;
+                LATDbits.LATD0 = 1;
+                state = 1;
+            } else {
+                watchdog_cntr = 950;
+                LATDbits.LATD0 = 0;
+                state = 0;
+            }
+        }
+
+        INTCONbits.GIEH = 1;    // re-enable all interrupts
+        INTCONbits.GIEL = 1;
+//        USBDeviceTasks();
+//        ProcessIO();
     }
 }
 
 static void InitializeSystem()
 {
-    ADCON1 |= 0x0F;
-    UserInit();
-    USBDeviceInit();
+    isr_init();
+    timer_init();
+    //ADCON1 |= 0x0F;
+    //UserInit();
+    //USBDeviceInit();
 }
 
 void USBCBInitEP(void)
