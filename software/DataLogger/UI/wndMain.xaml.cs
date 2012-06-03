@@ -56,7 +56,7 @@ namespace DataLogger
             this.DataContext = tLogger;
 
             //Initialise poll timer
-            poll.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            poll.Interval = new TimeSpan(0, 0, 0, 0, 1);
             poll.Tick += new EventHandler(poll_Tick);
             IsPolling = false;
 
@@ -145,6 +145,7 @@ namespace DataLogger
         {
             tLogger.Audio.Play();
         }
+
         /// <summary>
         /// Stop audio playback
         /// </summary>
@@ -183,11 +184,6 @@ namespace DataLogger
         private void grhSpectrum_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             tones.ScrollTo(e.HorizontalOffset);
-        }
-
-        private void btnStop_Click(object sender, RoutedEventArgs e)
-        {
-            tLogger.Audio.Stop();
         }
     }
 }

@@ -34,7 +34,6 @@ namespace DataLogger
         public static readonly DependencyProperty TimebaseProperty =
             DependencyProperty.Register("Timebase", typeof(float), typeof(Spectrum), new UIPropertyMetadata(1.0f));
 
-        public AudioProcessor Audio
         /// The source AudioProcessor that manages playback and contains the audio data
         public AudioProcessor Audio
         {
@@ -55,7 +54,6 @@ namespace DataLogger
         /// Raised when the internal ScrollViewer is scrolled
         /// </summary>
         public event ScrollChangedEventHandler ScrollChanged;
-        private bool dragging;
 
         /// <summary>
         /// Constructor
@@ -80,6 +78,9 @@ namespace DataLogger
                 //If Audio has been set to a meaningful value, attach event handlers
                 s.Audio.Spectrum.CollectionChanged += new NotifyCollectionChangedEventHandler(s.Spectrum_CollectionChanged);
                 s.Audio.PropertyChanged += new PropertyChangedEventHandler(s.Audio_PropertyChanged);
+
+                //Set height of spectrum now so it doesn't move when data comes in
+                s.stkSpectrum.Height = s.Audio.BlockSize;
             }
 
         }
@@ -95,7 +96,16 @@ namespace DataLogger
             {
                 case "ChannelPosition":
                     //Channel position changed, move cursor
-                    bdrCursor.Margin = new Thickness(Timebase * Audio.ChannelPosition * Audio.SamplingFrequency, 0, 0, 0);
+                    var position = Timebase * Audio.ChannelPosition * Audio.SamplingFrequency;
+                    bdrCursor.Margin = new Thickness(position, 0, 0, 0);
+
+                    //If cursor near egde, scroll along
+                    if (position > (scroll.HorizontalOffset + scroll.ActualWidth - 100))
+                    {
+                        var newOffset = position - scroll.ActualWidth + 100;
+                        scroll.ScrollToHorizontalOffset(newOffset);
+                    }
+
                     break;
                 default:
                     break;
@@ -153,7 +163,7 @@ namespace DataLogger
 
                 //Set layout
                 im.Stretch = Stretch.Fill;
-                im.Height = slice.Length;
+                im.Height = Audio.BlockSize;
 
                 //Bind the width to the Timebase
                 var b = new Binding("Timebase");
@@ -161,7 +171,6 @@ namespace DataLogger
                 b.Converter = new MultiplyConverter();
                 b.ConverterParameter = (double)Audio.BlockSize;
                 im.SetBinding(Image.WidthProperty, b);
-
                 //Add to spectogram
                 stkSpectrum.Children.Add(im);
             }
@@ -247,7 +256,10 @@ namespace DataLogger
             }
 
             //load pixel data into image
-            return BitmapSource.Create(imageWidth, imageHeight, 96, 96, PixelFormats.Rgb24, null, image, stride);
+            
+            var source = BitmapSource.Create(imageWidth, imageHeight, 96, 96, PixelFormats.Rgb24, null, image, stride);
+            source.Freeze();
+            return source;
         }
 
         /// <summary>

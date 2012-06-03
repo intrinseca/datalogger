@@ -39,10 +39,6 @@ namespace DataLogger
 
 		//The sample that was last converted to the spectrum
 		private int lastAnalysis = 0;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		DispatcherTimer notifyProperties;
 
 		/// <summary>
 		/// Implement INotifyPropertyChanged, raised when a property likely to be bound is changed
@@ -99,12 +95,6 @@ namespace DataLogger
 			notifyProperties = new DispatcherTimer();
 			notifyProperties.Interval = new TimeSpan(0, 0, 0, 0, 10);
 			notifyProperties.Tick += new EventHandler(notifyProperties_Tick);
-
-			player.PlaybackStopped += new EventHandler<StoppedEventArgs>(player_PlaybackStopped);
-
-			notifyProperties = new DispatcherTimer();
-			notifyProperties.Interval = new TimeSpan(0, 0, 0, 0, 10);
-			notifyProperties.Tick += new EventHandler(notifyProperties_Tick);
 		}
 
 		/// <summary>
@@ -133,24 +123,6 @@ namespace DataLogger
 					throw new NotImplementedException();
 			}
 		}
-
-		public void LoadFile(string path)
-		{
-			var reader = new WaveFileReader(path);
-			var data = new byte[reader.SampleCount];
-
-			reader.Read(data, 0, (int)reader.SampleCount);
-
-			for (int i = 0; i < data.Length; i++)
-			{
-				Samples.Add((short)(data[i] - 128));
-			}
-		}
-
-		#region "Fourier Analysis"
-
-		public ObservableCollection<float[]> Spectrum { get; private set; }
-		public ObservableCollection<float> SpectrumFrequencies { get; private set; }
 
 		/// <summary>
 		/// Fill the samples collection using data from a WAV file

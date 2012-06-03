@@ -84,7 +84,7 @@ namespace DataLogger
         private static void timeBaseChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var t = (ToneDisplay)sender;
-            //t.refresh();
+            t.refresh();
         }
 
         /// <summary>
