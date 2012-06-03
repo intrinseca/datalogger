@@ -18,15 +18,11 @@ DATA_PACKET OUTPacket;
 USB_HANDLE USBGenericOutHandle;
 USB_HANDLE USBGenericInHandle;
 
-/** P R I V A T E  P R O T O T Y P E S ***************************************/
-
 BYTE ReadPOT(void);
 void ServiceRequests(void);
 
-/** D E C L A R A T I O N S **************************************************/
-#if defined(__18CXX)
-    #pragma code
-#endif
+#pragma code
+
 void UserInit(void)
 {
     mInitAllLEDs();
@@ -36,39 +32,36 @@ void UserInit(void)
 
     USBGenericInHandle = 0;
     USBGenericOutHandle = 0;
-}//end UserInit
+}
 
-
-/******************************************************************************
- * Function:        void ProcessIO(void)
- *
- * PreCondition:    None
- *
- * Input:           None
- *
- * Output:          None
- *
- * Side Effects:    None
- *
- * Overview:        This function is a place holder for other user routines.
- *                  It is a mixture of both USB and non-USB tasks.
- *
- * Note:            None
- *****************************************************************************/
+//Called from the main loop to process user tasks
+//There's nothing here that couldn't really be in the main loop itself.
 void ProcessIO(void)
 {   
-    // User Application USB tasks
+    //Skip if the usb is not active
     if((USBDeviceState < CONFIGURED_STATE)||(USBSuspendControl==1)) return;
-		
+
+    //Process USB commands
     ServiceRequests();
 }
 
+//Run the ADC conversion and return the higher 8 bits of the result
 BYTE ReadPOT(void)
 {
     BYTE low, high;
 
-    ADCON0bits.GO = 1;              // Start AD conversion
-    while(ADCON0bits.NOT_DONE);     // Wait for conversion
+    //Configure ADC peripheral
+    TRISAbits.TRISA0=1;
+    ADCON0=0x05;
+    ADCON2=0x3C;
+    ADCON2bits.ADFM = 1;
+
+    //Trigger conversion
+    ADCON0bits.GO = 1;
+    //Wait for complete
+    while(ADCON0bits.NOT_DONE);
+
+    //Drop lower two bits and return
     low = ADRESL;
     high = ADRESH;
     low >>= 2;
@@ -77,36 +70,43 @@ BYTE ReadPOT(void)
     return (low | high);
 }
 
+//Process usb commands
 void ServiceRequests(void)
 {    
     //Check to see if data has arrived
     if(!USBHandleBusy(USBGenericOutHandle))
-    {   
+    {
+        //Length of the response packet
         counter = 0;
 
+        //Pre-fill response based on command received
         INPacket.CMD=OUTPacket.CMD;
-        INPacket.len=OUTPacket.len;
 
         //process the command
         switch(OUTPacket.CMD)
         {
             case PORTD_SET:
-                LATD = INPacket._byte[1];
-                counter=0x02;
-                break;
-            
-            case ADC_READ:
-                mInitPOT();
+                //Set PORTD to the value in the first data byte
+                LATD = OUTPacket._byte[1];
 
-                INPacket._byte[1] = ReadPOT();
-                counter=0x02;
+                //Response is the echo of the request
+                INPacket._byte[1] = OUTPacket._byte[1];
+                counter = 0x01;
                 break;
-                
+
+            //Return the current value of the ADC in the first data byte
+            case ADC_READ:
+                INPacket._byte[1] = ReadPOT();
+                counter = 0x02;
+                break;
+
+            //TODO: Is this here for any good reason?
             default:
                 Nop();
                 break;
         }
 
+        //If there was some response data, send it back
         if(counter != 0)
         {
             if(!USBHandleBusy(USBGenericInHandle))
