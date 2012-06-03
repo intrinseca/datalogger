@@ -39,6 +39,7 @@ void high_priority_isr(void)
 #pragma interruptlow low_priority_isr
 void low_priority_isr(void)
 {
+    adc_isr();
     timer_isr();
 }
 /*
