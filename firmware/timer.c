@@ -11,7 +11,7 @@
 #include <p18f4550.h>
 
 /* timer constants */
-#define CLK_HZ  20000000 // FIXME: this could be determined from somewhere
+#define CLK_HZ  48000000 // FIXME: this could be determined from somewhere
 #define TICK_HZ 1000
 
 #define TMR_PRESCALE    1
@@ -19,12 +19,18 @@
 
 /* forward declerations */
 static void reload_timer(void);
+static void update_counters(void);
+
+/* counter variables */
+volatile unsigned short watchdog_cntr;
 
 /*
  * Initialise the hardware timer system and reset all internal state
  */
 void timer_init(void)
 {
+    watchdog_cntr = 0;
+
     INTCONbits.TMR0IE = 0; // ensure interrupt is disabled
     INTCONbits.TMR0IF = 0; // clear any pending interrupt
 
@@ -44,11 +50,7 @@ void timer_init(void)
     INTCON2bits.TMR0IP = 0; // set timer to low priority interrupt
     INTCONbits.TMR0IE = 1; // re-enable interrupts
     
-    T0CONbits.TMR0ON = 1; // start the counter
-
-    /* FIXME: early debug only */
-    LATDbits.LATD0 = 0;
-    TRISDbits.TRISD0 = 0;
+    T0CONbits.TMR0ON = 1; // start the counters
 }
 
 /*
@@ -60,17 +62,15 @@ void timer_init(void)
  */
 void timer_isr(void)
 {
-    LATDbits.LATD0 = 1;
-
     /* check to see if interrupt has occured */
     if(INTCONbits.TMR0IF == 1) {
         reload_timer();
 
         /* clear interrupt */
         INTCONbits.TMR0IF = 0;
-    }
 
-    //LATDbits.LATD0 = 0;
+        update_counters();
+    }
 }
 
 /*
@@ -86,4 +86,11 @@ static void reload_timer(void)
      */
     TMR0H = (TMR_RELOAD_VAL >> 8) & 0xFF;
     TMR0L = TMR_RELOAD_VAL & 0xFF;
+}
+
+static void update_counters(void)
+{
+    if(watchdog_cntr > 0) {
+        watchdog_cntr--;
+    }
 }

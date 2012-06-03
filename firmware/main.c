@@ -22,10 +22,33 @@ void USBDeviceTasks(void);
 
 void main()
 {
+    unsigned char state = 0;
+
     InitializeSystem();
+
+    LATDbits.LATD0 = 0;
+    TRISDbits.TRISD0 = 0;
 
     while(1)
     {
+        // disable interrupts while checking
+        INTCONbits.GIEH = 0;    // disable all interrupts
+        INTCONbits.GIEL = 0;
+
+        if(watchdog_cntr == 0) {
+            if(state == 0) {
+                watchdog_cntr = 50;
+                LATDbits.LATD0 = 1;
+                state = 1;
+            } else {
+                watchdog_cntr = 950;
+                LATDbits.LATD0 = 0;
+                state = 0;
+            }
+        }
+
+        INTCONbits.GIEH = 1;    // re-enable all interrupts
+        INTCONbits.GIEL = 1;
 //        USBDeviceTasks();
 //        ProcessIO();
     }

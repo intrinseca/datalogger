@@ -14,4 +14,6 @@
 void timer_init(void);
 void timer_isr(void);
 
+extern volatile unsigned short watchdog_cntr;
+
 #endif TIMER_H
