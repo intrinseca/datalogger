@@ -1,5 +1,5 @@
 /*
-********************************************************************************
+ ********************************************************************************
                                                                                 
 Software License Agreement                                                      
                                                                                 
@@ -24,8 +24,8 @@ CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
 SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES          
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.     
                                                                                 
-********************************************************************************
-*/
+ ********************************************************************************
+ */
 
 // Created by the Microchip USBConfig Utility, Version 2.7.1.0, 5/17/2012, 20:56:50
 
@@ -33,14 +33,14 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define _usb_config_h_
 
 #if defined(__PIC24F__)
-    #include <p24fxxxx.h>
+#include <p24fxxxx.h>
 #elif defined(__18CXX)
-    #include <p18cxxx.h>
+#include <p18cxxx.h>
 #elif defined(__PIC32MX__)
-    #include <p32xxxx.h>
-    #include "plib.h"
+#include <p32xxxx.h>
+#include "plib.h"
 #else
-    #error No processor header file.
+#error No processor header file.
 #endif
 
 #define _USB_CONFIG_VERSION_MAJOR 2
@@ -54,31 +54,29 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 // Hardware Configuration
 
-#define USB_PING_PONG_MODE  USB_PING_PONG__FULL_PING_PONG
+#define USB_PING_PONG_MODE          USB_PING_PONG__FULL_PING_PONG
 
 // Peripheral Configuration
 
-#define MY_VID            0x04D8
-#define MY_PID            0x000C
-#define USB_SPEED_OPTION       USB_FULL_SPEED
+#define USB_SPEED_OPTION            USB_FULL_SPEED
 #define USB_INTERRUPT
 //#define USB_POLLING
-#define USB_PULLUP_OPTION      USB_PULLUP_ENABLE
-#define USB_TRANSCEIVER_OPTION USB_INTERNAL_TRANSCEIVER
-#define USB_EP0_BUFF_SIZE     8
-#define USB_MAX_NUM_INT       (0+1)
-#define USB_MAX_EP_NUMBER 3
-#define USB_NUM_STRING_DESCRIPTORS 3
+#define USB_PULLUP_OPTION           USB_PULLUP_ENABLE
+#define USB_TRANSCEIVER_OPTION      USB_INTERNAL_TRANSCEIVER
+#define USB_EP0_BUFF_SIZE           8
+#define USB_MAX_NUM_INT             (0+1)
+#define USB_MAX_EP_NUMBER           2
+#define USB_NUM_STRING_DESCRIPTORS  3
 
-//#define USB_DISABLE_SOF_HANDLER                 
-//#define USB_DISABLE_ERROR_HANDLER               
-//#define USB_DISABLE_SET_DESCRIPTOR_HANDLER      
+//#define USB_DISABLE_SOF_HANDLER
+//#define USB_DISABLE_ERROR_HANDLER
+//#define USB_DISABLE_SET_DESCRIPTOR_HANDLER
 
 // Generic Function Configuration
 
-#define USB_USE_GEN
-#define USBGEN_EP_NUM  1
-#define USBGEN_EP_SIZE 64
+#define COMMAND_EP  1
+#define DATA_EP     2
+#define EP_SIZE     64
 
 #endif
 

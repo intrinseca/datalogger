@@ -8,6 +8,7 @@
 
 #include <p18f4550.h>
 #include "timer.h"
+#include "isr.h"
 
 unsigned char state;
 
