@@ -4,6 +4,7 @@
         xmlns:dl="clr-namespace:DataLogger"
         Title="USB Data Logger" Height="450" Width="803"
         UseLayoutRounding="True"
+        Closed="Window_Closed"
         Background="{StaticResource LightBrush}" 
         Foreground="{StaticResource DarkBrush}" WindowState="Maximized">
 

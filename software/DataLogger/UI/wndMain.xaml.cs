@@ -193,5 +193,10 @@ namespace DataLogger
             byte result = tLogger.GetADC();
             //Debug.Print(result.ToString());
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            tLogger.Close();
+        }
     }
 }

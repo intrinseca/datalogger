@@ -24,6 +24,7 @@ namespace DataLogger
         UsbEndpointReader dataReader;
 
         private Thread dataReceiveThread;
+        private volatile bool closing;
 
         public event DataReceivedEventHandler DataReceived;
 
@@ -54,7 +55,7 @@ namespace DataLogger
             }
 
             device = UsbDevice.OpenUsbDevice(finder);
-            
+
             commandWriter = device.OpenEndpointWriter(WriteEndpointID.Ep01, EndpointType.Bulk);
             commandReader = device.OpenEndpointReader(ReadEndpointID.Ep01, 64, EndpointType.Bulk);
             dataReader = device.OpenEndpointReader(ReadEndpointID.Ep02, 64, EndpointType.Interrupt);
@@ -73,10 +74,11 @@ namespace DataLogger
             byte[] buffer = new byte[64];
             int count;
 
-            while (true)
+            while (!closing)
             {
                 dataReader.Read(buffer, RW_TIMEOUT, out count);
-                OnDataReceived(buffer, count);
+                if (count > 0)
+                    OnDataReceived(buffer, count);
             }
         }
 
@@ -96,9 +98,12 @@ namespace DataLogger
 
         public void Close()
         {
+            closing = true;
+            dataReceiveThread.Join(2 * RW_TIMEOUT);
+            dataReceiveThread.Abort();
+
             if (device != null && device.IsOpen)
             {
-                dataReceiveThread.Abort();
                 device.Close();
             }
         }

@@ -130,5 +130,11 @@ namespace DataLogger
             //return Device.SendCommand(COMMANDS.ADC_READ, 2)[1];
             return 0;
         }
+
+        public void Close()
+        {
+            StopPolling();
+            monitor.Stop();
+        }
     }
 }

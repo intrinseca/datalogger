@@ -17,6 +17,8 @@ namespace DataLogger
         public event EventHandler Connected;
         public event EventHandler Disconnected;
 
+        private bool stopped = false;
+
         public DeviceMonitor(IDriver _driver)
         {
             driver = _driver;
@@ -68,6 +70,13 @@ namespace DataLogger
         {
             if (Disconnected != null)
                 Disconnected(this, new EventArgs());
+        }
+
+        public void Stop()
+        {
+            stopped = true;
+            onDisconnect();
+            driver.Close();
         }
     }
 }
