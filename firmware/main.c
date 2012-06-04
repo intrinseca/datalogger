@@ -17,13 +17,6 @@ void _reset (void)
 
 unsigned char datalogger_state;
 
-extern USB_HANDLE USBCommandOutHandle;
-extern USB_HANDLE USBCommandInHandle;
-extern USB_HANDLE USBDataInHandle;
-extern DATA_PACKET INCommand;
-extern DATA_PACKET OUTCommand;
-extern DATA_PACKET INData;
-
 static void InitializeSystem(void);
 
 void main()
@@ -73,7 +66,7 @@ void USBCBInitEP(void)
     USBEnableEndpoint(COMMAND_EP, USB_OUT_ENABLED|USB_IN_ENABLED|USB_HANDSHAKE_ENABLED|USB_DISALLOW_SETUP);
     USBEnableEndpoint(DATA_EP, USB_IN_ENABLED|USB_HANDSHAKE_ENABLED|USB_DISALLOW_SETUP);
 
-    USBCommandOutHandle = USBGenRead(COMMAND_EP, (BYTE*)&OUTCommand, EP_SIZE);
+    USBCommandOutHandle = USBGenRead(COMMAND_EP, (BYTE*)OUTCommand, EP_SIZE);
 }
 
 BOOL USER_USB_CALLBACK_EVENT_HANDLER(USB_EVENT event, void *pdata, WORD size)

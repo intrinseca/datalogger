@@ -28,6 +28,13 @@ typedef union DATA_PACKET
     };
 } DATA_PACKET;
 
+extern USB_HANDLE USBCommandOutHandle;
+extern USB_HANDLE USBCommandInHandle;
+extern USB_HANDLE USBDataInHandle;
+extern DATA_PACKET * INCommand;
+extern DATA_PACKET * OUTCommand;
+extern DATA_PACKET * INData;
+
 void comms_init(void);
 void comms_process_command(void);
 void comms_send_samples(void);
