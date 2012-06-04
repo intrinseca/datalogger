@@ -13,7 +13,7 @@
 
 #include "pool.h"
 
-#define NUM_BUFFERS 4
+#define NUM_BUFFERS 8
 #define BUF_SIZE    64
 
 enum ALLOCED_STATUS {
@@ -21,7 +21,7 @@ enum ALLOCED_STATUS {
     BUFF_NOT_FREE
 };
 
-#pragma udata USB_VARIABLES2=0x500 // fixme needs to be 0x500 in the end
+#pragma udata USB_VARS
 unsigned char pool[NUM_BUFFERS][BUF_SIZE];
 #pragma udata
 
