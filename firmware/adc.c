@@ -29,7 +29,7 @@ void adc_init(void)
     
     /* configure ADC hardware */
     ADCON0 &= ~(0xF << 2); // select analog channel 1
-    //ADCON0 |= 1 << 2; TODO:currently sampling channel 0
+    ADCON0 |= 1 << 2;
 
     ADCON1bits.VCFG1 = 0; // use internal voltage references
     ADCON1bits.VCFG0 = 0;

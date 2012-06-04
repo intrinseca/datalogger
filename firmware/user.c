@@ -109,7 +109,7 @@ void ServiceRequests(void)
                 datalogger_state = CAPTURING;
                 break;
 
-            case SAMPLING_SEND:
+            case SAMPLING_STOP:
                 datalogger_state = NOT_CAPTURING;
                 break;
 
@@ -157,7 +157,7 @@ void sendSamples(void)
             USBDataInHandle = USBGenWrite(DATA_EP, (BYTE*)&INData, 2);
         }
 
-        iso_test_cntr = 4;
+        iso_test_cntr = 2;
     }
 
     isr_enable_interrupts();
