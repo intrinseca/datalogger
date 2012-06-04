@@ -29,7 +29,7 @@ typedef union DATA_PACKET
     };
 } DATA_PACKET;
 
-void UserInit(void);
-void ProcessIO(void);
-void sendSamples(void);
+void comms_init(void);
+void comms_process_command(void);
+void comms_send_samples(void);
 #endif USER_H

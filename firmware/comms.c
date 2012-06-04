@@ -1,10 +1,11 @@
 #include "usb.h"
 #include "USB/usb_function_generic.h"
 
-#include "HardwareProfile.h"
-#include "user.h"
+//#include "HardwareProfile.h"
+#include "comms.h"
 #include "main.h"
 #include "timer.h"
+#include "isr.h"
 
 #pragma udata
 
@@ -22,36 +23,19 @@ USB_HANDLE USBCommandOutHandle;
 USB_HANDLE USBCommandInHandle;
 USB_HANDLE USBDataInHandle;
 
-BYTE ReadPOT(void);
-void ServiceRequests(void);
+BYTE readPot(void);
 
 #pragma code
 
-void UserInit(void)
+void comms_init(void)
 {
-    mInitAllLEDs();
-    mInitAllSwitches();
-
-    //mInitPOT();
-
     USBCommandInHandle = 0;
     USBCommandOutHandle = 0;
     USBDataInHandle = 0;
 }
 
-//Called from the main loop to process user tasks
-//There's nothing here that couldn't really be in the main loop itself.
-void ProcessIO(void)
-{   
-    //Skip if the usb is not active
-    if((USBDeviceState < CONFIGURED_STATE)||(USBSuspendControl==1)) return;
-
-    //Process USB commands
-    ServiceRequests();
-}
-
 //Run the ADC conversion and return the higher 8 bits of the result
-BYTE ReadPOT(void)
+BYTE readPot(void)
 {
     BYTE low, high;
 
@@ -76,7 +60,7 @@ BYTE ReadPOT(void)
 }
 
 //Process usb commands
-void ServiceRequests(void)
+void comms_process_command(void)
 {    
     //Check to see if data has arrived
     if(!USBHandleBusy(USBCommandOutHandle))
@@ -101,7 +85,7 @@ void ServiceRequests(void)
 
             //Return the current value of the ADC in the first data byte
             case ADC_READ:
-                INCommand._byte[1] = ReadPOT();
+                INCommand._byte[1] = readPot();
                 counter = 0x02;
                 break;
 
@@ -133,14 +117,14 @@ void ServiceRequests(void)
     }
 }
 
-void sendSamples(void)
+void comms_send_samples(void)
 {
     BYTE low, high;
     unsigned char i;
 
     isr_disable_interrupts();
 
-    if(iso_test_cntr == 0)
+    if(send_samples_cntr == 0)
     {
         if(!USBHandleBusy(USBDataInHandle))
         {
@@ -157,7 +141,7 @@ void sendSamples(void)
             USBDataInHandle = USBGenWrite(DATA_EP, (BYTE*)&INData, 2);
         }
 
-        iso_test_cntr = 2;
+        send_samples_cntr = 2;
     }
 
     isr_enable_interrupts();

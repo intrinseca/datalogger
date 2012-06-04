@@ -1,7 +1,7 @@
 #include "main.h"
 #include "usb.h"
 #include "USB/usb_function_generic.h"
-#include "user.h"
+#include "comms.h"
 #include "timer.h"
 #include "isr.h"
 #include "watchdog.h"
@@ -36,13 +36,18 @@ void main()
     while(1)
     {
         watchdog_tick();
-        ProcessIO();
+
+        if(USBDeviceState == CONFIGURED_STATE && USBSuspendControl == 1)
+        {
+            //Process USB commands
+            comms_process_command();
+        }
 
         switch (datalogger_state) {
             case NOT_CAPTURING:
                 break;
             case CAPTURING:
-                sendSamples();
+                comms_send_samples();
                 break;
             default:
                 break;
@@ -58,7 +63,7 @@ static void InitializeSystem()
     adc_init();
 
     //ADCON1 |= 0x0F;
-    UserInit();
+    comms_init();
     USBDeviceInit();
 }
 
