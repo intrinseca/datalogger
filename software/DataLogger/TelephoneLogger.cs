@@ -31,7 +31,8 @@ namespace DataLogger
 
         private bool _capturing;
         public bool Capturing 
-        { get
+        { 
+            get
             {
                 return _capturing;
             }
@@ -39,11 +40,11 @@ namespace DataLogger
             {
                 if (Device.IsOpen)
                 {
-                    if (_capturing)
+                    if (!value && _capturing)
                     {
                         Device.SendCommand(COMMANDS.CAPTURE_STOP, 1);
                     }
-                    else
+                    else if(value && !_capturing)
                     {
                         Device.SendCommand(COMMANDS.CAPTURE_START, 1);
                     }

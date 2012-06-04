@@ -116,6 +116,7 @@ namespace DataLogger
 
             OnConnect();
 
+            closing = false;
             dataReceiveThread = new Thread(new ThreadStart(dataReceive));
             dataReceiveThread.Start();
         }
@@ -133,7 +134,7 @@ namespace DataLogger
             while (!closing)
             {
                 dataReader.Read(buffer, RW_TIMEOUT, out count);
-                if (count > 0)
+                if (count > 0 && !closing)
                     OnDataReceived(buffer, count);
             }
         }
@@ -211,8 +212,11 @@ namespace DataLogger
             Close();
 
             //stop event notifier
-            notifier.Enabled = false;
-            notifier = null;
+            if (notifier != null)
+            {
+                notifier.Enabled = false;
+                notifier = null;
+            }
         }
     }
 }

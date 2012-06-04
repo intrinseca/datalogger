@@ -37,7 +37,7 @@ void main()
     {
         watchdog_tick();
 
-        if(USBDeviceState == CONFIGURED_STATE && USBSuspendControl == 1)
+        if(USBDeviceState == CONFIGURED_STATE && USBSuspendControl != 1)
         {
             //Process USB commands
             comms_process_command();
