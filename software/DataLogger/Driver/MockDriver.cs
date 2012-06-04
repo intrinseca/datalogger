@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DataLogger
 {
-    class MockDriver// : IDriver
+    class MockDriver : IDriver
     {
         double f1 = 941; //941
         double f2 = 1209; //1209
@@ -17,6 +17,10 @@ namespace DataLogger
         double t;
 
         Random r = new Random();
+
+        public event DataReceivedEventHandler DataReceived;
+        public event EventHandler Connected;
+        public event EventHandler Disconnected;
 
         public MockDriver()
         {
@@ -31,17 +35,17 @@ namespace DataLogger
             }
         }
 
+        public bool TryOpen()
+        {
+            return true;
+        }
+
         public void Open()
         {
         }
 
         public void Close()
         {
-        }
-
-        public bool CheckDevicePresent()
-        {
-            return true;
         }
 
         public byte[] SendCommand(COMMANDS command, int responseLength)
@@ -79,6 +83,11 @@ namespace DataLogger
         public byte[] SendCommand(byte[] command, int responseLength)
         {
             throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            return;
         }
     }
 }

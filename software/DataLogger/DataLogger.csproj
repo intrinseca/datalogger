@@ -86,7 +86,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AudioProcessor.cs" />
-    <Compile Include="Driver\DeviceMonitor.cs" />
     <Compile Include="Driver\Driver.cs" />
     <Compile Include="DTMFAnalysis.cs" />
     <Compile Include="TelephoneLogger.cs" />

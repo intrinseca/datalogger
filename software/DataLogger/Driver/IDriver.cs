@@ -40,20 +40,21 @@ namespace DataLogger
     {
         ADC_READ = 0x10,
         PORTD_SET = 0x20,
-        SAMPLING_START = 0x30,
-        SAMPLING_STOP = 0x31,
-        SAMPLING_SEND = 0x32,
+        CAPTURE_START = 0x30,
+        CAPTURE_STOP = 0x31,
     };
 
-    interface IDriver
+    interface IDriver : IDisposable
     {
         bool IsOpen { get; }
 
         event DataReceivedEventHandler DataReceived;
+        event EventHandler Connected;
+        event EventHandler Disconnected;
 
+        bool TryOpen();
         void Open();
         void Close();
-        bool CheckDevicePresent();
 
         byte[] SendCommand(COMMANDS command, int responseLength);
         byte[] SendCommand(byte[] command, int responseLength);

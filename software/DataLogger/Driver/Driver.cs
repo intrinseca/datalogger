@@ -6,10 +6,11 @@ using LibUsbDotNet;
 using LibUsbDotNet.Main;
 using System.Diagnostics;
 using System.Threading;
+using LibUsbDotNet.DeviceNotify;
 
 namespace DataLogger
 {
-    class Driver : IDriver
+    class Driver : IDriver, IDisposable
     {
         public const int VID = 0x04D8;
         public const int PID = 0x000C;
@@ -18,47 +19,102 @@ namespace DataLogger
 
         UsbDevice device;
         UsbDeviceFinder finder = new UsbDeviceFinder(VID, PID);
+        IDeviceNotifier notifier;
 
         UsbEndpointWriter commandWriter;
         UsbEndpointReader commandReader;
         UsbEndpointReader dataReader;
 
-        private Thread dataReceiveThread;
-        private volatile bool closing;
+        Thread dataReceiveThread;
+        volatile bool closing;
+
+        public bool AutomaticConnection { get; private set; }
 
         public event DataReceivedEventHandler DataReceived;
+        public event EventHandler Connected;
+        public event EventHandler Disconnected;
 
         public bool IsOpen
         {
             get
             {
-                return device.IsOpen;
+                return (device != null && device.IsOpen);
             }
         }
 
-        public Driver()
+        public Driver(bool _automaticConnection)
         {
+            AutomaticConnection = _automaticConnection;
+
+            if (AutomaticConnection)
+            {
+                notifier = DeviceNotifier.OpenDeviceNotifier();
+                notifier.OnDeviceNotify += new EventHandler<DeviceNotifyEventArgs>(notifier_OnDeviceNotify);
+
+                TryOpen();
+            }
         }
 
-        public bool CheckDevicePresent()
+        void notifier_OnDeviceNotify(object sender, DeviceNotifyEventArgs e)
+        {
+            if (e.Device.IdVendor == Driver.VID && e.Device.IdProduct == Driver.PID)
+            {
+                switch (e.EventType)
+                {
+                    case EventType.DeviceArrival:
+                        if (AutomaticConnection)
+                            Open();
+                        break;
+                    case EventType.DeviceRemoveComplete:
+                        Close();
+                        break;
+                }
+            }
+        }
+
+        private void OnConnect()
+        {
+            if (Connected != null)
+                Connected(this, new EventArgs());
+        }
+
+        private void OnDisconnect()
+        {
+            if (Disconnected != null)
+                Disconnected(this, new EventArgs());
+        }
+
+        public bool TryOpen()
         {
             device = UsbDevice.OpenUsbDevice(finder);
 
-            return (device != null);
+            if (device != null)
+            {
+                Open();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public void Open()
         {
-            if (!CheckDevicePresent())
+            if (device == null)
             {
-                throw new DeviceNotFoundException("Could not find device");
+                device = UsbDevice.OpenUsbDevice(finder);
+                if (device == null)
+                {
+                    throw new DeviceNotFoundException("Could not find device");
+                }
             }
-
-            device = UsbDevice.OpenUsbDevice(finder);
 
             commandWriter = device.OpenEndpointWriter(WriteEndpointID.Ep01, EndpointType.Bulk);
             commandReader = device.OpenEndpointReader(ReadEndpointID.Ep01, 64, EndpointType.Bulk);
             dataReader = device.OpenEndpointReader(ReadEndpointID.Ep02, 64, EndpointType.Interrupt);
+
+            OnConnect();
 
             dataReceiveThread = new Thread(new ThreadStart(dataReceive));
             dataReceiveThread.Start();
@@ -105,7 +161,10 @@ namespace DataLogger
             if (device != null && device.IsOpen)
             {
                 device.Close();
+                device = null;
             }
+
+            OnDisconnect();
         }
 
         public byte[] SendCommand(COMMANDS command, int responseLength)
@@ -116,7 +175,14 @@ namespace DataLogger
         public byte[] SendCommand(byte[] command, int responseLength)
         {
             int sent;
-            commandWriter.Write(command, RW_TIMEOUT, out sent);
+            try
+            {
+                commandWriter.Write(command, RW_TIMEOUT, out sent);
+            }
+            catch(ObjectDisposedException)
+            {
+                throw new DriverException("Writing to closed device");
+            }
 
             int received = 0;
             int count;
@@ -137,6 +203,16 @@ namespace DataLogger
             }
 
             return buffer;
+        }
+
+        public void Dispose()
+        {
+            //close connection
+            Close();
+
+            //stop event notifier
+            notifier.Enabled = false;
+            notifier = null;
         }
     }
 }

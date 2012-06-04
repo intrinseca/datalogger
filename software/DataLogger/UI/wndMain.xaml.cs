@@ -28,24 +28,12 @@ namespace DataLogger
     public partial class wndMain : Window
     {
         /// <summary>
-        /// Flag indicating whether the device is being polled
-        /// </summary>
-        public bool IsPolling { get; set; }
-
-
-        /// <summary>
         /// Wrapper class for business logic
         /// </summary>
         private TelephoneLogger tLogger;
 
         /// <summary>
-        /// Timer to trigger polling of the device
-        /// </summary>
-        //TODO: Move to TelephoneLogger
-        DispatcherTimer poll = new DispatcherTimer();
-
-        /// <summary>
-        /// Constuctor
+        /// Constructor
         /// </summary>
         public wndMain()
         {
@@ -53,73 +41,55 @@ namespace DataLogger
 
             //Initialise business logic
             tLogger = new TelephoneLogger();
-            this.DataContext = tLogger;
+            
+            //Attach event handlers
+            tLogger.Device.Connected += new EventHandler(Device_Connected);
+            tLogger.Device.Disconnected += new EventHandler(Device_Disconnected);
 
-            //Initialise poll timer
-            poll.Interval = new TimeSpan(0, 0, 0, 0, 1);
-            poll.Tick += new EventHandler(poll_Tick);
-            IsPolling = false;
+            this.DataContext = tLogger;
 
             //Set up tone display blocksize
             tones.BlockSize = tLogger.Audio.BlockSize;
         }
 
-        //TODO: Link with TelephoneLogger
-        void monitor_Disconnected(object sender, EventArgs e)
-        {
-            stopSampling();
-
-            sbiConnectionStatus.Content = "Not Connected";
-        }
-
-        //TODO: Link with TelephoneLogger
-        void monitor_Connected(object sender, EventArgs e)
+        void Device_Connected(object sender, EventArgs e)
         {
             sbiConnectionStatus.Content = "Connected";
         }
 
+        void Device_Disconnected(object sender, EventArgs e)
+        {
+            sbiConnectionStatus.Content = "Not Connected";
+        }
+
         /// <summary>
-        /// Start sampling
+        /// Start capturing audio data
         /// </summary>
-        private void startSampling()
+        private void startCapture()
         {
             if (tLogger.Device.IsOpen)
             {
-                //If the device is connected, start polling
-                IsPolling = true;
-                tLogger.BeginPolling();
-                //poll.Start();
+                //If the device is connected, start capturing
+                tLogger.Capturing = true;
             }
         }
 
         /// <summary>
-        /// Stop sampling
+        /// Stop capturing audio data
         /// </summary>
-        private void stopSampling()
+        private void stopCapturing()
         {
-            //poll.Stop();
-            tLogger.StopPolling();
-            IsPolling = false;
+            tLogger.Capturing = false;
         }
 
-        /// <summary>
-        /// Request a batch of samples
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void poll_Tick(object sender, EventArgs e)
+        private void btnStopCapture_Click(object sender, RoutedEventArgs e)
         {
-            tLogger.PollDevice();
+            stopCapturing();
         }
 
-        private void btnStopSampling_Click(object sender, RoutedEventArgs e)
+        private void btnStartCapture_Click(object sender, RoutedEventArgs e)
         {
-            stopSampling();
-        }
-
-        private void btnStartSampling_Click(object sender, RoutedEventArgs e)
-        {
-            startSampling();
+            startCapture();
         }
 
         /// <summary>
@@ -196,7 +166,7 @@ namespace DataLogger
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            tLogger.Close();
+            tLogger.Dispose();
         }
     }
 }

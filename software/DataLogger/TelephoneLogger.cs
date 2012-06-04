@@ -12,7 +12,7 @@ namespace DataLogger
     /// <summary>
     /// Container class for telephone logger
     /// </summary>
-    class TelephoneLogger
+    class TelephoneLogger : IDisposable
     {
         public const int SAMPLING_RATE = 8192;
         public const int BLOCK_SIZE = 256;
@@ -20,7 +20,7 @@ namespace DataLogger
         /// <summary>
         /// Connection to the USB device
         /// </summary>
-        public IDriver Device = new Driver();
+        public IDriver Device { get; private set; }
 
         /// <summary>
         /// Storage and processing of audio data
@@ -29,34 +29,44 @@ namespace DataLogger
 
         public DTMFAnalysis Analyser { get; private set; }
 
-        public bool Connected { get; private set; }
-
-        private Timer pollTimer;
-
-        /// <summary>
-        /// TODO: Move into device class
-        /// </summary>
-        private DeviceMonitor monitor;
+        private bool _capturing;
+        public bool Capturing 
+        { get
+            {
+                return _capturing;
+            }
+            set
+            {
+                if (Device.IsOpen)
+                {
+                    if (_capturing)
+                    {
+                        Device.SendCommand(COMMANDS.CAPTURE_STOP, 1);
+                    }
+                    else
+                    {
+                        Device.SendCommand(COMMANDS.CAPTURE_START, 1);
+                    }
+                }
+                _capturing = value;
+            }
+        }
 
         public TelephoneLogger()
         {
             Audio = new AudioProcessor(SAMPLING_RATE, BLOCK_SIZE);
-            monitor = new DeviceMonitor(Device);
             Analyser = new DTMFAnalysis();
 
+            Device = new Driver(true);
+            Device.Disconnected += new EventHandler(Device_Disconnected);
             Device.DataReceived += new DataReceivedEventHandler(Device_DataReceived);
-            monitor.Connected += new EventHandler(monitor_Connected);
 
-            Audio.Spectrum.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Spectrum_CollectionChanged);
-
-            pollTimer = new Timer(4);
-            pollTimer.AutoReset = true;
-            pollTimer.Elapsed += new ElapsedEventHandler(pollTimer_Elapsed);
+            Audio.Spectrum.CollectionChanged += new NotifyCollectionChangedEventHandler(Spectrum_CollectionChanged);
         }
 
-        void monitor_Connected(object sender, EventArgs e)
+        void Device_Disconnected(object sender, EventArgs e)
         {
-            Device.DataReceived += new DataReceivedEventHandler(Device_DataReceived);
+            Capturing = false;
         }
 
         void Device_DataReceived(object sender, DataReceivedEventArgs e)
@@ -81,42 +91,10 @@ namespace DataLogger
             }
         }
 
-        void pollTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            PollDevice();
-        }
-
-        public void BeginPolling()
-        {
-            Device.SendCommand(COMMANDS.SAMPLING_START, 1);
-        }
-
-        public void StopPolling()
-        {
-            Device.SendCommand(COMMANDS.SAMPLING_STOP, 1);
-        }
-
-        public void PollDevice()
-        {
-            var result = Device.SendCommand(COMMANDS.ADC_READ, 64);
-
-            for (int i = 2; i < result[1]; i++)
-            {
-                int sample = 128 - result[i];
-                Audio.Samples.Add((short)sample);
-            }
-        }
-
         public void LoadFile(string filePath)
         {
             Audio.Samples.Clear();
             Audio.LoadFile(filePath);
-        }
-
-        public void UpdateAnalysis()
-        {
-            //Audio.ProcessSpectrum();
-            Analyser.Analyse(Audio.Spectrum, Audio.SpectrumFrequencies);
         }
 
         public void Clear()
@@ -127,14 +105,13 @@ namespace DataLogger
 
         public byte GetADC()
         {
-            //return Device.SendCommand(COMMANDS.ADC_READ, 2)[1];
-            return 0;
+            return Device.SendCommand(COMMANDS.ADC_READ, 2)[1];
         }
 
-        public void Close()
+        public void Dispose()
         {
-            StopPolling();
-            monitor.Stop();
+            Capturing = false;
+            Device.Dispose();
         }
     }
 }

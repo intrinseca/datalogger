@@ -189,13 +189,13 @@
                                 <Image Source="{StaticResource Folder}" />
                             </Button>
 
-                            <Button Name="btnStartSampling" ToolTip="Begin Sampling" Click="btnStartSampling_Click">
+                            <Button Name="btnStartCapture" ToolTip="Begin Capture" Click="btnStartCapture_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{StaticResource Microphone}" />
-                                    <TextBlock>Record Telephone Audio</TextBlock>
+                                    <TextBlock>Capture Telephone Audio</TextBlock>
                                 </StackPanel>
                             </Button>
-                            <Button Name="btnStopSampling" Click="btnStopSampling_Click">Stop Sampling</Button>
+                            <Button Name="btnStopCapture" Click="btnStopCapture_Click">Stop Sampling</Button>
 
                             <Button Name="btnClear" Click="btnClear_Click" ToolTip="Clear Audio Data">
                                 <Image Source="{StaticResource Clear}" />
