@@ -21,7 +21,7 @@ enum ALLOCED_STATUS {
     BUFF_NOT_FREE
 };
 
-#pragma udata USB_VARIABLES2=0x600 // fixme needs to be 0x500 in the end
+#pragma udata USB_VARIABLES2=0x500 // fixme needs to be 0x500 in the end
 unsigned char pool[NUM_BUFFERS][BUF_SIZE];
 #pragma udata
 
@@ -59,7 +59,7 @@ void * pool_malloc_buff(void)
         }
     }
 
-    return NULL;
+    return NULL; // all buffers allocated
 }
 
 void pool_free_buff(void * handle)

@@ -6,18 +6,15 @@
 #include "main.h"
 #include "timer.h"
 #include "isr.h"
+#include "pool.h"
 
 #pragma udata
 
 BYTE counter;
 
-#pragma udata USB_VARIABLES=0x500
-
-DATA_PACKET INCommand;
-DATA_PACKET OUTCommand;
-DATA_PACKET INData;
-
-#pragma udata
+DATA_PACKET * INCommand;
+DATA_PACKET * OUTCommand;
+DATA_PACKET * INData;
 
 USB_HANDLE USBCommandOutHandle;
 USB_HANDLE USBCommandInHandle;
@@ -29,6 +26,10 @@ BYTE read_pot(void);
 
 void comms_init(void)
 {
+    INCommand = pool_malloc_buff();
+    OUTCommand = pool_malloc_buff();
+    INData = pool_malloc_buff();
+    
     USBCommandInHandle = 0;
     USBCommandOutHandle = 0;
     USBDataInHandle = 0;
@@ -69,23 +70,23 @@ void comms_process_command(void)
         counter = 1;
 
         //Pre-fill response based on command received
-        INCommand.CMD=OUTCommand.CMD;
+        INCommand->CMD=OUTCommand->CMD;
 
         //process the command
-        switch(OUTCommand.CMD)
+        switch(OUTCommand->CMD)
         {
             case PORTD_SET:
                 //Set PORTD to the value in the first data byte
-                LATD = OUTCommand._byte[1];
+                LATD = OUTCommand->_byte[1];
 
                 //Response is the echo of the request
-                INCommand._byte[1] = OUTCommand._byte[1];
+                INCommand->_byte[1] = OUTCommand->_byte[1];
                 counter = 0x01;
                 break;
 
             //Return the current value of the ADC in the first data byte
             case ADC_READ:
-                INCommand._byte[1] = read_pot();
+                INCommand->_byte[1] = read_pot();
                 counter = 0x02;
                 break;
 
@@ -108,12 +109,12 @@ void comms_process_command(void)
         {
             if(!USBHandleBusy(USBCommandInHandle))
             {
-                USBCommandInHandle = USBGenWrite(COMMAND_EP, (BYTE*)&INCommand, counter);
+                USBCommandInHandle = USBGenWrite(COMMAND_EP, (BYTE*)INCommand, counter);
             }
         }
         
         //Re-arm the OUT endpoint for the next packet
-        USBCommandOutHandle = USBGenRead(COMMAND_EP, (BYTE*)&OUTCommand, EP_SIZE);
+        USBCommandOutHandle = USBGenRead(COMMAND_EP, (BYTE*)OUTCommand, EP_SIZE);
     }
 }
 
@@ -135,10 +136,10 @@ void comms_send_samples(void)
 
             for(i = 0; i < 64; i++)
             {
-                INData._byte[i] = (low | high);
+                INData->_byte[i] = (low | high);
             }
 
-            USBDataInHandle = USBGenWrite(DATA_EP, (BYTE*)&INData, 2);
+            USBDataInHandle = USBGenWrite(DATA_EP, (BYTE*)INData, 2);
         }
 
         send_samples_cntr = 2;
