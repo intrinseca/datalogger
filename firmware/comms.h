@@ -12,9 +12,8 @@ typedef enum
 {
     ADC_READ        = 0x10,
     PORTD_SET       = 0x20,
-    SAMPLING_START  = 0x30,
-    SAMPLING_STOP   = 0x31,
-    SAMPLING_SEND   = 0x32
+    CAPTURE_START   = 0x30,
+    CAPTURE_STOP    = 0x31,
 }TYPE_CMD;
 
 //Used to access fields of the data packet being sent

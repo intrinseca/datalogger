@@ -23,7 +23,7 @@ USB_HANDLE USBCommandOutHandle;
 USB_HANDLE USBCommandInHandle;
 USB_HANDLE USBDataInHandle;
 
-BYTE readPot(void);
+BYTE read_pot(void);
 
 #pragma code
 
@@ -35,7 +35,7 @@ void comms_init(void)
 }
 
 //Run the ADC conversion and return the higher 8 bits of the result
-BYTE readPot(void)
+BYTE read_pot(void)
 {
     BYTE low, high;
 
@@ -85,15 +85,15 @@ void comms_process_command(void)
 
             //Return the current value of the ADC in the first data byte
             case ADC_READ:
-                INCommand._byte[1] = readPot();
+                INCommand._byte[1] = read_pot();
                 counter = 0x02;
                 break;
 
-            case SAMPLING_START:
+            case CAPTURE_START:
                 datalogger_state = CAPTURING;
                 break;
 
-            case SAMPLING_STOP:
+            case CAPTURE_STOP:
                 datalogger_state = NOT_CAPTURING;
                 break;
 
