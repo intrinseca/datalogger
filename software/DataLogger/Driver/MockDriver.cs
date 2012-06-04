@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DataLogger
 {
-    class MockDriver : IDriver
+    class MockDriver// : IDriver
     {
         double f1 = 941; //941
         double f2 = 1209; //1209

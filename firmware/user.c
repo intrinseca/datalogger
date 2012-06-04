@@ -3,6 +3,8 @@
 
 #include "HardwareProfile.h"
 #include "user.h"
+#include "main.h"
+#include "timer.h"
 
 #pragma udata
 
@@ -10,13 +12,15 @@ BYTE counter;
 
 #pragma udata USB_VARIABLES=0x500
 
-DATA_PACKET INPacket;
-DATA_PACKET OUTPacket;
+DATA_PACKET INCommand;
+DATA_PACKET OUTCommand;
+DATA_PACKET INData;
 
 #pragma udata
 
 USB_HANDLE USBCommandOutHandle;
 USB_HANDLE USBCommandInHandle;
+USB_HANDLE USBDataInHandle;
 
 BYTE ReadPOT(void);
 void ServiceRequests(void);
@@ -28,10 +32,11 @@ void UserInit(void)
     mInitAllLEDs();
     mInitAllSwitches();
 
-    mInitPOT();
+    //mInitPOT();
 
     USBCommandInHandle = 0;
     USBCommandOutHandle = 0;
+    USBDataInHandle = 0;
 }
 
 //Called from the main loop to process user tasks
@@ -52,7 +57,7 @@ BYTE ReadPOT(void)
 
     //Configure ADC peripheral
     TRISAbits.TRISA0=1;
-    ADCON0=0x05;
+    ADCON0=0x01;
     ADCON2=0x3C;
     ADCON2bits.ADFM = 1;
 
@@ -77,27 +82,35 @@ void ServiceRequests(void)
     if(!USBHandleBusy(USBCommandOutHandle))
     {
         //Length of the response packet
-        counter = 0;
+        counter = 1;
 
         //Pre-fill response based on command received
-        INPacket.CMD=OUTPacket.CMD;
+        INCommand.CMD=OUTCommand.CMD;
 
         //process the command
-        switch(OUTPacket.CMD)
+        switch(OUTCommand.CMD)
         {
             case PORTD_SET:
                 //Set PORTD to the value in the first data byte
-                LATD = OUTPacket._byte[1];
+                LATD = OUTCommand._byte[1];
 
                 //Response is the echo of the request
-                INPacket._byte[1] = OUTPacket._byte[1];
+                INCommand._byte[1] = OUTCommand._byte[1];
                 counter = 0x01;
                 break;
 
             //Return the current value of the ADC in the first data byte
             case ADC_READ:
-                INPacket._byte[1] = ReadPOT();
+                INCommand._byte[1] = ReadPOT();
                 counter = 0x02;
+                break;
+
+            case SAMPLING_START:
+                datalogger_state = CAPTURING;
+                break;
+
+            case SAMPLING_SEND:
+                datalogger_state = NOT_CAPTURING;
                 break;
 
             //TODO: Is this here for any good reason?
@@ -111,11 +124,41 @@ void ServiceRequests(void)
         {
             if(!USBHandleBusy(USBCommandInHandle))
             {
-                USBCommandInHandle = USBGenWrite(COMMAND_EP, (BYTE*)&INPacket, counter);
+                USBCommandInHandle = USBGenWrite(COMMAND_EP, (BYTE*)&INCommand, counter);
             }
         }
         
         //Re-arm the OUT endpoint for the next packet
-        USBCommandOutHandle = USBGenRead(COMMAND_EP, (BYTE*)&OUTPacket, EP_SIZE);
+        USBCommandOutHandle = USBGenRead(COMMAND_EP, (BYTE*)&OUTCommand, EP_SIZE);
     }
+}
+
+void sendSamples(void)
+{
+    BYTE low, high;
+    unsigned char i;
+
+    isr_disable_interrupts();
+
+    if(iso_test_cntr == 0)
+    {
+        if(!USBHandleBusy(USBDataInHandle))
+        {
+            low = ADRESL;
+            high = ADRESH;
+            low >>= 2;
+            high <<= 6;
+
+            for(i = 0; i < 64; i++)
+            {
+                INData._byte[i] = (low | high);
+            }
+
+            USBDataInHandle = USBGenWrite(DATA_EP, (BYTE*)&INData, 2);
+        }
+
+        iso_test_cntr = 4;
+    }
+
+    isr_enable_interrupts();
 }

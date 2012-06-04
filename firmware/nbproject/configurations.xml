@@ -21,6 +21,7 @@
       <itemPath>timer.h</itemPath>
       <itemPath>isr.h</itemPath>
       <itemPath>watchdog.h</itemPath>
+      <itemPath>main.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -39,6 +40,7 @@
       <itemPath>timer.c</itemPath>
       <itemPath>isr.c</itemPath>
       <itemPath>watchdog.c</itemPath>
+      <itemPath>adc.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

@@ -221,7 +221,7 @@ ROM BYTE configDescriptor1[]={
     0x07,                       /*sizeof(USB_EP_DSC)*/
     USB_DESCRIPTOR_ENDPOINT,    //Endpoint Descriptor
     _EP02_IN,                   //EndpointAddress
-    (_ISO | _NS | _DE),         //Attributes
+    _INTERRUPT,             //Attributes
     EP_SIZE,0x00,        //size
     1                           //Interval
 };

@@ -31,5 +31,5 @@ typedef union DATA_PACKET
 
 void UserInit(void);
 void ProcessIO(void);
-
+void sendSamples(void);
 #endif USER_H

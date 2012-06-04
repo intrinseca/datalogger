@@ -1,3 +1,4 @@
+#include "main.h"
 #include "usb.h"
 #include "USB/usb_function_generic.h"
 #include "user.h"
@@ -14,18 +15,14 @@ void _reset (void)
 }
 #pragma code
 
-enum DATALOGGER_STATE {
-    NOT_CAPTURING,
-    CAPTURING
-};
-
 unsigned char datalogger_state;
 
 extern USB_HANDLE USBCommandOutHandle;
 extern USB_HANDLE USBCommandInHandle;
-
-extern DATA_PACKET INPacket;
-extern DATA_PACKET OUTPacket;
+extern USB_HANDLE USBDataInHandle;
+extern DATA_PACKET INCommand;
+extern DATA_PACKET OUTCommand;
+extern DATA_PACKET INData;
 
 static void InitializeSystem(void);
 
@@ -45,6 +42,7 @@ void main()
             case NOT_CAPTURING:
                 break;
             case CAPTURING:
+                sendSamples();
                 break;
             default:
                 break;
@@ -67,9 +65,9 @@ static void InitializeSystem()
 void USBCBInitEP(void)
 {
     USBEnableEndpoint(COMMAND_EP, USB_OUT_ENABLED|USB_IN_ENABLED|USB_HANDSHAKE_ENABLED|USB_DISALLOW_SETUP);
-    USBEnableEndpoint(DATA_EP, USB_IN_ENABLED|USB_HANDSHAKE_DISABLED|USB_DISALLOW_SETUP);
+    USBEnableEndpoint(DATA_EP, USB_IN_ENABLED|USB_HANDSHAKE_ENABLED|USB_DISALLOW_SETUP);
 
-    USBCommandOutHandle = USBGenRead(COMMAND_EP, (BYTE*)&OUTPacket, EP_SIZE);
+    USBCommandOutHandle = USBGenRead(COMMAND_EP, (BYTE*)&OUTCommand, EP_SIZE);
 }
 
 BOOL USER_USB_CALLBACK_EVENT_HANDLER(USB_EVENT event, void *pdata, WORD size)

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using LibUsbDotNet;
 using LibUsbDotNet.Main;
+using System.Diagnostics;
+using System.Threading;
 
 namespace DataLogger
 {
@@ -17,10 +19,13 @@ namespace DataLogger
         UsbDevice device;
         UsbDeviceFinder finder = new UsbDeviceFinder(VID, PID);
 
-        UsbEndpointWriter bulkWriter;
-        UsbEndpointReader bulkReader;
+        UsbEndpointWriter commandWriter;
+        UsbEndpointReader commandReader;
+        UsbEndpointReader dataReader;
 
-        UsbTransferQueue queue;
+        private Thread dataReceiveThread;
+
+        public event DataReceivedEventHandler DataReceived;
 
         public bool IsOpen
         {
@@ -49,16 +54,53 @@ namespace DataLogger
             }
 
             device = UsbDevice.OpenUsbDevice(finder);
+            
+            commandWriter = device.OpenEndpointWriter(WriteEndpointID.Ep01, EndpointType.Bulk);
+            commandReader = device.OpenEndpointReader(ReadEndpointID.Ep01, 64, EndpointType.Bulk);
+            dataReader = device.OpenEndpointReader(ReadEndpointID.Ep02, 64, EndpointType.Interrupt);
 
+            dataReceiveThread = new Thread(new ThreadStart(dataReceive));
+            dataReceiveThread.Start();
+        }
 
-            bulkWriter = device.OpenEndpointWriter(WriteEndpointID.Ep01, EndpointType.Bulk);
-            bulkReader = device.OpenEndpointReader(ReadEndpointID.Ep01, 64, EndpointType.Bulk);
+        void dataReader_DataReceived(object sender, EndpointDataEventArgs e)
+        {
+            Debug.Print(e.Buffer[0].ToString());
+        }
+
+        void dataReceive()
+        {
+            byte[] buffer = new byte[64];
+            int count;
+
+            while (true)
+            {
+                dataReader.Read(buffer, RW_TIMEOUT, out count);
+                OnDataReceived(buffer, count);
+            }
+        }
+
+        void OnDataReceived(byte[] buffer, int count)
+        {
+            if (DataReceived != null)
+            {
+                var e = new DataReceivedEventArgs();
+                e.Buffer = new byte[count];
+                for (int i = 0; i < count; i++)
+                {
+                    e.Buffer[i] = buffer[i];
+                }
+                DataReceived(this, e);
+            }
         }
 
         public void Close()
         {
             if (device != null && device.IsOpen)
+            {
+                dataReceiveThread.Abort();
                 device.Close();
+            }
         }
 
         public byte[] SendCommand(COMMANDS command, int responseLength)
@@ -69,7 +111,7 @@ namespace DataLogger
         public byte[] SendCommand(byte[] command, int responseLength)
         {
             int sent;
-            bulkWriter.Write(command, RW_TIMEOUT, out sent);
+            commandWriter.Write(command, RW_TIMEOUT, out sent);
 
             int received = 0;
             int count;
@@ -79,7 +121,7 @@ namespace DataLogger
             {
                 try
                 {
-                    bulkReader.Read(buffer, RW_TIMEOUT, out count);
+                    commandReader.Read(buffer, RW_TIMEOUT, out count);
                 }
                 catch (ObjectDisposedException ex)
                 {

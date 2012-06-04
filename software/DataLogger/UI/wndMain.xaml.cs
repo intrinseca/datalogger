@@ -87,7 +87,8 @@ namespace DataLogger
             {
                 //If the device is connected, start polling
                 IsPolling = true;
-                poll.Start();
+                tLogger.BeginPolling();
+                //poll.Start();
             }
         }
 
@@ -96,7 +97,8 @@ namespace DataLogger
         /// </summary>
         private void stopSampling()
         {
-            poll.Stop();
+            //poll.Stop();
+            tLogger.StopPolling();
             IsPolling = false;
         }
 
@@ -184,6 +186,12 @@ namespace DataLogger
         private void grhSpectrum_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             tones.ScrollTo(e.HorizontalOffset);
+        }
+
+        private void btnSample_Click(object sender, RoutedEventArgs e)
+        {
+            byte result = tLogger.GetADC();
+            //Debug.Print(result.ToString());
         }
     }
 }

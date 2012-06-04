@@ -23,6 +23,7 @@ static void update_counters(void);
 
 /* counter variables */
 volatile unsigned short watchdog_cntr;
+volatile unsigned short iso_test_cntr;
 
 /*
  * Initialise the hardware timer system and reset all internal state
@@ -92,5 +93,9 @@ static void update_counters(void)
 {
     if(watchdog_cntr > 0) {
         watchdog_cntr--;
+    }
+
+    if(iso_test_cntr > 0) {
+        iso_test_cntr--;
     }
 }

@@ -5,6 +5,13 @@ using System.Text;
 
 namespace DataLogger
 {
+    public class DataReceivedEventArgs : EventArgs
+    {
+        public byte[] Buffer { get; set; }
+    }
+
+    public delegate void DataReceivedEventHandler(object sender, DataReceivedEventArgs e);
+
     [Serializable]
     public class DeviceNotFoundException : Exception
     {
@@ -41,6 +48,8 @@ namespace DataLogger
     interface IDriver
     {
         bool IsOpen { get; }
+
+        event DataReceivedEventHandler DataReceived;
 
         void Open();
         void Close();

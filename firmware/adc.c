@@ -29,7 +29,7 @@ void adc_init(void)
     
     /* configure ADC hardware */
     ADCON0 &= ~(0xF << 2); // select analog channel 1
-    ADCON1 |= 1 << 2;
+    //ADCON0 |= 1 << 2; TODO:currently sampling channel 0
 
     ADCON1bits.VCFG1 = 0; // use internal voltage references
     ADCON1bits.VCFG0 = 0;
@@ -43,7 +43,7 @@ void adc_init(void)
     ADCON2 |= 0x02 << 3; // Enable 4Tad acquisition time
     ADCON2 |= 0x06; // enable Fosc/64 conversion clock
 
-    ADCON0bits.ADON = 0; // turn off the ADC
+    ADCON0bits.ADON = 1; // turn on the ADC
 
     /* configure timer 1 with CCP2 for sampling rate */
     PIE1bits.TMR1IE = 0; // ensure interrupt is disabled
