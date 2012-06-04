@@ -23,6 +23,7 @@
       <itemPath>main.h</itemPath>
       <itemPath>comms.h</itemPath>
       <itemPath>adc.h</itemPath>
+      <itemPath>pool.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -42,6 +43,7 @@
       <itemPath>watchdog.c</itemPath>
       <itemPath>adc.c</itemPath>
       <itemPath>comms.c</itemPath>
+      <itemPath>pool.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

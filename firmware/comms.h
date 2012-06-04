@@ -13,8 +13,8 @@ typedef enum
     ADC_READ        = 0x10,
     PORTD_SET       = 0x20,
     CAPTURE_START   = 0x30,
-    CAPTURE_STOP    = 0x31,
-}TYPE_CMD;
+    CAPTURE_STOP    = 0x31
+} TYPE_CMD;
 
 //Used to access fields of the data packet being sent
 typedef union DATA_PACKET

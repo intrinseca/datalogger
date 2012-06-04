@@ -60,6 +60,7 @@ static void InitializeSystem()
     isr_init();
     timer_init();
     watchdog_init();
+    pool_init();
     adc_init();
 
     //ADCON1 |= 0x0F;
