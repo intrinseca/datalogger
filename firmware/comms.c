@@ -1,6 +1,9 @@
 #include "usb.h"
 #include "USB/usb_function_generic.h"
 
+
+#include "adc.h"
+
 //#include "HardwareProfile.h"
 #include "comms.h"
 #include "main.h"
@@ -16,6 +19,8 @@ DATA_PACKET * INCommand;
 DATA_PACKET * OUTCommand;
 DATA_PACKET * INData;
 
+unsigned char * adc_data;
+
 USB_HANDLE USBCommandOutHandle;
 USB_HANDLE USBCommandInHandle;
 USB_HANDLE USBDataInHandle;
@@ -29,6 +34,7 @@ void comms_init(void)
     INCommand = pool_malloc_buff();
     OUTCommand = pool_malloc_buff();
     INData = pool_malloc_buff();
+    adc_data = NULL;
     
     USBCommandInHandle = 0;
     USBCommandOutHandle = 0;
@@ -123,27 +129,17 @@ void comms_send_samples(void)
     BYTE low, high;
     unsigned char i;
 
-    isr_disable_interrupts();
 
-    if(send_samples_cntr == 0)
+    if(!USBHandleBusy(USBDataInHandle))
     {
-        if(!USBHandleBusy(USBDataInHandle))
+        if(adc_data != NULL)
+            adc_free_buff(adc_data);
+
+        adc_data = adc_get_filled_buff();
+
+        if(adc_data != NULL)
         {
-            low = ADRESL;
-            high = ADRESH;
-            low >>= 2;
-            high <<= 6;
-
-            for(i = 0; i < 64; i++)
-            {
-                INData->_byte[i] = (low | high);
-            }
-
-            USBDataInHandle = USBGenWrite(DATA_EP, (BYTE*)INData, 2);
+            USBDataInHandle = USBGenWrite(DATA_EP, (BYTE*)adc_data, POOL_BUFF_SIZE);
         }
-
-        send_samples_cntr = 2;
     }
-
-    isr_enable_interrupts();
 }

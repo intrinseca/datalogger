@@ -14,7 +14,7 @@ namespace DataLogger
     /// </summary>
     class TelephoneLogger : IDisposable
     {
-        public const int SAMPLING_RATE = 8192;
+        public const int SAMPLING_RATE = 8000;
         public const int BLOCK_SIZE = 256;
 
         /// <summary>

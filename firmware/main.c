@@ -6,6 +6,7 @@
 #include "isr.h"
 #include "watchdog.h"
 #include "adc.h"
+#include "pool.h"
 
 extern void _startup (void);        // See c018i.c in your C18 compiler dir
 #pragma code _RESET_INTERRUPT_VECTOR = 0x000800
