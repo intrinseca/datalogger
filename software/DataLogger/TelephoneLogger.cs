@@ -30,8 +30,8 @@ namespace DataLogger
         public DTMFAnalysis Analyser { get; private set; }
 
         private bool _capturing;
-        public bool Capturing 
-        { 
+        public bool Capturing
+        {
             get
             {
                 return _capturing;
@@ -44,7 +44,7 @@ namespace DataLogger
                     {
                         Device.SendCommand(COMMANDS.CAPTURE_STOP, 1);
                     }
-                    else if(value && !_capturing)
+                    else if (value && !_capturing)
                     {
                         Device.SendCommand(COMMANDS.CAPTURE_START, 1);
                     }
@@ -53,16 +53,26 @@ namespace DataLogger
             }
         }
 
+        bool disposed = false;
+
         public TelephoneLogger()
         {
             Audio = new AudioProcessor(SAMPLING_RATE, BLOCK_SIZE);
             Analyser = new DTMFAnalysis();
 
-            Device = new Driver(true);
+            Device = new Driver();
+            Device.Connected += new EventHandler(Device_Connected);
             Device.Disconnected += new EventHandler(Device_Disconnected);
             Device.DataReceived += new DataReceivedEventHandler(Device_DataReceived);
 
             Audio.Spectrum.CollectionChanged += new NotifyCollectionChangedEventHandler(Spectrum_CollectionChanged);
+        }
+
+        void Device_Connected(object sender, EventArgs e)
+        {
+            //Force the sending of the CAPTURE_STOP command
+            _capturing = true;
+            Capturing = false;
         }
 
         void Device_Disconnected(object sender, EventArgs e)
@@ -112,7 +122,9 @@ namespace DataLogger
         public void Dispose()
         {
             Capturing = false;
+            Device.DataReceived -= new DataReceivedEventHandler(Device_DataReceived);
             Device.Dispose();
+            disposed = true;
         }
     }
 }

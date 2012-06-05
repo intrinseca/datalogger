@@ -47,6 +47,7 @@ namespace DataLogger
     interface IDriver : IDisposable
     {
         bool IsOpen { get; }
+        bool ConnectAutomatically { get; set; }
 
         event DataReceivedEventHandler DataReceived;
         event EventHandler Connected;

@@ -18,6 +18,8 @@ namespace DataLogger
 
         Random r = new Random();
 
+        public bool ConnectAutomatically { get; set; }
+
         public event DataReceivedEventHandler DataReceived;
         public event EventHandler Connected;
         public event EventHandler Disconnected;
