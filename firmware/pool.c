@@ -14,7 +14,6 @@
 #include "pool.h"
 
 #define NUM_BUFFERS 8
-#define BUF_SIZE    64
 
 enum ALLOCED_STATUS {
     BUFF_FREE,
@@ -22,7 +21,7 @@ enum ALLOCED_STATUS {
 };
 
 #pragma udata USB_VARS
-unsigned char pool[NUM_BUFFERS][BUF_SIZE];
+unsigned char pool[NUM_BUFFERS][POOL_BUFF_SIZE];
 #pragma udata
 
 #pragma code
@@ -38,7 +37,7 @@ void pool_init(void)
     unsigned char i;
 
     for(i = 0; i < NUM_BUFFERS; ++i) {
-        memset(pool[i], 0, BUF_SIZE);
+        memset(pool[i], 0, POOL_BUFF_SIZE);
         alloced[i] = BUFF_FREE;
     }
 }

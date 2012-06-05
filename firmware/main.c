@@ -29,6 +29,7 @@ void main()
     while(1)
     {
         watchdog_tick();
+        adc_tick();
 
         if(USBDeviceState == CONFIGURED_STATE && USBSuspendControl != 1)
         {
