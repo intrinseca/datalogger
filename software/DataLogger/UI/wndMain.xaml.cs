@@ -41,14 +41,13 @@ namespace DataLogger
 
             //Initialise business logic
             tLogger = new TelephoneLogger();
-            
-            //Event doesn't fire if the device was already connected, so manually check here
-            if (tLogger.Device.IsOpen)
-                Device_Connected(tLogger.Device, new EventArgs());
 
             //Attach event handlers
             tLogger.Device.Connected += new EventHandler(Device_Connected);
             tLogger.Device.Disconnected += new EventHandler(Device_Disconnected);
+
+            //Enable connection
+            tLogger.Device.ConnectAutomatically = true;
 
             this.DataContext = tLogger;
 
@@ -165,7 +164,7 @@ namespace DataLogger
         private void btnSample_Click(object sender, RoutedEventArgs e)
         {
             byte result = tLogger.GetADC();
-            //Debug.Print(result.ToString());
+            Debug.Print(result.ToString());
         }
 
         private void Window_Closed(object sender, EventArgs e)

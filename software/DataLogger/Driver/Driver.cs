@@ -28,31 +28,34 @@ namespace DataLogger
         Thread dataReceiveThread;
         volatile bool closing;
 
-        public bool AutomaticConnection { get; private set; }
+        private bool _connectAutomatically;
+        public bool ConnectAutomatically
+        {
+            get
+            {
+                return _connectAutomatically;
+            }
+            set
+            {
+                if (value && !IsOpen)
+                {
+                    TryOpen();
+                }
+
+                _connectAutomatically = value;
+            }
+        }
 
         public event DataReceivedEventHandler DataReceived;
         public event EventHandler Connected;
         public event EventHandler Disconnected;
 
-        public bool IsOpen
+        public bool IsOpen { get; set; }
+
+        public Driver()
         {
-            get
-            {
-                return (device != null && device.IsOpen);
-            }
-        }
-
-        public Driver(bool _automaticConnection)
-        {
-            AutomaticConnection = _automaticConnection;
-
-            if (AutomaticConnection)
-            {
-                notifier = DeviceNotifier.OpenDeviceNotifier();
-                notifier.OnDeviceNotify += new EventHandler<DeviceNotifyEventArgs>(notifier_OnDeviceNotify);
-
-                TryOpen();
-            }
+            notifier = DeviceNotifier.OpenDeviceNotifier();
+            notifier.OnDeviceNotify += new EventHandler<DeviceNotifyEventArgs>(notifier_OnDeviceNotify);
         }
 
         void notifier_OnDeviceNotify(object sender, DeviceNotifyEventArgs e)
@@ -62,7 +65,7 @@ namespace DataLogger
                 switch (e.EventType)
                 {
                     case EventType.DeviceArrival:
-                        if (AutomaticConnection)
+                        if (ConnectAutomatically)
                             Open();
                         break;
                     case EventType.DeviceRemoveComplete:
@@ -110,30 +113,34 @@ namespace DataLogger
                 }
             }
 
+            device.Open();
+
             commandWriter = device.OpenEndpointWriter(WriteEndpointID.Ep01, EndpointType.Bulk);
             commandReader = device.OpenEndpointReader(ReadEndpointID.Ep01, 64, EndpointType.Bulk);
             dataReader = device.OpenEndpointReader(ReadEndpointID.Ep02, 64, EndpointType.Interrupt);
 
             OnConnect();
+            IsOpen = true;
 
             closing = false;
             dataReceiveThread = new Thread(new ThreadStart(dataReceive));
+            dataReceiveThread.Name = "DataReceive";
             dataReceiveThread.Start();
-        }
-
-        void dataReader_DataReceived(object sender, EndpointDataEventArgs e)
-        {
-            Debug.Print(e.Buffer[0].ToString());
         }
 
         void dataReceive()
         {
             byte[] buffer = new byte[64];
-            int count;
-
-            while (!closing)
+            int count = 0;
+            ErrorCode ec = ErrorCode.MonoApiError;
+            
+            while (!closing && device.IsOpen)
             {
-                dataReader.Read(buffer, RW_TIMEOUT, out count);
+                ec = dataReader.Read(buffer, RW_TIMEOUT, out count);
+
+                if (ec != ErrorCode.None && ec != ErrorCode.IoTimedOut)
+                    break;
+
                 if (count > 0 && !closing)
                     OnDataReceived(buffer, count);
             }
@@ -141,6 +148,8 @@ namespace DataLogger
 
         void OnDataReceived(byte[] buffer, int count)
         {
+            Debug.Print("{0}", buffer[0]);
+
             if (DataReceived != null)
             {
                 var e = new DataReceivedEventArgs();
@@ -155,15 +164,23 @@ namespace DataLogger
 
         public void Close()
         {
-            closing = true;
-            dataReceiveThread.Join(2 * RW_TIMEOUT);
-            dataReceiveThread.Abort();
+            if (!IsOpen)
+                return;
 
-            if (device != null && device.IsOpen)
-            {
-                device.Close();
-                device = null;
-            }
+            IsOpen = false;
+
+            closing = true;
+            dataReader.Abort();
+            dataReceiveThread.Join();
+            dataReceiveThread.Abort();
+            dataReceiveThread = null;
+
+            device.Close();
+            commandReader.Dispose();
+            commandWriter.Dispose();
+            dataReader.Dispose();
+
+            device = null;
 
             OnDisconnect();
         }
@@ -180,7 +197,7 @@ namespace DataLogger
             {
                 commandWriter.Write(command, RW_TIMEOUT, out sent);
             }
-            catch(ObjectDisposedException)
+            catch (ObjectDisposedException)
             {
                 throw new DriverException("Writing to closed device");
             }
@@ -209,7 +226,8 @@ namespace DataLogger
         public void Dispose()
         {
             //close connection
-            Close();
+            if (IsOpen)
+                Close();
 
             //stop event notifier
             if (notifier != null)
