@@ -82,6 +82,9 @@ namespace DataLogger
         /// </summary>
         public event ScrollChangedEventHandler ScrollChanged;
 
+        //Store a reference to the padding border to allow it to be modified
+        Border paddingBorder;
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -209,12 +212,17 @@ namespace DataLogger
             var lastToneEnd = lastTone.StartBlock + lastTone.Duration;
             if (lastToneEnd < LastBlock)
             {
-                //Insert a padding block
-                var b = new Border();
-                b.Background = (Brush)FindResource("LightBrush");
-                b.Width = (LastBlock - lastToneEnd) * width;
-                b.Margin = new Thickness(width * lastToneEnd, 0, 0, 0);
-                grdTones.Children.Add(b);
+                //Try to create the padding block
+                if(paddingBorder == null)
+                {
+                    paddingBorder = new Border();
+                    paddingBorder.Background = (Brush)FindResource("LightBrush");
+                    grdTones.Children.Add(paddingBorder);
+                }
+
+                //Update the padding block                
+                paddingBorder.Width = (LastBlock - lastToneEnd) * width;
+                paddingBorder.Margin = new Thickness(width * lastToneEnd, 0, 0, 0);
             }
         }
 
