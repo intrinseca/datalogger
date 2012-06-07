@@ -154,6 +154,9 @@ namespace DataLogger
         /// </summary>
         public ObservableCollection<Tone> Tones { get; set; }
 
+        //Flag for used in Analyse for whether the previous tone has ended
+        bool continueTone = false;
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -196,18 +199,22 @@ namespace DataLogger
                     //Calculate the corresponding key
                     int key = row * DTMFFrequencies.Columns.Length + column;
 
-                    if (Tones.Count > 0 && (int)Tones[Tones.Count - 1].Key == key)
+                    if (Tones.Count > 0 && (int)Tones[Tones.Count - 1].Key == key && continueTone)
                     {
-                        //If the key has not changed, make the previous tone longer
+                        //If the key has not changed and no gap has been found, make the previous tone longer
                         Tones[Tones.Count - 1].Duration++;
                     }
                     else
                     {
                         //Otherwise add a new tone
                         Tones.Add(new Tone() { StartBlock = block, Key = (DTMFTones)key, Duration = 1 });
+                        continueTone = true;
                     }
                 }
-                //TODO: Probably merging consecutive tones
+                else
+                {
+                    continueTone = false;
+                }
             }
         }
 
