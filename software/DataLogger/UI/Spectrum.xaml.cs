@@ -237,13 +237,13 @@ namespace DataLogger
             byte[] image = new byte[stride * imageHeight];
 
             //Scaling factor to apply to frequency magnitudes
-            float scale = 10.0f;
+            float scale = 100.0f;
 
             //for each frequency component
             for (int j = 0; j < imageHeight; j++)
             {
                 //scale and clip the value
-                float scaledValue = scale * spectrum[j];
+                float scaledValue = 2.0f * (float)Math.Log10(scale * spectrum[j]);
                 if (scaledValue > 1.0f) scaledValue = 1.0f;
                 if (scaledValue < 0.0f) scaledValue = 0.0f;
 
