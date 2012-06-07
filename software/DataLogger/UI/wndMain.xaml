@@ -175,16 +175,26 @@
         </StatusBar>
 
         <TabControl Template="{StaticResource MainTabControl}">
-            <TabItem Header="ANALYSE">
+            <TabItem Header="CAPTURE">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center">recording</TextBlock>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Label VerticalAlignment="Center" Grid.Row="0">recording</Label>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
                             <Button Name="btnLoadWav" Click="btnLoadWav_Click" ToolTip="Load Data from File">
                                 <Image Source="{StaticResource Folder}" />
                             </Button>
@@ -195,23 +205,35 @@
                                     <TextBlock>Capture Telephone Audio</TextBlock>
                                 </StackPanel>
                             </Button>
-                            <Button Name="btnStopCapture" Click="btnStopCapture_Click">Stop Sampling</Button>
-
-                            <Button Name="btnClear" Click="btnClear_Click" ToolTip="Clear Audio Data">
-                                <Image Source="{StaticResource Clear}" />
+                            <Button Name="btnStopCapture" Click="btnStopCapture_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{StaticResource Stop}" />
+                                    <TextBlock>Stop Capturing</TextBlock>
+                                </StackPanel>
                             </Button>
 
-                            <TextBlock VerticalAlignment="Center">playback</TextBlock>
-
+                            <Button Name="btnClear" Click="btnClear_Click" ToolTip="Clear Audio Data">
+                                <StackPanel Orientation="Horizontal">
+                                <Image Source="{StaticResource Clear}" />
+                                <TextBlock>Clear Data</TextBlock>
+                        </StackPanel>
+                        </Button>
+                        </StackPanel>
+                        
+                        <Label VerticalAlignment="Center" Grid.Row="1">playback</Label>
+                        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
                             <Button Name="btnPlay" Click="btnPlay_Click" ToolTip="Play Audio">
                                 <Image Source="{StaticResource Play}" />
                             </Button>
 
-                            <Button Name="btnStop" Click="btnStop_Click">Stop</Button>
-                            <Button Name="btnSample" Click="btnSample_Click">Sample</Button>
+                            <Button Name="btnStop" Click="btnStop_Click">
+                                <Image Source="{StaticResource Stop}" />
+                            </Button>
                         </StackPanel>
-                        <Slider Name="sldAnalyseTimebase" Minimum="0.001" Maximum="0.1" Value="0.02" />
-                    </StackPanel>
+                        
+                        <Label Grid.Row="2">timebase</Label>
+                        <Slider Name="sldAnalyseTimebase" Minimum="0.001" Maximum="0.1" Value="0.02" Grid.Row="2" Grid.Column="1" />
+                    </Grid>
 
                     <GroupBox Header="spectrum" Grid.Row="1">
                         <StackPanel>

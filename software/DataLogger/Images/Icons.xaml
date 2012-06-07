@@ -67,4 +67,14 @@
             </GeometryDrawing>
         </DrawingImage.Drawing>
     </DrawingImage>
+    
+    <DrawingImage x:Key="Stop">
+        <DrawingImage.Drawing>
+            <GeometryDrawing Brush="{StaticResource LightBrush}">
+                <GeometryDrawing.Geometry>
+                    <RectangleGeometry Rect="25,25,50,50" />
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+        </DrawingImage.Drawing>
+    </DrawingImage>
 </ResourceDictionary>
