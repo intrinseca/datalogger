@@ -27,7 +27,15 @@ namespace DataLogger
         /// </summary>
         public AudioProcessor Audio { get; private set; }
 
+        /// <summary>
+        /// Analysis of DTMF tones
+        /// </summary>
         public DTMFAnalysis Analyser { get; private set; }
+
+        /// <summary>
+        /// Analysis of calls
+        /// </summary>
+        public CallAnalysis Calls { get; private set; }
 
         private bool _capturing;
         public bool Capturing
@@ -59,6 +67,7 @@ namespace DataLogger
         {
             Audio = new AudioProcessor(SAMPLING_RATE, BLOCK_SIZE);
             Analyser = new DTMFAnalysis();
+            Calls = new CallAnalysis();
 
             Device = new Driver();
             Device.Connected += new EventHandler(Device_Connected);
@@ -99,6 +108,7 @@ namespace DataLogger
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
                 Analyser.Analyse(Audio.Spectrum, Audio.SpectrumFrequencies, e.NewStartingIndex);
+                Calls.Analyse(Analyser.Tones);
             }
         }
 

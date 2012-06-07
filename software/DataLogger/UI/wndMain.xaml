@@ -266,16 +266,12 @@
 
             <TabItem Header="CALL LOG">
                 <DockPanel>
-                    <ToolBar DockPanel.Dock="Top">
-                        <Button>Clear Log</Button>
-                    </ToolBar>
-
                     <GroupBox Header="detected calls">
-                        <ListView Foreground="{StaticResource DarkBrush}">
+                        <ListView Foreground="{StaticResource DarkBrush}" ItemsSource="{Binding Calls.Calls}">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Time" Width="75" DisplayMemberBinding="{Binding Tag}" />
-                                    <GridViewColumn Header="Number" DisplayMemberBinding="{Binding .}" />
+                                    <GridViewColumn Header="Time" Width="Auto" DisplayMemberBinding="{Binding Time}" />
+                                    <GridViewColumn Header="Number" Width="300" DisplayMemberBinding="{Binding Number}" />
                                 </GridView>
                             </ListView.View>
                         </ListView>

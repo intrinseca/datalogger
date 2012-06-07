@@ -95,6 +95,8 @@ namespace DataLogger
             }
         }
 
+        public DateTime Time { get; set; }
+
         /// <summary>
         /// String representations of each key
         /// </summary>
@@ -212,7 +214,7 @@ namespace DataLogger
                     else
                     {
                         //Otherwise add a new tone
-                        Tones.Add(new Tone() { StartBlock = block, Key = (DTMFTones)key, Duration = 1 });
+                        Tones.Add(new Tone() { StartBlock = block, Key = (DTMFTones)key, Duration = 1, Time = DateTime.Now });
                         continueTone = true;
                     }
                 }
