@@ -111,6 +111,7 @@ namespace DataLogger
         public void Clear()
         {
             Audio.Samples.Clear();
+            Audio.ChannelPosition = 0;
             Analyser.Tones.Clear();
         }
 
