@@ -32,7 +32,7 @@ namespace DataLogger
 
         public static readonly DependencyProperty BlockSizeProperty =
             DependencyProperty.Register("BlockSize", typeof(int), typeof(ToneDisplay), new UIPropertyMetadata(0));
-        
+
         /// <summary>
         /// The width of a sample, in pixels/sample
         /// </summary>
@@ -44,7 +44,7 @@ namespace DataLogger
 
         public static readonly DependencyProperty TimebaseProperty =
             DependencyProperty.Register("Timebase", typeof(float), typeof(ToneDisplay), new UIPropertyMetadata(100f, new PropertyChangedCallback(timeBaseChanged)));
-        
+
         /// <summary>
         /// The collection of tones that have been detected
         /// </summary>
@@ -56,10 +56,26 @@ namespace DataLogger
 
         public static readonly DependencyProperty TonesProperty =
             DependencyProperty.Register(
-            "Tones", 
-            typeof(ObservableCollection<Tone>), 
-            typeof(ToneDisplay), 
+            "Tones",
+            typeof(ObservableCollection<Tone>),
+            typeof(ToneDisplay),
             new UIPropertyMetadata(null, new PropertyChangedCallback(tonesChanged)));
+
+        /// <summary>
+        /// The last block that was analysed, whether any tone was detected or not. Used to set width of whole display
+        /// </summary>
+        public int LastBlock
+        {
+            get { return (int)GetValue(LastBlockProperty); }
+            set { SetValue(LastBlockProperty, value); }
+        }
+
+        public static readonly DependencyProperty LastBlockProperty =
+            DependencyProperty.Register(
+            "LastBlock", 
+            typeof(int), 
+            typeof(ToneDisplay), 
+            new UIPropertyMetadata(0, new PropertyChangedCallback(lastBlockChanged)));
 
         /// <summary>
         /// Raised when the internal ScrollViewer is scrolled
@@ -95,9 +111,22 @@ namespace DataLogger
         private static void tonesChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var t = (ToneDisplay)sender;
-            if(t.Tones != null)
+            if (t.Tones != null)
                 t.Tones.CollectionChanged += new NotifyCollectionChangedEventHandler(t.Tones_CollectionChanged);
         }
+
+        /// <summary>
+        /// Update the display padding if the number of FFT blocks changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void lastBlockChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var t = (ToneDisplay)sender;
+            if (t.Tones != null)
+                t.padDisplay();
+        }
+
         /// <summary>
         /// Handle changes to the tone collection, by regenerating the tone display
         /// </summary>
@@ -113,15 +142,19 @@ namespace DataLogger
         /// </summary>
         private void refresh()
         {
-            //Stop if we have no tones to display
+            //Stop if we have the tone collection is not set
             if (Tones == null)
                 return;
 
-            //Calculate the width of pixels that is one unit tone duration
-            double width = Timebase * BlockSize;
-
             //Clear the tone container
             grdTones.Children.Clear();
+
+            //Stop here if there are no tones to display
+            if (Tones.Count == 0)
+                return;
+
+            //Calculate the width of pixels that is one unit tone duration
+            double width = getBlockWidth();
 
             //Add each tone
             foreach (var tone in Tones)
@@ -145,6 +178,42 @@ namespace DataLogger
 
                 //Add the tone to the display
                 b.Child = t;
+                grdTones.Children.Add(b);
+            }
+
+            padDisplay();
+        }
+
+        /// <summary>
+        /// Get the width of a single FFT block
+        /// </summary>
+        /// <returns></returns>
+        private double getBlockWidth()
+        {
+            double width = Timebase * BlockSize;
+            return width;
+        }
+
+        /// <summary>
+        /// Add a padding tone to the end of the display to match the spectrogram
+        /// </summary>
+        /// <param name="width"></param>
+        private void padDisplay()
+        {
+            if (Tones.Count == 0)
+                return;
+
+            double width = getBlockWidth();
+
+            var lastTone = Tones[Tones.Count - 1];
+            var lastToneEnd = lastTone.StartBlock + lastTone.Duration;
+            if (lastToneEnd < LastBlock)
+            {
+                //Insert a padding block
+                var b = new Border();
+                b.Background = (Brush)FindResource("LightBrush");
+                b.Width = (LastBlock - lastToneEnd) * width;
+                b.Margin = new Thickness(width * lastToneEnd, 0, 0, 0);
                 grdTones.Children.Add(b);
             }
         }

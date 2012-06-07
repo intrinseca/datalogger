@@ -88,7 +88,7 @@ namespace DataLogger
             {
                 return m_Duration;
             }
-            set 
+            set
             {
                 m_Duration = value;
                 OnPropertyChanged("Duration");
@@ -137,7 +137,7 @@ namespace DataLogger
     /// <summary>
     /// Analyse a spectrum and determine the DTMF tones present, and hence the keys pressed
     /// </summary>
-    public class DTMFAnalysis
+    public class DTMFAnalysis : INotifyPropertyChanged
     {
         /// <summary>
         /// The ratio of max to min tone intensity to declare a tone present
@@ -156,6 +156,11 @@ namespace DataLogger
 
         //Flag for used in Analyse for whether the previous tone has ended
         bool continueTone = false;
+
+        /// <summary>
+        /// Implement INotifyPropertyChanged
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Constructor
@@ -272,7 +277,7 @@ namespace DataLogger
 
             //If the maximum is both indepently strong, and stronger than the minimum tone
             if (max / min > RATIO_THRESHOLD && max > ABS_THRESHOLD)
-            { 
+            {
                 //Find the corresponding index and return
                 tone = findValue(max, magnitudes);
             }
@@ -298,6 +303,16 @@ namespace DataLogger
 
             //Throw exception if value not found
             throw new Exception("Value not found");
+        }
+
+        /// <summary>
+        /// Helper to raise PropertyChanged
+        /// </summary>
+        /// <param name="name"></param>
+        private void OnPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
     }
 }

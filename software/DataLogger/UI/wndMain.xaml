@@ -215,7 +215,7 @@
 
                     <GroupBox Header="spectrum" Grid.Row="1">
                         <StackPanel>
-                            <dl:ToneDisplay x:Name="tones" ScrollChanged="tones_ScrollChanged" Timebase="{Binding ElementName=sldAnalyseTimebase, Path=Value}" Tones="{Binding Analyser.Tones}" MinHeight="23" />
+                            <dl:ToneDisplay x:Name="tones" ScrollChanged="tones_ScrollChanged" Timebase="{Binding ElementName=sldAnalyseTimebase, Path=Value}" Tones="{Binding Analyser.Tones}" LastBlock="{Binding Audio.Spectrum.Count}" MinHeight="23" />
                             <dl:Spectrum x:Name="grhSpectrum" ScrollChanged="grhSpectrum_ScrollChanged" Timebase="{Binding ElementName=sldAnalyseTimebase, Path=Value}" Audio="{Binding Audio}" MinHeight="128" />
                         </StackPanel>
                     </GroupBox>
