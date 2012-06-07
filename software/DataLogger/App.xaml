@@ -6,7 +6,7 @@
         <Color R="31" G="150" B="191" A="255" x:Key="AccentBlue" />
         <Color R="129" G="54" B="245" A="255" x:Key="AccentPurple" />
         <Color R="204" G="38" B="38" A="255" x:Key="AccentRed" />
-        <Color R="19" G="181" B="31" A="255" x:Key="AccentGreen" />
+        <Color R="63" G="255" B="130" A="255" x:Key="AccentGreen" />
         <Color R="252" G="235" B="27" A="255" x:Key="AccentYellow" />
         <Color R="241" G="255" B="252" A="255" x:Key="Light" />
         <Color R="13" G="26" B="28" A="255" x:Key="Dark" />

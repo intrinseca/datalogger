@@ -10,6 +10,13 @@ namespace DataLogger
     {
         public DateTime Time { get; set; }
         public string Number { get; set; }
+        public bool IsValid
+        {
+            get
+            {
+                return Number != null && Number.Length == 11 && (Number[0] == '0' && "12378".Contains(Number[1]));
+            }
+        }
     }
 
 
@@ -30,24 +37,21 @@ namespace DataLogger
 
             for (int i = 0; i < tones.Count; i++)
             {
-                if (i >= 1 && (tones[i].Time - tones[i - 1].Time).Seconds > 2)
-                {
-                    addCall(tones, callStart, i - callStart - 1);
-                    callStart = i;
-                }
-
-                if (i == tones.Count - 1)
+                if (i >= 1 && i - callStart > 0 && (tones[i].Time - tones[i - 1].Time).Seconds > 2)
                 {
                     addCall(tones, callStart, i - callStart);
-                    callStart = i + 1;
-                    continue;
+                    callStart = i;
                 }
-
-                if (i - callStart >= 10)
+                
+                if (i == tones.Count - 1)
                 {
-                    addCall(tones, callStart, 10);
+                    addCall(tones, callStart, i - callStart + 1);
                     callStart = i + 1;
-                    continue;
+                }
+                else if (i - callStart >= 10)
+                {
+                    addCall(tones, callStart, 11);
+                    callStart = i + 1;
                 }
             }
         }
@@ -57,7 +61,7 @@ namespace DataLogger
             var c = new Call();
             c.Time = tones[callStart].Time;
 
-            for (int j = callStart; j <= (callStart + count); j++)
+            for (int j = callStart; j < (callStart + count); j++)
             {
                 c.Number += tones[j].KeyString;
             }
