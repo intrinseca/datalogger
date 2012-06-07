@@ -72,9 +72,9 @@ namespace DataLogger
 
         public static readonly DependencyProperty LastBlockProperty =
             DependencyProperty.Register(
-            "LastBlock", 
-            typeof(int), 
-            typeof(ToneDisplay), 
+            "LastBlock",
+            typeof(int),
+            typeof(ToneDisplay),
             new UIPropertyMetadata(0, new PropertyChangedCallback(lastBlockChanged)));
 
         /// <summary>
@@ -212,17 +212,14 @@ namespace DataLogger
             var lastToneEnd = lastTone.StartBlock + lastTone.Duration;
             if (lastToneEnd < LastBlock)
             {
-                //Try to create the padding block
-                if(paddingBorder == null)
-                {
-                    paddingBorder = new Border();
-                    paddingBorder.Background = (Brush)FindResource("LightBrush");
-                    grdTones.Children.Add(paddingBorder);
-                }
+                grdTones.Children.Remove(paddingBorder);
 
-                //Update the padding block                
+                paddingBorder = new Border();
+                paddingBorder.Background = (Brush)FindResource("LightBrush");
                 paddingBorder.Width = (LastBlock - lastToneEnd) * width;
                 paddingBorder.Margin = new Thickness(width * lastToneEnd, 0, 0, 0);
+
+                grdTones.Children.Add(paddingBorder);
             }
         }
 
